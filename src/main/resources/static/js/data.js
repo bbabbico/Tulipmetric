@@ -36,8 +36,8 @@ const industriesData = [ //TODO : 하락률 제외하고 순수 3개월간 상�
     stockCount: 10,
     totalMarketCap: 420000000000,
     averagePer: 12.6,
-    stockIndex: 1452,
-    growthHistory: [5.2, 5.0, 4.9, 4.7, 4.5, 4.2, 4.0, 3.8, 3.5, 3.2, 3.0, 2.8], // 1개월 전부터 12개월 전까지 주가 지수인데 상승률로 오타남 수정해야됨.
+    stockIndex: 1452, //1달전 주가 지수
+    growthHistory: [5.2, 5.0, 4.9, 4.7, 4.5, 4.2, 4.0, 3.8, 3.5, 3.2, 3.0, 2.8], // 1개월 전부터 12개월 전까지 주가 지수인데 상승률로 오타남 수정해야됨. stockIndex 랑그냥 통합해도 될듯
     description: '농산물 생산, 임업, 어업 및 관련 서비스를 제공하는 기업들입니다.',
     marketStatus: 'stable'
   },
