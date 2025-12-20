@@ -1,10 +1,226 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tulipmetric - 산업군별 시장 지표</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    h1 { font-size: 1.5rem; font-weight: 500; line-height: 1.5; }
+    h2 { font-size: 1.25rem; font-weight: 500; line-height: 1.5; }
+    h3 { font-size: 1.125rem; font-weight: 500; line-height: 1.5; }
+    h4 { font-size: 1rem; font-weight: 500; line-height: 1.5; }
+    label, button { font-size: 1rem; font-weight: 500; line-height: 1.5; }
+    input { font-size: 1rem; font-weight: 400; line-height: 1.5; }
+    
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
 </head>
-<body>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between py-4">
+        <!-- Logo -->
+        <a href="index.html" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <svg class="w-8 h-8" viewBox="0 0 100 100">
+            <path d="M 50 60 Q 48 75 46 90" stroke="#27AE60" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M 46 75 Q 35 75 30 80 Q 35 78 46 77" fill="#27AE60" opacity="0.8"/>
+            <g>
+              <ellipse cx="50" cy="35" rx="8" ry="18" fill="#FF69B4" opacity="0.9"/>
+              <ellipse cx="42" cy="40" rx="8" ry="18" fill="#FF69B4" transform="rotate(-25 42 40)" opacity="0.85"/>
+              <ellipse cx="58" cy="40" rx="8" ry="18" fill="#FF69B4" transform="rotate(25 58 40)" opacity="0.85"/>
+              <ellipse cx="38" cy="42" rx="7" ry="16" fill="#FF69B4" transform="rotate(-40 38 42)" opacity="0.7"/>
+              <ellipse cx="62" cy="42" rx="7" ry="16" fill="#FF69B4" transform="rotate(40 62 42)" opacity="0.7"/>
+            </g>
+          </svg>
+          <h1 class="text-slate-900">Tulipmetric</h1>
+        </a>
 
+        <!-- Center Navigation -->
+        <nav class="flex items-center gap-1">
+          <a href="index.html" class="flex items-center gap-2 px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            <span>산업군별 시장 지표</span>
+          </a>
+          <a href="community.html" class="flex items-center gap-2 px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+            <span>커뮤니티</span>
+          </a>
+        </nav>
+
+        <!-- Right Navigation -->
+        <div class="flex items-center gap-1">
+          <a href="login.html" class="flex items-center gap-2 px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+            </svg>
+            <span>로그인</span>
+          </a>
+          <a href="signup.html" class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+            </svg>
+            <span>회원가입</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Hero Section -->
+    <div class="mb-8 text-center">
+      <h2 class="text-slate-900 mb-3">산업군별 시장 지표 분석</h2>
+      <p class="text-slate-600 max-w-2xl mx-auto">
+        튤립으로 표현되는 시장의 온도를 확인하고, 각 산업군의 성장 동향을 한눈에 파악하세요
+      </p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+      <div class="flex flex-col md:flex-row gap-4">
+        <div class="flex-1 relative">
+          <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input 
+            type="text" 
+            id="searchInput"
+            placeholder="산업군명 또는 기업명으로 검색..." 
+            class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+        <div>
+          <select id="statusFilter" class="px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <option value="all">전체 상태</option>
+            <option value="overvalued">과열 (매우 화려한 튤립)</option>
+            <option value="growing">강한 상승 (화려한 튤립)</option>
+            <option value="stable">안정 상승 (평범한 튤립)</option>
+            <option value="declining">하락 (시든 튤립)</option>
+            <option value="crashed">급락 (꺾인 튤립)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Market Temperature Section -->
+    <section class="mb-12" id="marketTempSection">
+      <div class="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50 rounded-3xl shadow-xl border border-slate-200">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-200/30 to-indigo-200/30 rounded-full blur-3xl"></div>
+        
+        <div class="relative px-8 py-16">
+          <div class="text-center max-w-3xl mx-auto">
+            <!-- Market Title -->
+            <div class="mb-8">
+              <p class="text-sm tracking-wider uppercase text-slate-400 mb-3" style="font-weight: 300;">현재 시장은...</p>
+              <h2 id="marketTitle" class="text-5xl md:text-6xl mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600" style="font-weight: 300; letter-spacing: -0.025em;">
+                안정적인 시장
+              </h2>
+            </div>
+            
+            <!-- Large Tulip Icon with glow effect -->
+            <div class="flex justify-center mb-8">
+              <div class="relative">
+                <div class="absolute inset-0 blur-2xl opacity-40 bg-blue-400"></div>
+                <div id="marketTulip" class="relative transform hover:scale-110 transition-transform duration-500 ease-out"></div>
+              </div>
+            </div>
+            
+            <!-- Market Description -->
+            <div class="mb-8">
+              <p id="marketDescription" class="text-xl md:text-2xl text-blue-700" style="font-weight: 300;">
+                신기술 중심으로 관심이 쏠립니다
+              </p>
+            </div>
+            
+            <!-- Subtle growth rate indicator -->
+            <div class="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full border border-slate-200 shadow-sm">
+              <span class="text-sm text-slate-500">평균 성장률</span>
+              <span id="avgGrowthRate" class="text-xl text-green-600">+12.8%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Favorites Section -->
+    <section class="mb-12" id="favoritesSection" style="display: none;">
+      <div class="flex items-center gap-3 mb-6">
+        <svg class="w-7 h-7 text-yellow-500 fill-current" viewBox="0 0 24 24">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+        <h2 class="text-slate-900">즐겨찾기</h2>
+      </div>
+      <div id="favoritesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- Trending Industries -->
+    <section class="mb-12" id="trendingSection">
+      <div class="flex items-center gap-3 mb-6">
+        <svg class="w-7 h-7 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+        </svg>
+        <h2 class="text-slate-900">빠르게 성장중인 산업군</h2>
+      </div>
+      <div id="trendingList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- Other Industries -->
+    <section class="mb-12" id="otherSection">
+      <div class="flex items-center gap-3 mb-6">
+        <svg class="w-7 h-7 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        <h2 class="text-slate-900">주요 산업군</h2>
+      </div>
+      <div id="otherList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- No Results -->
+    <div id="noResults" class="text-center py-16" style="display: none;">
+      <div class="text-6xl mb-4">🔍</div>
+      <h3 class="text-slate-900 mb-2">검색 결과가 없습니다</h3>
+      <p class="text-slate-600 mb-6">다른 검색어를 입력하거나 필터를 변경해보세요</p>
+      <button onclick="resetFilters()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        필터 초기화
+      </button>
+    </div>
+
+    <!-- Tulip Guide -->
+    <div class="mt-16 p-6 bg-white rounded-xl border border-slate-200">
+      <h3 class="text-slate-900 mb-3">튤립 지표 가이드</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="tulipGuide"></div>
+    </div>
+  </div>
+
+  <script src="/js/data.js"></script>
+  <script src="/js/tulip.js"></script>
+  <script src="/js/main.js"></script>
 </body>
 </html>
