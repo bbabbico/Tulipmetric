@@ -20,33 +20,14 @@
   </style>
 </head>
 <body class="bg-slate-50">
-  <!-- Navigation -->
-  <nav class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
-        <div class="flex items-center gap-3">
-          <div class="text-3xl">🌷</div>
-          <a href="index.html" class="text-2xl text-slate-900" style="font-weight: 700;">Tulipmetric</a>
-        </div>
-        
-        <div class="flex items-center gap-8">
-          <a href="index.html" class="text-slate-600 hover:text-blue-600 transition-colors" style="font-weight: 500;">산업군별 시장 지표</a>
-          <a href="community.html" class="text-slate-900 hover:text-blue-600 transition-colors" style="font-weight: 500;">커뮤니티</a>
-        </div>
-        
-        <div class="flex items-center gap-3">
-          <a href="login.html" class="px-4 py-2 text-slate-700 hover:text-slate-900 transition-colors">로그인</a>
-          <a href="signup.html" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">회원가입</a>
-        </div>
-      </div>
-    </div>
-  </nav>
+<!-- Header -->
+<div th:replace="~{fragments/basicheader :: basicheader-fragment}"></div>
 
   <!-- Main Content -->
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Back Button -->
     <div class="mb-6">
-      <a href="community.html" class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
+      <a href="/community" class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>

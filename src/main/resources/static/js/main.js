@@ -48,7 +48,7 @@ function createIndustryCard(industry, isTrending = false) {
         </svg>
       </button>
       
-      <a href="industry-detail.html?id=${industry.id}" class="block bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-slate-300 group">
+      <a href="industry-detail?id=${industry.id}" class="block bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-slate-300 group">
         <div class="p-6">
           <div class="flex items-start justify-between mb-4">
             <div class="flex-1">
