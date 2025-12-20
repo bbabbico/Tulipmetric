@@ -164,6 +164,7 @@
 
   <script src="/js/data.js"></script>
   <script src="/js/tulip.js"></script>
+
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const industryId = urlParams.get('id');
@@ -237,16 +238,16 @@
       // Monthly Growth Rate
       const monthlyGrowthEl = document.getElementById('monthlyGrowth');
       const monthlyGrowthIcon = document.getElementById('monthlyGrowthIcon');
-      const growthColor = industryData.monthlyGrowthRate >= 0 ? 'text-green-600' : 'text-red-600';
-      const growthIconColor = industryData.monthlyGrowthRate >= 0 ? 'text-green-500' : 'text-red-500';
-      const growthSymbol = industryData.monthlyGrowthRate >= 0 ? '+' : '';
+      const growthColor = industryData.stockIndex >= 0 ? 'text-green-600' : 'text-red-600';
+      const growthIconColor = industryData.stockIndex >= 0 ? 'text-green-500' : 'text-red-500';
+      const growthSymbol = industryData.stockIndex >= 0 ? '+' : '';
       
       monthlyGrowthEl.className = 'text-2xl ' + growthColor;
       monthlyGrowthEl.style.fontWeight = '600';
-      monthlyGrowthEl.textContent = growthSymbol + industryData.monthlyGrowthRate.toFixed(1) + '%';
+      monthlyGrowthEl.textContent = growthSymbol + industryData.stockIndex.toFixed(1) + '%';
       
       monthlyGrowthIcon.className = 'w-5 h-5 ' + growthIconColor;
-      if (industryData.monthlyGrowthRate >= 0) {
+      if (industryData.stockIndex >= 0) {
         monthlyGrowthIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>';
       } else {
         monthlyGrowthIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>';

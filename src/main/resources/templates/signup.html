@@ -32,7 +32,7 @@
       </div>
 
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
-        <form onsubmit="handleSignup(event)" class="space-y-6">
+        <form action="/signup" method="post" onsubmit="handleSignup()" class="space-y-6">
           <div>
             <label for="name" class="block text-sm text-slate-700 mb-2" style="font-weight: 500;">이름</label>
             <input 
@@ -169,10 +169,9 @@
       
       if (password !== confirmPassword) {
         alert('비밀번호가 일치하지 않습니다');
-        return;
+        return false;
       }
-      
-      alert('회원가입 기능은 데모 버전에서는 지원되지 않습니다');
+      return true;
     }
   </script>
 </body>

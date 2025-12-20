@@ -28,8 +28,8 @@ function toggleFavorite(id) {
 // Create industry card
 function createIndustryCard(industry, isTrending = false) {
   const isFavorite = favorites.includes(industry.id);
-  const changeColor = industry.growthRate >= 0 ? 'text-green-600' : 'text-red-600';
-  const changeSymbol = industry.growthRate >= 0 ? '+' : '';
+  const changeColor = industry.stockIndex >= 0 ? 'text-green-600' : 'text-red-600';
+  const changeSymbol = industry.stockIndex >= 0 ? '+' : '';
   
   return `
     <div class="relative">
@@ -72,7 +72,7 @@ function createIndustryCard(industry, isTrending = false) {
           <div class="flex items-center justify-between pt-4 border-t border-slate-100">
             <div>
               <div class="flex items-center gap-2 mb-1">
-                ${industry.growthRate >= 0 ? `
+                ${industry.stockIndex >= 0 ? `
                   <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                   </svg>
@@ -82,7 +82,7 @@ function createIndustryCard(industry, isTrending = false) {
                   </svg>
                 `}
                 <span class="${changeColor}">
-                  ${changeSymbol}${industry.growthRate.toFixed(1)}%
+                  ${changeSymbol}${industry.stockIndex.toFixed(1)}%
                 </span>
               </div>
               <p class="text-xs text-slate-500">30일 성장률</p>
@@ -132,9 +132,9 @@ function filterIndustries() {
   return filtered;
 }
 
-// Calculate market sentiment
+// Calculate market sentiment 전체 시장 분위기 계산
 function calculateMarketSentiment() {
-  const avgGrowthRate = industries.reduce((sum, ind) => sum + ind.growthRate, 0) / industries.length;
+  const avgGrowthRate = industries.reduce((sum, ind) => sum + ind.stockIndex, 0) / industries.length;
   
   let marketStatus;
   let marketTitle;
@@ -276,7 +276,7 @@ function resetFilters() {
 // Render tulip guide
 function renderTulipGuide() {
   const statuses = ['crashed', 'declining', 'stable', 'growing', 'overvalued'];
-  const guideHTML = statuses.map(status => `
+  document.getElementById('tulipGuide').innerHTML = statuses.map(status => `
     <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
       ${createTulipSVG(status, 'sm')}
       <div>
@@ -285,8 +285,6 @@ function renderTulipGuide() {
       </div>
     </div>
   `).join('');
-  
-  document.getElementById('tulipGuide').innerHTML = guideHTML;
 }
 
 // Event listeners

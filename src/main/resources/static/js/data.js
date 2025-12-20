@@ -29,17 +29,15 @@ const companiesData = {
 };
 
 // 산업군 정보: 산업군명, 종목수, 산업군 시가총액, 등락(원), 등락률, PER, 한달간 산업군 주가 성장률, 1~12개월 전 산업군 주가 성장률
-const industriesData = [
+const industriesData = [ //TODO : 하락률 제외하고 순수 3개월간 상승률로만 산업군 과열도 체크해서 marketStatus 정하는 로직 필요 ( crashed , declining , stable , growing , overvalued )
   {
     name: '농업, 임업 및 어업',
     id: 'agriculture',
     stockCount: 10,
     totalMarketCap: 420000000000,
-    priceChange: 2580,
-    changeRate: 5.2,
     averagePer: 12.6,
-    monthlyGrowthRate: 5.2,
-    growthHistory: [5.2, 5.0, 4.9, 4.7, 4.5, 4.2, 4.0, 3.8, 3.5, 3.2, 3.0, 2.8], // 1개월 전부터 12개월 전까지
+    stockIndex: 1452,
+    growthHistory: [5.2, 5.0, 4.9, 4.7, 4.5, 4.2, 4.0, 3.8, 3.5, 3.2, 3.0, 2.8], // 1개월 전부터 12개월 전까지 주가 지수인데 상승률로 오타남 수정해야됨.
     description: '농산물 생산, 임업, 어업 및 관련 서비스를 제공하는 기업들입니다.',
     marketStatus: 'stable'
   },
@@ -48,10 +46,8 @@ const industriesData = [
     id: 'food-beverage',
     stockCount: 10,
     totalMarketCap: 1250000000000,
-    priceChange: 10250,
-    changeRate: 8.7,
     averagePer: 15.3,
-    monthlyGrowthRate: 8.7,
+    stockIndex: 4500,
     growthHistory: [8.7, 8.5, 8.3, 8.1, 7.8, 7.5, 7.2, 6.8, 6.5, 6.2, 5.8, 5.5],
     description: '식품, 음료, 담배를 제조 및 유통하는 기업들입니다.',
     marketStatus: 'stable'
@@ -61,10 +57,8 @@ const industriesData = [
     id: 'pharmaceutical',
     stockCount: 10,
     totalMarketCap: 1650000000000,
-    priceChange: 38500,
-    changeRate: 28.4,
     averagePer: 24.8,
-    monthlyGrowthRate: 28.4,
+    stockIndex: 17501,
     growthHistory: [28.4, 27.1, 25.8, 24.1, 22.3, 20.5, 18.7, 16.9, 15.2, 13.5, 11.8, 10.2],
     description: '의약품을 연구 개발하고 제조하는 기업들입니다.',
     marketStatus: 'growing',
@@ -75,10 +69,8 @@ const industriesData = [
     id: 'electronics',
     stockCount: 10,
     totalMarketCap: 2150000000000,
-    priceChange: 56800,
-    changeRate: 35.6,
     averagePer: 28.9,
-    monthlyGrowthRate: 35.6,
+    stockIndex: 46428,
     growthHistory: [35.6, 33.9, 32.2, 30.1, 27.8, 25.3, 23.0, 20.8, 18.5, 16.2, 14.0, 11.8],
     description: '전자제품 및 전기 기기를 제조하는 기업들입니다.',
     marketStatus: 'growing',
@@ -89,10 +81,8 @@ const industriesData = [
     id: 'medical-devices',
     stockCount: 10,
     totalMarketCap: 920000000000,
-    priceChange: 17850,
-    changeRate: 24.7,
     averagePer: 22.5,
-    monthlyGrowthRate: 24.7,
+    stockIndex: 1492,
     growthHistory: [24.7, 23.7, 22.6, 21.3, 19.9, 18.5, 17.2, 15.8, 14.5, 13.2, 11.8, 10.5],
     description: '의료 장비 및 정밀 기기를 제조하는 기업들입니다.',
     marketStatus: 'growing',
@@ -103,10 +93,8 @@ const industriesData = [
     id: 'it-services',
     stockCount: 10,
     totalMarketCap: 2450000000000,
-    priceChange: 125800,
-    changeRate: 85.3,
     averagePer: 42.5,
-    monthlyGrowthRate: 85.3,
+    stockIndex: 1344,
     growthHistory: [85.3, 81.2, 76.8, 71.3, 64.5, 58.2, 52.5, 47.2, 42.1, 37.5, 33.2, 29.5],
     description: 'IT 솔루션 및 소프트웨어 서비스를 제공하는 기업들입니다.',
     marketStatus: 'overvalued',
@@ -117,10 +105,8 @@ const industriesData = [
     id: 'entertainment',
     stockCount: 10,
     totalMarketCap: 780000000000,
-    priceChange: 18950,
-    changeRate: 31.4,
     averagePer: 26.8,
-    monthlyGrowthRate: 31.4,
+    stockIndex: 1428,
     growthHistory: [31.4, 30.0, 28.5, 26.8, 24.9, 22.8, 20.8, 18.9, 17.2, 15.5, 13.8, 12.2],
     description: '엔터테인먼트 및 문화 콘텐츠를 제공하는 기업들입니다.',
     marketStatus: 'growing',
@@ -131,10 +117,8 @@ const industriesData = [
     id: 'semiconductor',
     stockCount: 10,
     totalMarketCap: 3250000000000,
-    priceChange: 178500,
-    changeRate: 92.8,
     averagePer: 28.3,
-    monthlyGrowthRate: 92.8,
+    stockIndex: 20000,
     growthHistory: [92.8, 88.7, 84.5, 78.9, 72.1, 65.3, 58.8, 52.5, 46.8, 41.5, 36.8, 32.5],
     description: '반도체 칩과 관련 장비를 제조하는 기업들로, 현대 기술 산업의 핵심 인프라를 제공합니다.',
     marketStatus: 'overvalued',
@@ -145,10 +129,8 @@ const industriesData = [
     id: 'construction',
     stockCount: 10,
     totalMarketCap: 680000000000,
-    priceChange: -6250,
-    changeRate: -9.7,
     averagePer: 8.5,
-    monthlyGrowthRate: -9.7,
+    stockIndex: 99,
     growthHistory: [-9.7, -8.6, -7.5, -6.1, -4.8, -3.2, -1.8, -0.5, 0.8, 2.1, 3.5, 4.8],
     description: '건축 및 토목 공사를 수행하는 기업들입니다.',
     marketStatus: 'declining'
@@ -158,10 +140,8 @@ const industriesData = [
     id: 'real-estate',
     stockCount: 10,
     totalMarketCap: 420000000000,
-    priceChange: -11250,
-    changeRate: -28.5,
     averagePer: 6.2,
-    monthlyGrowthRate: -28.5,
+    stockIndex: 968,
     growthHistory: [-28.5, -25.6, -22.5, -19.2, -15.8, -12.3, -8.9, -5.5, -2.2, 1.1, 4.5, 7.8],
     description: '부동산 개발 및 임대 사업을 하는 기업들입니다.',
     marketStatus: 'crashed'
@@ -244,7 +224,7 @@ function getIndustryData(industryId) {
   return industriesData.find(ind => ind.id === industryId);
 }
 
-function getCompaniesData(industryId) {
+function getCompaniesData(industryId) { //산업군으로 기업 검색
   return companiesData[industryId] || [];
 }
 
@@ -262,7 +242,7 @@ const industries = industriesData.map(ind => ({
   name: ind.name,
   description: ind.description,
   marketStatus: ind.marketStatus,
-  growthRate: ind.monthlyGrowthRate,
+  stockIndex: ind.stockIndex,
   totalMarketCap: ind.totalMarketCap,
   isTrending: ind.isTrending,
   companies: getCompaniesData(ind.id).slice(0, 3) // 미리보기용 상위 3개만
