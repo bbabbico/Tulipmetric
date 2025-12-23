@@ -19,7 +19,7 @@ public class Comment {
     private String content; // 글 내용
 
     @Column(length = 61 , nullable = false)
-    private String date_minute; // 작성 년도/월/일/시간/분
+    private String dateminute; // 작성 년도/월/일/시간/분
 
     @Column(nullable = false)
     private int likenum; // 좋아요수
@@ -31,7 +31,7 @@ public class Comment {
                 ", postid=" + postid +
                 ", nickname='" + nickname + '\'' +
                 ", content='" + content + '\'' +
-                ", date_minute='" + date_minute + '\'' +
+                ", date_minute='" + dateminute + '\'' +
                 ", likenum=" + likenum +
                 '}';
     }

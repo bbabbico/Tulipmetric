@@ -31,4 +31,13 @@ public class JoinService {
         }
         log.info("회원가입완료");
     }
+
+    // 회원가입 정보 중복확인 메서드
+    public boolean LoginIdDuplicateCheck(String loginid) {
+        return memberRepository.findByLoginid(loginid) == null;
+    }
+
+    public boolean NickNameDuplicateCheck(String nickname) {
+        return memberRepository.findByNickname(nickname) == null;
+    }
 }

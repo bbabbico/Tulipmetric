@@ -35,39 +35,77 @@
         <form action="/join" method="post" onsubmit="handleSignup()" class="space-y-6">
           <!--          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>     -->
           <div>
-            <label for="loginid" class="block text-sm text-slate-700 mb-2" style="font-weight: 500;">로그인 ID</label>
-            <input 
-              type="text" 
-              id="loginid"
-              name="loginid"
-              required
-              placeholder="홍길동"
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label for="nickname" class="block text-sm text-slate-700 mb-2" style="font-weight: 500;">별명</label>
+            <label for="email" class="block text-sm text-slate-700 mb-2" style="font-weight: 500;">이메일</label>
             <input
-                    type="text"
-                    id="nickname"
-                    name="nickname"
+                    type="email"
+                    id="email"
+                    name="email"
                     required
-                    placeholder="잠자리"
+                    placeholder="your@email.com"
                     class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <label for="email" class="block text-sm text-slate-700 mb-2" style="font-weight: 500;">이메일</label>
-            <input 
-              type="email" 
-              id="email"
-              name="email"
-              required
-              placeholder="your@email.com"
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <label for="loginid" class="block text-sm text-slate-700 mb-2" style="font-weight: 500;">로그인 ID</label>
+
+            <div class="flex gap-2">
+              <input
+                      type="text"
+                      id="loginid"
+                      name="loginid"
+                      required
+                      minlength="6"
+                      placeholder="6자 이상 입력"
+                      class="flex-1 w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+
+              <button
+                      type="button"
+                      id="loginidCheckBtn"
+                      class="px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors text-slate-700 text-sm inline-flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed"
+                      style="font-weight: 500;"
+              >
+                <svg id="loginidSpinner" class="hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                </svg>
+                <span id="loginidBtnText">중복확인</span>
+              </button>
+            </div>
+
+            <p id="loginidCheckMsg" class="text-xs mt-1"></p>
+          </div>
+
+          <div>
+            <label for="nickname" class="block text-sm text-slate-700 mb-2" style="font-weight: 500;">별명</label>
+
+            <div class="flex gap-2">
+              <input
+                      type="text"
+                      id="nickname"
+                      name="nickname"
+                      required
+                      minlength="2"
+                      placeholder="잠자리"
+                      class="flex-1 w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+
+              <button
+                      type="button"
+                      id="nicknameCheckBtn"
+                      class="px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors text-slate-700 text-sm inline-flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed"
+                      style="font-weight: 500;"
+              >
+                <svg id="nicknameSpinner" class="hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                </svg>
+                <span id="nicknameBtnText">중복확인</span>
+              </button>
+            </div>
+
+            <p id="nicknameCheckMsg" class="text-xs mt-1"></p>
           </div>
 
           <div>
@@ -112,13 +150,30 @@
             </label>
           </div>
 
-          <button 
-            type="submit"
-            class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            style="font-weight: 500;"
-          >
-            회원가입
-          </button>
+          <div class="relative group" id="signupBtnWrapper">
+            <button
+                    type="submit"
+                    id="signupBtn"
+                    disabled
+                    class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors
+           disabled:bg-slate-300 disabled:hover:bg-slate-300 disabled:cursor-not-allowed"
+                    style="font-weight: 500;"
+            >
+              회원가입
+            </button>
+
+            <!-- disabled 상태에서만 보이게 JS로 hidden 토글 -->
+            <div
+                    id="signupTooltip"
+                    class="hidden absolute left-1/2 -translate-x-1/2 -top-2 -translate-y-full
+           px-3 py-2 text-xs text-white bg-slate-800 rounded-md shadow-lg whitespace-nowrap
+           opacity-0 group-hover:opacity-100 transition pointer-events-none"
+            >
+              로그인 ID와 별명 중복확인을 먼저 해주세요
+              <div class="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0
+                border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-slate-800"></div>
+            </div>
+          </div>
         </form>
 
         <div class="mt-6">
@@ -178,19 +233,216 @@
     </div>
   </div>
 
-  <script>
-    function handleSignup(event) {
-      event.preventDefault();
-      
-      const password = document.getElementById('password').value;
-      const confirmPassword = document.getElementById('confirmPassword').value;
-      
-      if (password !== confirmPassword) {
-        alert('비밀번호가 일치하지 않습니다');
-        return false;
-      }
-      return true;
+<script>
+  // 중복확인 상태 저장
+  const duplicateState = {
+    loginid: null,   // true(사용가능) / false(중복) / null(미확인)
+    nickname: null
+  };
+
+  function getCsrfHeader() {
+    // (선택) Spring Security CSRF를 쓰는 경우를 대비한 처리
+    const token =
+            document.querySelector('meta[name="_csrf"]')?.content ||
+            document.querySelector('input[type="hidden"][name*="csrf"]')?.value;
+
+    const headerName =
+            document.querySelector('meta[name="_csrf_header"]')?.content ||
+            'X-CSRF-TOKEN';
+
+    return token ? { headerName, token } : null;
+  }
+
+  function setLoading(btn, spinner, textEl, loadingText, isLoading) {
+    btn.disabled = isLoading;
+    if (isLoading) {
+      spinner.classList.remove('hidden');
+      textEl.textContent = loadingText;
+    } else {
+      spinner.classList.add('hidden');
+      textEl.textContent = '중복확인';
     }
-  </script>
+  }
+
+  function setMsg(msgEl, inputEl, ok, message) {
+    msgEl.textContent = message || '';
+    msgEl.className = 'text-xs mt-1 ' + (ok ? 'text-green-600' : 'text-red-600');
+
+    // input 테두리/포커스 색도 같이 변경
+    if (ok) {
+      inputEl.classList.remove('border-slate-300', 'focus:ring-blue-500');
+      inputEl.classList.add('border-green-400', 'focus:ring-green-500');
+    } else {
+      inputEl.classList.remove('border-slate-300', 'focus:ring-blue-500');
+      inputEl.classList.add('border-red-400', 'focus:ring-red-500');
+    }
+  }
+
+  function resetFieldUI(msgEl, inputEl) {
+    msgEl.textContent = '';
+    msgEl.className = 'text-xs mt-1';
+
+    inputEl.classList.remove('border-green-400', 'focus:ring-green-500', 'border-red-400', 'focus:ring-red-500');
+    inputEl.classList.add('border-slate-300', 'focus:ring-blue-500');
+  }
+
+  async function postCheck(url, payload) {
+    const headers = { 'Content-Type': 'application/json' };
+
+    const csrf = getCsrfHeader();
+    if (csrf) headers[csrf.headerName] = csrf.token;
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      throw new Error('요청 실패: ' + res.status);
+    }
+
+    const text = (await res.text()).trim(); // "0" or "1"
+    const num = Number(text);
+    if (Number.isNaN(num)) throw new Error('응답 형식이 숫자(0/1)가 아닙니다: ' + text);
+    return num;
+  }
+
+  async function checkLoginId() {
+    const input = document.getElementById('loginid');
+    const btn = document.getElementById('loginidCheckBtn');
+    const spinner = document.getElementById('loginidSpinner');
+    const btnText = document.getElementById('loginidBtnText');
+    const msg = document.getElementById('loginidCheckMsg');
+
+    const value = input.value.trim();
+    resetFieldUI(msg, input);
+
+    if (value.length < 6) {
+      duplicateState.loginid = null;
+      setMsg(msg, input, false, '로그인 ID는 6자 이상이어야 합니다.');
+      return;
+    }
+
+    try {
+      setLoading(btn, spinner, btnText, '확인중...', true);
+      const result = await postCheck('/loginidcheck', { loginid: value });
+
+      if (result === 1) {
+        duplicateState.loginid = true;
+        setMsg(msg, input, true, '사용 가능한 로그인 ID입니다.');
+      } else {
+        duplicateState.loginid = false;
+        setMsg(msg, input, false, '이미 사용 중인 로그인 ID입니다.');
+      }
+    } catch (e) {
+      duplicateState.loginid = null;
+      setMsg(msg, input, false, '중복확인 중 오류가 발생했습니다. 다시 시도해주세요.');
+      console.error(e);
+    } finally {
+      setLoading(btn, spinner, btnText, '확인중...', false);
+      updateSignupButton();
+    }
+  }
+
+  async function checkNickname() {
+    const input = document.getElementById('nickname');
+    const btn = document.getElementById('nicknameCheckBtn');
+    const spinner = document.getElementById('nicknameSpinner');
+    const btnText = document.getElementById('nicknameBtnText');
+    const msg = document.getElementById('nicknameCheckMsg');
+
+    const value = input.value.trim();
+    resetFieldUI(msg, input);
+
+    if (value.length < 2) {
+      duplicateState.nickname = null;
+      setMsg(msg, input, false, '별명은 2자 이상이어야 합니다.');
+      return;
+    }
+
+    try {
+      setLoading(btn, spinner, btnText, '확인중...', true);
+      const result = await postCheck('/nicknamecheck', { nickname: value });
+
+      if (result === 1) {
+        duplicateState.nickname = true;
+        setMsg(msg, input, true, '사용 가능한 별명입니다.');
+      } else {
+        duplicateState.nickname = false;
+        setMsg(msg, input, false, '이미 사용 중인 별명입니다.');
+      }
+    } catch (e) {
+      duplicateState.nickname = null;
+      setMsg(msg, input, false, '중복확인 중 오류가 발생했습니다. 다시 시도해주세요.');
+      console.error(e);
+    } finally {
+      setLoading(btn, spinner, btnText, '확인중...', false);
+      updateSignupButton();
+    }
+  }
+
+  // 버튼 클릭 이벤트
+  document.addEventListener('DOMContentLoaded', () => {
+    const loginidInput = document.getElementById('loginid');
+    const nicknameInput = document.getElementById('nickname');
+
+    document.getElementById('loginidCheckBtn').addEventListener('click', checkLoginId);
+    document.getElementById('nicknameCheckBtn').addEventListener('click', checkNickname);
+
+    // 값이 바뀌면 다시 "미확인" 상태로 돌림
+    loginidInput.addEventListener('input', () => {
+      duplicateState.loginid = null;
+      resetFieldUI(document.getElementById('loginidCheckMsg'), loginidInput);
+      updateSignupButton();
+    });
+
+    nicknameInput.addEventListener('input', () => {
+      duplicateState.nickname = null;
+      resetFieldUI(document.getElementById('nicknameCheckMsg'), nicknameInput);
+      updateSignupButton();
+    });
+    updateSignupButton();
+  });
+
+  function updateSignupButton() {
+    const btn = document.getElementById('signupBtn');
+    const tip = document.getElementById('signupTooltip');
+
+    const enabled = (duplicateState.loginid === true && duplicateState.nickname === true);
+
+    btn.disabled = !enabled;
+
+    // disabled일 때만 tooltip이 hover로 보이게
+    if (enabled) tip.classList.add('hidden');
+    else tip.classList.remove('hidden');
+  }
+
+  // 최종 제출 시 검증
+  function handleSignup(event) {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (password !== confirmPassword) {
+      alert('비밀번호가 일치하지 않습니다');
+      event.preventDefault();
+      return false;
+    }
+
+    // 중복확인 체크(요구사항에 맞게 버튼 누른 뒤 0/1 결과를 반영)   TODO : 삭제
+    if (duplicateState.loginid !== true) {
+      alert('로그인 ID 중복확인을 완료해주세요.');
+      event.preventDefault();
+      return false;
+    }
+    if (duplicateState.nickname !== true) {
+      alert('별명 중복확인을 완료해주세요.');
+      event.preventDefault();
+      return false;
+    }
+
+    return true;
+  }
+</script>
 </body>
 </html>

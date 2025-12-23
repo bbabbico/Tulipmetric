@@ -13,7 +13,6 @@ public class MemberUserDetails implements UserDetails {
 
     private final Member member;
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
