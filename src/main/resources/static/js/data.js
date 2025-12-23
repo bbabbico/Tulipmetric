@@ -31,17 +31,6 @@ const companiesData = {
 // 산업군 정보: 산업군명, 종목수, 산업군 시가총액, 등락(원), 등락률, PER, 한달간 산업군 주가 성장률, 1~12개월 전 산업군 주가 성장률
 const industriesData = [ //TODO : 하락률 제외하고 순수 3개월간 상승률로만 산업군 과열도 체크해서 marketStatus 정하는 로직 필요 ( crashed , declining , stable , growing , overvalued )
   {
-    name: '농업, 임업 및 어업',
-    id: 'agriculture',
-    stockCount: 10,
-    totalMarketCap: 420000000000,
-    averagePer: 12.6,
-    stockIndex: 1452, //1달전 주가 지수
-    growthHistory: [5.2, 5.0, 4.9, 4.7, 4.5, 4.2, 4.0, 3.8, 3.5, 3.2, 3.0, 2.8], // 1개월 전부터 12개월 전까지 주가 지수인데 상승률로 오타남 수정해야됨. stockIndex 랑그냥 통합해도 될듯
-    description: '농산물 생산, 임업, 어업 및 관련 서비스를 제공하는 기업들입니다.',
-    marketStatus: 'stable'
-  },
-  {
     name: '음식료·담배',
     id: 'food-beverage',
     stockCount: 10,
@@ -64,88 +53,6 @@ const industriesData = [ //TODO : 하락률 제외하고 순수 3개월간 상�
     marketStatus: 'growing',
     isTrending: true
   },
-  {
-    name: '전기·전자',
-    id: 'electronics',
-    stockCount: 10,
-    totalMarketCap: 2150000000000,
-    averagePer: 28.9,
-    stockIndex: 46428,
-    growthHistory: [35.6, 33.9, 32.2, 30.1, 27.8, 25.3, 23.0, 20.8, 18.5, 16.2, 14.0, 11.8],
-    description: '전자제품 및 전기 기기를 제조하는 기업들입니다.',
-    marketStatus: 'growing',
-    isTrending: true
-  },
-  {
-    name: '의료·정밀기기',
-    id: 'medical-devices',
-    stockCount: 10,
-    totalMarketCap: 920000000000,
-    averagePer: 22.5,
-    stockIndex: 1492,
-    growthHistory: [24.7, 23.7, 22.6, 21.3, 19.9, 18.5, 17.2, 15.8, 14.5, 13.2, 11.8, 10.5],
-    description: '의료 장비 및 정밀 기기를 제조하는 기업들입니다.',
-    marketStatus: 'growing',
-    isTrending: true
-  },
-  {
-    name: 'IT 서비스',
-    id: 'it-services',
-    stockCount: 10,
-    totalMarketCap: 2450000000000,
-    averagePer: 42.5,
-    stockIndex: 1344,
-    growthHistory: [85.3, 81.2, 76.8, 71.3, 64.5, 58.2, 52.5, 47.2, 42.1, 37.5, 33.2, 29.5],
-    description: 'IT 솔루션 및 소프트웨어 서비스를 제공하는 기업들입니다.',
-    marketStatus: 'overvalued',
-    isTrending: true
-  },
-  {
-    name: '오락·문화',
-    id: 'entertainment',
-    stockCount: 10,
-    totalMarketCap: 780000000000,
-    averagePer: 26.8,
-    stockIndex: 1428,
-    growthHistory: [31.4, 30.0, 28.5, 26.8, 24.9, 22.8, 20.8, 18.9, 17.2, 15.5, 13.8, 12.2],
-    description: '엔터테인먼트 및 문화 콘텐츠를 제공하는 기업들입니다.',
-    marketStatus: 'growing',
-    isTrending: true
-  },
-  {
-    name: '반도체',
-    id: 'semiconductor',
-    stockCount: 10,
-    totalMarketCap: 3250000000000,
-    averagePer: 28.3,
-    stockIndex: 20000,
-    growthHistory: [92.8, 88.7, 84.5, 78.9, 72.1, 65.3, 58.8, 52.5, 46.8, 41.5, 36.8, 32.5],
-    description: '반도체 칩과 관련 장비를 제조하는 기업들로, 현대 기술 산업의 핵심 인프라를 제공합니다.',
-    marketStatus: 'overvalued',
-    isTrending: true
-  },
-  {
-    name: '건설',
-    id: 'construction',
-    stockCount: 10,
-    totalMarketCap: 680000000000,
-    averagePer: 8.5,
-    stockIndex: 99,
-    growthHistory: [-9.7, -8.6, -7.5, -6.1, -4.8, -3.2, -1.8, -0.5, 0.8, 2.1, 3.5, 4.8],
-    description: '건축 및 토목 공사를 수행하는 기업들입니다.',
-    marketStatus: 'declining'
-  },
-  {
-    name: '부동산',
-    id: 'real-estate',
-    stockCount: 10,
-    totalMarketCap: 420000000000,
-    averagePer: 6.2,
-    stockIndex: 968,
-    growthHistory: [-28.5, -25.6, -22.5, -19.2, -15.8, -12.3, -8.9, -5.5, -2.2, 1.1, 4.5, 7.8],
-    description: '부동산 개발 및 임대 사업을 하는 기업들입니다.',
-    marketStatus: 'crashed'
-  }
 ];
 
 // 게시물 정보: 게시물 구분숫자, 작성자, 게시물 제목, 게시물 내용, 작성시간, 게시글 좋아요수, 댓글수
