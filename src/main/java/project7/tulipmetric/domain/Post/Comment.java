@@ -9,11 +9,11 @@ public class Comment {
     private Long id; //댓글 식별 번호
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="post_id")
-    private Post post_id;
+    @JoinColumn(name="postid")
+    private Post postid;
 
     @Column(length = 20 , nullable = false)
-    private String nick_name; // 작성자 닉네임
+    private String nickname; // 작성자 닉네임
 
     @Column(columnDefinition = "TEXT" ,nullable = false)
     private String content; // 글 내용
@@ -22,17 +22,17 @@ public class Comment {
     private String date_minute; // 작성 년도/월/일/시간/분
 
     @Column(nullable = false)
-    private int like_num; // 좋아요수
+    private int likenum; // 좋아요수
 
     @Override
     public String toString() {
         return "Comment{" +
                 "id=" + id +
-                ", post_id=" + post_id +
-                ", nick_name='" + nick_name + '\'' +
+                ", postid=" + postid +
+                ", nickname='" + nickname + '\'' +
                 ", content='" + content + '\'' +
                 ", date_minute='" + date_minute + '\'' +
-                ", like_num=" + like_num +
+                ", likenum=" + likenum +
                 '}';
     }
 }

@@ -1,10 +1,19 @@
 package project7.tulipmetric.domain.Member;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "UniqueEmail", columnNames = {"email"}),
+        @UniqueConstraint(name = "UniqueLogin_id", columnNames = {"login_id"}),
+        @UniqueConstraint(name = "UniqueNick_name", columnNames = {"nick_name"})
+})
+@AllArgsConstructor
+@NoArgsConstructor
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,10 +23,10 @@ public class Member {
     private String email;    //이메일
 
     @Column(length = 30 , nullable = false)
-    private String login_id;  //로그인 ID
+    private String loginid;  //로그인 ID
 
     @Column(length = 20 , nullable = false)
-    private String nick_name;     //사용자 이름
+    private String nickname;     //사용자 이름
 
     @Column(length = 61 , nullable = false) // BCryptPasswordEncoder
     private String password; //비밀번호
@@ -28,19 +37,22 @@ public class Member {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 10 , nullable = false)
-    private Join_type join_type; // 로그인 방식이 소셜 로그인 / 폼 방식인지 체크
+    private Join_type jointype; // 로그인 방식이 소셜 로그인 / 폼 방식인지 체크
 
+    public MemberDto DTO() {
+        return new MemberDto(email, loginid, nickname, role);
+    }
 
     @Override
     public String toString() {
         return "Member{" +
                 "id=" + id +
                 ", email='" + email + '\'' +
-                ", login_id='" + login_id + '\'' +
-                ", nick_name='" + nick_name + '\'' +
+                ", loginid='" + loginid + '\'' +
+                ", nickname='" + nickname + '\'' +
                 ", password='" + password + '\'' +
                 ", role=" + role +
-                ", join_type='" + join_type + '\'' +
+                ", jointype=" + jointype +
                 '}';
     }
 }
