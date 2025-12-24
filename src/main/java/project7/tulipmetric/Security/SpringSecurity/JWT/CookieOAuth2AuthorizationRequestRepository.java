@@ -6,10 +6,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
+import org.springframework.util.SerializationUtils;
 
 import java.util.Base64;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class CookieOAuth2AuthorizationRequestRepository
         implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
@@ -21,10 +20,7 @@ public class CookieOAuth2AuthorizationRequestRepository
         String value = getCookie(request, COOKIE_NAME);
         if (value == null) return null;
         byte[] decoded = Base64.getUrlDecoder().decode(value);
-        // 간단화를 위해 직렬화/역직렬화는 생략하면 안 됨.
-        // 실무에서는 SerializationUtils 또는 JSON 직렬화로 OAuth2AuthorizationRequest를 저장/복구 구현이 필요.
-        // 여기서는 "구조가 필요하다"는 점만 보여주는 뼈대 예시.
-        return null;
+        return (OAuth2AuthorizationRequest) SerializationUtils.deserialize(decoded);
     }
 
     @Override
@@ -37,15 +33,17 @@ public class CookieOAuth2AuthorizationRequestRepository
             deleteCookie(response, COOKIE_NAME);
             return;
         }
-        // 마찬가지로 authorizationRequest를 안전하게 직렬화해서 쿠키에 저장해야 함
-        String dummy = Base64.getUrlEncoder().encodeToString("DUMMY".getBytes(UTF_8));
-        addCookie(response, COOKIE_NAME, dummy, 180);
+        String encoded = Base64.getUrlEncoder().encodeToString(
+                SerializationUtils.serialize(authorizationRequest)
+        );
+        addCookie(response, COOKIE_NAME, encoded, 180);
     }
 
     @Override
     public OAuth2AuthorizationRequest removeAuthorizationRequest(HttpServletRequest request, HttpServletResponse response) {
+        OAuth2AuthorizationRequest authorizationRequest = loadAuthorizationRequest(request);
         deleteCookie(response, COOKIE_NAME);
-        return null;
+        return authorizationRequest;
     }
 
     private String getCookie(HttpServletRequest request, String name) {

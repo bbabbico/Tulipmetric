@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import project7.tulipmetric.Security.SpringSecurity.JWT.*;
+import project7.tulipmetric.Security.SpringSecurity.OAuth2.CustomOAuth2UserService;
 
 @Configuration
 @EnableWebSecurity
@@ -62,7 +63,8 @@ public class SecurityConfig {
             JwtTokenProvider tokenProvider,
             JwtAuthenticationFilter jwtAuthenticationFilter,
             OAuth2SuccessHandler oAuth2SuccessHandler,
-            CookieOAuth2AuthorizationRequestRepository cookieRepo
+            CookieOAuth2AuthorizationRequestRepository cookieRepo,
+            CustomOAuth2UserService customOAuth2UserService
     ) throws Exception {
 
         // 폼 로그인 JWT 발급 필터
@@ -89,13 +91,14 @@ public class SecurityConfig {
                 // 기본 formLogin 비활성 (JwtLoginFilter로 대체)
                 .formLogin(AbstractHttpConfigurer::disable)
 
-//                // OAuth2 로그인: 성공 시 JWT 발급
-//                .oauth2Login(oauth -> oauth
-//                        .loginPage("/login")
-//                        .authorizationEndpoint(a -> a.authorizationRequestRepository(cookieRepo)) // 세션 대신 쿠키 저장소(완성 필요)
-//                        .successHandler(oAuth2SuccessHandler)
-//                        .failureHandler((req, res, ex) -> res.sendRedirect("/login?error"))
-//                )
+                // OAuth2 로그인: 성공 시 JWT 발급
+                .oauth2Login(oauth -> oauth
+                        .loginPage("/login")
+                        .authorizationEndpoint(a -> a.authorizationRequestRepository(cookieRepo))
+                        .userInfoEndpoint(u -> u.userService(customOAuth2UserService))
+                        .successHandler(oAuth2SuccessHandler)
+                        .failureHandler((req, res, ex) -> res.sendRedirect("/login?error"))
+                )
 
                 // JWT 검증 필터(매 요청)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
