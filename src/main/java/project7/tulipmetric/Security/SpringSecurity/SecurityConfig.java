@@ -1,75 +1,127 @@
 package project7.tulipmetric.Security.SpringSecurity;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import project7.tulipmetric.Security.SpringSecurity.JWT.*;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    @Value("${jwt.access-token-ms:1800000}") // 없으면 기본값 30분
+    private long accessTokenMs;
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public JwtTokenProvider jwtTokenProvider() {
+        return new JwtTokenProvider(jwtSecret, accessTokenMs);
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtTokenProvider provider) {
+        return new JwtAuthenticationFilter(provider);
+    }
+
+    @Bean
+    public OAuth2SuccessHandler oAuth2SuccessHandler(JwtTokenProvider provider) {
+        return new OAuth2SuccessHandler(provider);
+    }
+
+    @Bean
+    public CookieOAuth2AuthorizationRequestRepository cookieOAuth2AuthorizationRequestRepository() {
+        return new CookieOAuth2AuthorizationRequestRepository();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            AuthenticationManager authenticationManager,
+            JwtTokenProvider tokenProvider,
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            OAuth2SuccessHandler oAuth2SuccessHandler,
+            CookieOAuth2AuthorizationRequestRepository cookieRepo
+    ) throws Exception {
+
+        // 폼 로그인 JWT 발급 필터
+        JwtLoginFilter jwtLoginFilter = new JwtLoginFilter(authenticationManager, tokenProvider);
 
         http
-                // (선택) 개발 중이면 편의상 끄는 경우도 있음. 운영에선 켜는 걸 권장.
-                 .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+
+                // ✅ 세션 완전 비활성(STATELESS)
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
-                        // 정적 리소스 허용
-                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
 
-                        // 회원가입/로그인 페이지 및 회원가입 처리 URL 허용
-                        .requestMatchers(HttpMethod.GET,  "/join", "/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/join", "/signup").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/join", "/login").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/join", "/signup", "/login").permitAll()
 
-                        // OAuth2 관련 엔드포인트 허용(리다이렉트/콜백 흐름에 필요)
-                        .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+                                .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
 
-                                .anyRequest().permitAll() //테스트용
-
-                        // 나머지는 인증 필요
-//                        .anyRequest().authenticated()
+//                                .anyRequest().authenticated() // 운영 기준
+                         .anyRequest().permitAll()    // 테스트
                 )
 
-                // 폼 로그인: login.html 에서 POST로 넘어오는 걸 처리
-                .formLogin(form -> form
-                        .loginPage("/login")              // GET /login -> login.html
-                        .loginProcessingUrl("/login")     // POST /login -> UsernamePasswordAuthenticationFilter
-                        .usernameParameter("loginid")    // 폼 input name="loginid"
-                        .passwordParameter("password")    // 폼 input name="password"
-                        .defaultSuccessUrl("/", true)
-                        .failureUrl("/login?error")
-                        .permitAll()
-                )
+                // 기본 formLogin 비활성 (JwtLoginFilter로 대체)
+                .formLogin(AbstractHttpConfigurer::disable)
 
-                // 소셜 로그인(OAuth2): /oauth2/authorization/{registrationId} 로 시작
+//                // OAuth2 로그인: 성공 시 JWT 발급
 //                .oauth2Login(oauth -> oauth
-//                                .loginPage("/login")              // 인증 필요 시 login.html로 보냄(여기서 소셜 버튼 제공)
-//                                .defaultSuccessUrl("/", true)
-//                                .failureUrl("/login?error")
-//                        // 필요하면 여기서 커스텀 서비스/핸들러 연결
-//                        // .userInfoEndpoint(u -> u.userService(customOAuth2UserService))
-//                        // .successHandler(customOAuth2SuccessHandler)
+//                        .loginPage("/login")
+//                        .authorizationEndpoint(a -> a.authorizationRequestRepository(cookieRepo)) // 세션 대신 쿠키 저장소(완성 필요)
+//                        .successHandler(oAuth2SuccessHandler)
+//                        .failureHandler((req, res, ex) -> res.sendRedirect("/login?error"))
 //                )
 
+                // JWT 검증 필터(매 요청)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // 로그인 처리 필터(POST /login)
+                .addFilterAt(jwtLoginFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // 로그아웃: 세션이 없으니 "쿠키 삭제" 정도만 의미 있음
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                );
+                        .logoutSuccessHandler((req, res, auth) -> {
+                            var cookie = new jakarta.servlet.http.Cookie("ACCESS_TOKEN", "");
+                            cookie.setPath("/");
+                            cookie.setMaxAge(0);
+                            cookie.setHttpOnly(true);
+                            cookie.setSecure(true);
+                            res.addCookie(cookie);
+                            res.setStatus(200);
+                        })
+                )
 
-                // (선택) remember-me, httpBasic 등 필요하면 추가
-//                .httpBasic(Customizer.withDefaults());
+                // 인증 실패시 401 내려주기(페이지가 아니라 API면 특히 중요)
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint((req, res, ex) -> res.sendError(401))
+                        .accessDeniedHandler((req, res, ex) -> res.sendError(403))
+                );
 
         return http.build();
     }
@@ -83,7 +135,7 @@ public class SecurityConfig {
     RoleHierarchy roleHierarchy(){
         // "ROLE_ADMIN > ROLE_MANAGER"는 ROLE_ADMIN이 ROLE_MANAGER의 권한을 포함함을 의미.
         // 줄 바꿈 문자(\n)를 사용하여 여러 계층을 정의가능.
-        String roleHierarchyStringRepresentation = "ROLE_ADMIN > ROLE_MANAGER\n" +
+        String roleHierarchyStringRepresentation = "ADMIN > USER\n" +
                 "ROLE_MANAGER > ROLE_USER";
 
         // 정적 팩토리 메서드 fromHierarchy()를 사용하여 RoleHierarchyImpl 인스턴스를 생성.

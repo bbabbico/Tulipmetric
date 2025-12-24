@@ -66,7 +66,7 @@
                       class="px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors text-slate-700 text-sm inline-flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed"
                       style="font-weight: 500;"
               >
-                <svg id="loginidSpinner" class="hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <svg id="loginidSpinner" class="hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" aria-hidden="true">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                 </svg>
@@ -97,7 +97,7 @@
                       class="px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors text-slate-700 text-sm inline-flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed"
                       style="font-weight: 500;"
               >
-                <svg id="nicknameSpinner" class="hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <svg id="nicknameSpinner" class="hidden h-4 w-4 animate-spin" viewBox="0 0 24 24"  aria-hidden="true">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                 </svg>
@@ -204,7 +204,7 @@
               <button
                       class="w-full flex items-center justify-center gap-3 px-6 py-3 bg-yellow-400 text-slate-900 rounded-lg hover:bg-yellow-500 transition-colors"
               >
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <svg class="w-5 h-5" viewBox="0 0 24 24">
                   <path d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v.343c-.001.823-.62 1.56-1.44 1.712-2.64.462-5.4.7-8.56.7-3.16 0-5.92-.238-8.56-.7-.82-.152-1.439-.889-1.44-1.712v-.343c0-.54.384-1.006.917-1.096C6.545 3.232 9.245 3 12 3zm0 4.992c2.78 0 5.498-.213 8.068-.622l.515-.082c.325-.052.417-.235.417-.417v-.35c0-.182-.092-.365-.417-.417C17.498 5.691 14.78 5.478 12 5.478c-2.78 0-5.498.213-8.068.622l-.515.082c-.325.052-.417.235-.417.417v.35c0 .182.092.365.417.417 2.57.409 5.288.622 8.068.622z"/>
                   <circle cx="12" cy="15" r="1.5"/>
                 </svg>
@@ -216,7 +216,7 @@
               <button
                       class="w-full flex items-center justify-center gap-3 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
               >
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" >
                   <path d="M16.273 12.845L7.376 0H0v24h7.726V11.156L16.624 24H24V0h-7.727v12.845z"/>
                 </svg>
                 <span style="font-weight: 500;">NAVER로 로그인</span>
@@ -239,19 +239,6 @@
     loginid: null,   // true(사용가능) / false(중복) / null(미확인)
     nickname: null
   };
-
-  function getCsrfHeader() {
-    // (선택) Spring Security CSRF를 쓰는 경우를 대비한 처리
-    const token =
-            document.querySelector('meta[name="_csrf"]')?.content ||
-            document.querySelector('input[type="hidden"][name*="csrf"]')?.value;
-
-    const headerName =
-            document.querySelector('meta[name="_csrf_header"]')?.content ||
-            'X-CSRF-TOKEN';
-
-    return token ? { headerName, token } : null;
-  }
 
   function setLoading(btn, spinner, textEl, loadingText, isLoading) {
     btn.disabled = isLoading;
