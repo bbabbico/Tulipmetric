@@ -1,7 +1,7 @@
 <!-- templates/fragments/basicheader.html -->
 <!-- index 페이지 처럼 네비게이터 메뉴 , 로그인 회원가입 이 있는 일반적인 페이지에 쓰이는 헤더 -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="ko">
 <body>
 
 <!-- basic header fragment  -->
@@ -41,7 +41,15 @@
         </nav>
 
         <!-- Right Navigation -->
-        <div class="flex items-center gap-1">
+        <div sec:authorize="isAuthenticated()">
+            <a href="/mypage" class="flex items-center gap-2 px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+              <span>마이페이지</span>
+            </a>
+        </div>
+        <div sec:authorize="isAnonymous()" class="flex items-center gap-1">
           <a href="/login" class="flex items-center gap-2 px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>

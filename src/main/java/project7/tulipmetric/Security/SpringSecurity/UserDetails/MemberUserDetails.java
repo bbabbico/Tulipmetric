@@ -1,4 +1,4 @@
-package project7.tulipmetric.Security.SpringSecurity;
+package project7.tulipmetric.Security.SpringSecurity.UserDetails;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

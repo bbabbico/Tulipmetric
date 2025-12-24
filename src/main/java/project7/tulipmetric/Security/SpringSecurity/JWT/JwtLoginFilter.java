@@ -38,7 +38,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
         String loginId = obtainUsername(request);
         String password = obtainPassword(request);
 
-        // 2) 만약 JSON으로도 받고 싶다면(선택):
+        // 2) 만약 JSON으로도 받고 싶다면:
         // Content-Type이 JSON이면 바디 파싱해서 loginid/password 읽는 로직을 추가할 수 있음.
 
         var authRequest = new UsernamePasswordAuthenticationToken(loginId, password);
