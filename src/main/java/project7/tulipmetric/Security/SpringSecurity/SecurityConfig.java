@@ -114,6 +114,7 @@ public class SecurityConfig {
                             cookie.setSecure(true);
                             res.addCookie(cookie);
                             res.setStatus(200);
+                            res.sendRedirect("/");
                         })
                 )
 
