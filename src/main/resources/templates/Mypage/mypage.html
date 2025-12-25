@@ -52,8 +52,8 @@
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
               </svg>
             </div>
-            <h3 class="text-slate-900 mb-1" id="userName">투자자</h3>
-            <p class="text-sm text-slate-500" id="userEmail">investor@tulipmetric.com</p>
+            <h3 class="text-slate-900 mb-1" th:text="${member.nickname}" id="userName">사용자 별명</h3>
+            <p class="text-sm text-slate-500" th:text="${member.email}" id="userEmail">사용자 이메일</p>
           </div>
 
           <!-- Profile Stats -->

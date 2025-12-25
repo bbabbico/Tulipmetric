@@ -22,6 +22,7 @@ public class JoinService {
                     dto.getLoginid(),
                     dto.getNickname(),
                     encodedPw,
+                    null,
                     Role.USER,
                     Join_type.FORM   // 예시: 폼 가입이면 이렇게 지정
             );

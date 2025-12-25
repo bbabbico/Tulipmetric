@@ -18,7 +18,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import project7.tulipmetric.Security.SpringSecurity.JWT.*;
+import project7.tulipmetric.Security.SpringSecurity.OAuth2.CookieOAuth2AuthorizationRequestRepository;
 import project7.tulipmetric.Security.SpringSecurity.OAuth2.CustomOAuth2UserService;
+import project7.tulipmetric.Security.SpringSecurity.OAuth2.OAuth2SuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -81,6 +83,7 @@ public class SecurityConfig {
 
                                 .requestMatchers(HttpMethod.GET, "/join", "/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/join", "/signup", "/login").permitAll()
+                                .requestMatchers("/mypage","/activity","/accountsettings","/saved").authenticated() //마이 페이지
 
                                 .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
 

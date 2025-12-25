@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -21,7 +24,7 @@ public class Member {
     @Column(length = 100 , nullable = false)
     private String email;    //이메일
 
-    @Column(length = 30 , nullable = false)
+    @Column(length = 100 , nullable = false)
     private String loginid;  //로그인 ID
 
     @Column(length = 20 , nullable = false)
@@ -29,6 +32,10 @@ public class Member {
 
     @Column(length = 61 , nullable = false) // BCryptPasswordEncoder
     private String password; //비밀번호
+
+    @CreationTimestamp // 자동으로 날짜/시간/분 찍어줌
+    @Column(nullable = false)
+    private LocalDateTime creatdatetime; // SQL TIMESTAMP 타입 매핑
 
     @Enumerated(EnumType.STRING) //enum 값을 string 으로 저장
     @Column(length = 20 , nullable = false)

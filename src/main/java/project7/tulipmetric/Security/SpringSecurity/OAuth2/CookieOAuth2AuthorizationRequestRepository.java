@@ -1,4 +1,4 @@
-package project7.tulipmetric.Security.SpringSecurity.JWT;
+package project7.tulipmetric.Security.SpringSecurity.OAuth2;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

@@ -56,7 +56,8 @@
                       name="loginid"
                       required
                       minlength="6"
-                      placeholder="6자 이상 입력"
+                      maxlength="30"
+                      placeholder="6자 이상 30자 이하 입력"
                       class="flex-1 w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
 
@@ -87,7 +88,8 @@
                       name="nickname"
                       required
                       minlength="2"
-                      placeholder="잠자리"
+                      maxlength="30"
+                      placeholder="다른 사람들에게 보여질 별명 2자 이상 30자 이하 작성."
                       class="flex-1 w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
 
@@ -200,18 +202,6 @@
               </button>
             </a>
 
-            <a href="/oauth2/authorization/kakao">
-              <button
-                      class="w-full flex items-center justify-center gap-3 px-6 py-3 bg-yellow-400 text-slate-900 rounded-lg hover:bg-yellow-500 transition-colors"
-              >
-                <svg class="w-5 h-5" viewBox="0 0 24 24">
-                  <path d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v.343c-.001.823-.62 1.56-1.44 1.712-2.64.462-5.4.7-8.56.7-3.16 0-5.92-.238-8.56-.7-.82-.152-1.439-.889-1.44-1.712v-.343c0-.54.384-1.006.917-1.096C6.545 3.232 9.245 3 12 3zm0 4.992c2.78 0 5.498-.213 8.068-.622l.515-.082c.325-.052.417-.235.417-.417v-.35c0-.182-.092-.365-.417-.417C17.498 5.691 14.78 5.478 12 5.478c-2.78 0-5.498.213-8.068.622l-.515.082c-.325.052-.417.235-.417.417v.35c0 .182.092.365.417.417 2.57.409 5.288.622 8.068.622z"/>
-                  <circle cx="12" cy="15" r="1.5"/>
-                </svg>
-                <span style="font-weight: 500;">카카오로 로그인</span>
-              </button>
-            </a>
-
             <a href="/oauth2/authorization/naver">
               <button
                       class="w-full flex items-center justify-center gap-3 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
@@ -276,8 +266,8 @@
   async function postCheck(url, payload) {
     const headers = { 'Content-Type': 'application/json' };
 
-    const csrf = getCsrfHeader();
-    if (csrf) headers[csrf.headerName] = csrf.token;
+    // const csrf = getCsrfHeader();
+    // if (csrf) headers[csrf.headerName] = csrf.token;
 
     const res = await fetch(url, {
       method: 'POST',
