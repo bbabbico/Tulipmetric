@@ -20,7 +20,7 @@ public class MypageController {
     @GetMapping("/mypage")
     public String mypage(@AuthenticationPrincipal Jwt jwt , Model model) {
         Member member = memberRepository.findByLoginid(jwt.getSubject());
-        log.info(member.toString());
+        log.info("회원인증 완료 {}",member.toString());
         model.addAttribute("member", member);
         return "/Mypage/mypage";
     }

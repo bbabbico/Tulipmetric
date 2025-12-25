@@ -6,15 +6,19 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -34,15 +38,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = resolveToken(request);
 
         if (StringUtils.hasText(token) && tokenProvider.validate(token)) {
-            String username = tokenProvider.getUsername(token);
-            String roles = tokenProvider.getRoles(token);
+            var signedClaims = tokenProvider.parseSignedClaims(token);
+            var claims = signedClaims.getPayload();
+
+            String username = claims.getSubject();
+            Object rolesClaim = claims.get("roles");
+            String roles = rolesClaim == null ? "" : rolesClaim.toString();
+
+            Instant issuedAt = claims.getIssuedAt() == null ? null : claims.getIssuedAt().toInstant();
+            Instant expiresAt = claims.getExpiration() == null ? null : claims.getExpiration().toInstant();
+
+            Map<String, Object> jwtClaims = new HashMap<>();
+            claims.forEach(jwtClaims::put);
+
+            Map<String, Object> headers = new HashMap<>();
+            signedClaims.getHeader().forEach(headers::put);
+
+            Jwt jwt = new Jwt(token, issuedAt, expiresAt, headers, jwtClaims);
 
             List<SimpleGrantedAuthority> authorities = Arrays.stream(roles.split(","))
                     .filter(StringUtils::hasText)
                     .map(SimpleGrantedAuthority::new)
                     .toList();
 
-            var auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
+            var auth = new JwtAuthenticationToken(jwt, authorities, username);
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
 
