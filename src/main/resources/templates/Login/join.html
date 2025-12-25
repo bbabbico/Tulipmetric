@@ -282,6 +282,8 @@
     const text = (await res.text()).trim(); // "0" or "1"
     const num = Number(text);
     if (Number.isNaN(num)) throw new Error('응답 형식이 숫자(0/1)가 아닙니다: ' + text);
+    console.log("text : "+text);
+    console.log("num : "+num);
     return num;
   }
 
@@ -306,6 +308,7 @@
       const result = await postCheck('/loginidcheck', { loginid: value });
 
       if (result === 1) {
+        console.log("setLoading : "+result); //////////////////////////////////////
         duplicateState.loginid = true;
         setMsg(msg, input, true, '사용 가능한 로그인 ID입니다.');
       } else {

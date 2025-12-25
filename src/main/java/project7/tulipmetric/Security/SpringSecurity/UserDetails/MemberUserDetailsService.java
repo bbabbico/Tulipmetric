@@ -18,7 +18,6 @@ public class MemberUserDetailsService implements UserDetailsService { //시큐�
 
     @Override
     public UserDetails loadUserByUsername(String Loginid) throws UsernameNotFoundException {
-        // TODO : 로그인 ID 를 잘못 입력했을떄 그냥 java.lang.NullPointerException 떠버림. 예외처리해야됨 로그인Id 는 맞는데 비밀번호 틀리면 SecurityConfig의 .failureUrl("/login?error") 이거 호출됨.
         Member member = memberRepository.findByLoginid(Loginid);
         if (member == null) {
             log.info("Loginid:{} 는 없는 회원임.",Loginid);

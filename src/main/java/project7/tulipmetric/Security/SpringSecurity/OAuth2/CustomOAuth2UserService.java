@@ -14,10 +14,8 @@ import project7.tulipmetric.domain.Member.Member;
 import project7.tulipmetric.domain.Member.MemberRepository;
 import project7.tulipmetric.domain.Member.Role;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -55,13 +53,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         String encodedPassword = "social"+UUID.randomUUID().toString();
+        Date nowDate = new Date();
+        SimpleDateFormat  simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 ss초");
+
         Member member = new Member(
                 null,
                 profile.email(),
                 profile.loginId(),
                 profile.nickname(),
                 encodedPassword,
-                null,
+                simpleDateFormat.format(nowDate),
                 Role.USER,
                 profile.joinType()
         );

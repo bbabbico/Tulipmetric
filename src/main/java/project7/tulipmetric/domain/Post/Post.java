@@ -1,6 +1,7 @@
 package project7.tulipmetric.domain.Post;
 
 import jakarta.persistence.*;
+import project7.tulipmetric.domain.Member.Member;
 import project7.tulipmetric.domain.Member.Role;
 
 @Entity
@@ -10,8 +11,9 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //글 식별 번호
 
-    @Column(length = 20 , nullable = false)
-    private String nickname; // 작성자 닉네임
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="userid")
+    private Member userid; //작성자 식별 외래키
 
     @Column(length = 50 , nullable = false)
     private String title; // 글 제목
@@ -36,7 +38,6 @@ public class Post {
     public String toString() {
         return "Post{" +
                 "id=" + id +
-                ", nickname='" + nickname + '\'' +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 ", dateminute='" + dateminute + '\'' +

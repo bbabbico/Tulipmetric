@@ -1,6 +1,7 @@
 package project7.tulipmetric.domain.Post;
 
 import jakarta.persistence.*;
+import project7.tulipmetric.domain.Member.Member;
 
 @Entity
 public class Comment {
@@ -12,8 +13,9 @@ public class Comment {
     @JoinColumn(name="postid")
     private Post postid;
 
-    @Column(length = 20 , nullable = false)
-    private String nickname; // 작성자 닉네임
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="userid")
+    private Member userid; //작성자 식별 외래키
 
     @Column(columnDefinition = "TEXT" ,nullable = false)
     private String content; // 글 내용
@@ -29,7 +31,6 @@ public class Comment {
         return "Comment{" +
                 "id=" + id +
                 ", postid=" + postid +
-                ", nickname='" + nickname + '\'' +
                 ", content='" + content + '\'' +
                 ", date_minute='" + dateminute + '\'' +
                 ", likenum=" + likenum +

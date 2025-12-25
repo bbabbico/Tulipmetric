@@ -6,6 +6,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import project7.tulipmetric.domain.Member.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -15,6 +18,8 @@ public class JoinService {
 
     public void Join(JoinDto dto) {
         String encodedPw = passwordEncoder.encode(dto.getPassword());
+        Date nowDate = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 ss초");
         try {
             Member member = new Member(
                     null,
@@ -22,7 +27,7 @@ public class JoinService {
                     dto.getLoginid(),
                     dto.getNickname(),
                     encodedPw,
-                    null,
+                    simpleDateFormat.format(nowDate),
                     Role.USER,
                     Join_type.FORM   // 예시: 폼 가입이면 이렇게 지정
             );

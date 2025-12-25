@@ -33,9 +33,8 @@ public class Member {
     @Column(length = 61 , nullable = false) // BCryptPasswordEncoder
     private String password; //비밀번호
 
-    @CreationTimestamp // 자동으로 날짜/시간/분 찍어줌
     @Column(nullable = false)
-    private LocalDateTime creatdatetime; // SQL TIMESTAMP 타입 매핑
+    private String creatdatetime; // SQL TIMESTAMP 타입 매핑
 
     @Enumerated(EnumType.STRING) //enum 값을 string 으로 저장
     @Column(length = 20 , nullable = false)

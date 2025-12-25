@@ -16,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import project7.tulipmetric.Security.SpringSecurity.JWT.*;
 import project7.tulipmetric.Security.SpringSecurity.OAuth2.CookieOAuth2AuthorizationRequestRepository;
@@ -125,7 +126,7 @@ public class SecurityConfig {
 
                 // 인증 실패시 401 내려주기(페이지가 아니라 API면 특히 중요)
                 .exceptionHandling(e -> e
-                        .authenticationEntryPoint((req, res, ex) -> res.sendError(401))
+                        .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")) //로그인 안했는데 로그인 필요한 페이지 접근하면 = 로그인 페이지로 이동
                         .accessDeniedHandler((req, res, ex) -> res.sendError(403))
                 );
 
