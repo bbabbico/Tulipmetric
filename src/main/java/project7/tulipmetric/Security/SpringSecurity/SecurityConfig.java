@@ -75,7 +75,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // ✅ 세션 완전 비활성(STATELESS)
+                // 세션 완전 비활성(STATELESS)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
@@ -84,7 +84,6 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/join", "/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/join", "/signup", "/login").permitAll()
                                 .requestMatchers("/mypage","/activity","/accountsettings","/saved").authenticated() //마이 페이지
-
                                 .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
 
 //                                .anyRequest().authenticated() // 운영 기준
