@@ -1,19 +1,28 @@
 package project7.tulipmetric.domain.Post;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import project7.tulipmetric.domain.Member.Member;
 import project7.tulipmetric.domain.Member.Role;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //글 식별 번호
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="userid")
-    private Member userid; //작성자 식별 외래키
+    @Column(length = 20 , nullable = false)
+    private String nickname; //작성자 식별 외래키
+
+    @Column(length = 10 , nullable = false)
+    private String category; // 글 카테고리
+
+    @Column(length = 30 , nullable = false)
+    private String industryTag; // 글 관련 산업군
 
     @Column(length = 50 , nullable = false)
     private String title; // 글 제목

@@ -1,14 +1,15 @@
 package project7.tulipmetric.Security.Controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import project7.tulipmetric.Security.join.JoinDto;
 import project7.tulipmetric.Security.join.JoinService;
+
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,15 +30,15 @@ public class JoinController {
 
     @ResponseBody
     @PostMapping("/loginidcheck")
-    public ResponseEntity<Integer> Postloginidcheck(String loginid) {
-        if (joinService.LoginIdDuplicateCheck(loginid)) {return new ResponseEntity<>(1, HttpStatus.OK);
+    public ResponseEntity<Integer> Postloginidcheck(@RequestBody Map<String ,String> map) {
+        if (joinService.LoginIdDuplicateCheck(map.get("loginid"))) {return new ResponseEntity<>(1, HttpStatus.OK);
         } else {return new ResponseEntity<>(0, HttpStatus.OK);}
     }
 
     @ResponseBody
     @PostMapping("/nicknamecheck")
-    public ResponseEntity<Integer> Postnicknamecheck(String nickname) {
-        if (joinService.NickNameDuplicateCheck(nickname)) {return new ResponseEntity<>(1, HttpStatus.OK);
+    public ResponseEntity<Integer> Postnicknamecheck(@RequestBody Map<String ,String> map) {
+        if (joinService.NickNameDuplicateCheck(map.get("nickname"))) {return new ResponseEntity<>(1, HttpStatus.OK);
         } else {return new ResponseEntity<>(0, HttpStatus.OK);}
     }
 

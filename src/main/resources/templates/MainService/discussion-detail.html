@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -89,25 +89,42 @@
       </div>
     </div>
 
-    <!-- Comments Section -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
-      <h3 class="text-slate-900 mb-6">댓글 <span class="text-slate-500">0</span></h3>
-      
-      <!-- Comment Form -->
-      <div class="mb-8">
+    <!-- Comment Form -->
+    <div class="mb-8">
+      <form sec:authorize="isAuthenticated()"
+            action="/comment"
+            method="post"
+            class="flex gap-3 items-start">
+
+        <label class="flex-1">
+              <textarea
+                      id="commentContent"
+                      name="content"
+                      placeholder="댓글을 입력하세요"
+                      class="w-full px-4 py-3 border border-slate-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                      rows="3"
+                      required
+              ></textarea>
+        </label>
+        <button
+                type="submit"
+                class="px-5 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors whitespace-nowrap"
+        >
+          댓글 등록
+        </button>
+
+      </form>
+      <!-- 비로그인 사용자: 입력 불가 -->
+      <div sec:authorize="isAnonymous()">
         <label>
           <textarea
-            placeholder="댓글을 작성하려면 로그인이 필요합니다"
-            disabled
-            class="w-full px-4 py-3 border border-slate-300 rounded-lg resize-none bg-slate-50"
-            rows="3"
+                  placeholder="댓글을 작성하려면 로그인이 필요합니다"
+                  disabled
+                  class="w-full px-4 py-3 border border-slate-300 rounded-lg resize-none bg-slate-50"
+                  rows="3"
           ></textarea>
+          <input id="postid" type="hidden" name="postid" value=""/>
         </label>
-      </div>
-      
-      <!-- Comments List -->
-      <div id="commentsList" class="space-y-6">
-        <p class="text-slate-500 text-center py-8">댓글이 없습니다</p>
       </div>
     </div>
   </div>
@@ -117,52 +134,59 @@
     // 실제 환경에서는 서버 API에서 데이터를 받아옴
     // fetch(`/api/post?id=${postId}`)
     // fetch(`/api/comments?postId=${postId}`)
-    
+
+    // TODO : 댓글 DATA 에서 가져오는거 말고 실재로 DB 요청으로 구현 해야함
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('id');
-    
+    document.getElementById('postid').setAttribute('value', postId);
+
+
     // Load post data
     const postData = getPostData(postId);
     const commentsDataList = getCommentsData(postId);
-    
+
     if (postData) {
       // 카테고리 표시
       const categoryColors = {
+        general: 'bg-blue-100 text-blue-700',
         analysis: 'bg-blue-100 text-blue-700',
+        question: 'bg-blue-100 text-blue-700',
         discussion: 'bg-green-100 text-green-700',
         news: 'bg-purple-100 text-purple-700'
       };
       const categoryLabels = {
+        general: '일반',
         analysis: '산업 분석',
+        question: '질문',
         discussion: '투자 토론',
         news: '뉴스 공유'
       };
-      
+
       document.getElementById('postCategory').textContent = categoryLabels[postData.category] || postData.category;
       document.getElementById('postCategory').className = 'px-3 py-1 rounded-full text-sm ' + (categoryColors[postData.category] || 'bg-slate-100 text-slate-700');
-      
+
       // 게시물 정보 표시
       document.getElementById('postTitle').textContent = postData.title;
-      
+
       const authorInitial = postData.author.charAt(0);
       document.querySelector('.bg-blue-500').textContent = authorInitial;
-      
+
       document.getElementById('postAuthor').textContent = postData.author;
       document.getElementById('postDate').textContent = postData.createdAt;
       document.getElementById('postViews').textContent = postData.views.toLocaleString();
       document.getElementById('postLikes').textContent = postData.likes;
       document.getElementById('postContent').innerHTML = '<p>' + postData.content + '</p>';
-      
+
       // 댓글 렌더링
       const commentsList = document.getElementById('commentsList');
       if (commentsDataList && commentsDataList.length > 0) {
         document.querySelector('h3').innerHTML = `댓글 <span class="text-slate-500">${commentsDataList.length}</span>`;
-        
+
         commentsList.innerHTML = commentsDataList.map(comment => {
           const firstLetter = comment.author.charAt(0);
           const colors = ['bg-green-500', 'bg-purple-500', 'bg-orange-500', 'bg-blue-500', 'bg-pink-500'];
           const randomColor = colors[Math.floor(Math.random() * colors.length)];
-          
+
           return `
             <div class="flex gap-4">
               <div class="w-10 h-10 ${randomColor} rounded-full flex items-center justify-center text-white flex-shrink-0" style="font-weight: 600;">${firstLetter}</div>

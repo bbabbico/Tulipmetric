@@ -82,9 +82,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
 
-                                .requestMatchers(HttpMethod.GET, "/join", "/login").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/join", "/login","/loginidcheck","/nicknamecheck").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/join", "/signup", "/login").permitAll()
                                 .requestMatchers("/mypage","/activity","/accountsettings","/saved").authenticated() //마이 페이지
+                                .requestMatchers("/createpost").authenticated() //Post , Comment
                                 .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
 
 //                                .anyRequest().authenticated() // 운영 기준

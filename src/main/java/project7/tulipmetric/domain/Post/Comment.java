@@ -1,9 +1,12 @@
 package project7.tulipmetric.domain.Post;
 
 import jakarta.persistence.*;
-import project7.tulipmetric.domain.Member.Member;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,9 +16,8 @@ public class Comment {
     @JoinColumn(name="postid")
     private Post postid;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="userid")
-    private Member userid; //작성자 식별 외래키
+    @Column(length = 20 , nullable = false)
+    private String nickname; //작성자 식별 외래키
 
     @Column(columnDefinition = "TEXT" ,nullable = false)
     private String content; // 글 내용

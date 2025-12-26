@@ -10,13 +10,6 @@ public class MainController {
         return "/MainService/index";
     }
 
-
-    @GetMapping("/community")
-    public String community(){
-        return "/MainService/community";
-    }
-
-
     @GetMapping("/discussion-detail")
     public String discussion_detail(){
         return "/MainService/discussion-detail";
