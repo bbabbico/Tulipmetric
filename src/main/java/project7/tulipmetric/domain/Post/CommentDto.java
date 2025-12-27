@@ -1,4 +1,4 @@
 package project7.tulipmetric.domain.Post;
 
-public record CommentDto(Long postid,String content, String dateminute, int likenum) {
+public record CommentDto(Long postid,String content) {
 }

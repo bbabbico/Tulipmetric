@@ -9,13 +9,6 @@ public class MainController {
     public String index(){
         return "/MainService/index";
     }
-
-    @GetMapping("/discussion-detail")
-    public String discussion_detail(){
-        return "/MainService/discussion-detail";
-    }
-
-
     @GetMapping("/industry-detail")
     public String industry_detail(){
         return "/MainService/industry-detail";

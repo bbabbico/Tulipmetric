@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,154 +9,230 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    }
-    
+
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
     h1 { font-size: 2.5rem; font-weight: 700; line-height: 1.2; }
     h2 { font-size: 2rem; font-weight: 700; line-height: 1.3; }
     h3 { font-size: 1.5rem; font-weight: 600; line-height: 1.4; }
     h4 { font-size: 1.25rem; font-weight: 600; line-height: 1.4; }
-    p { font-size: 1rem; line-height: 1.6; }
+    p  { font-size: 1rem; line-height: 1.6; }
+
+    /* tailwind CDN 환경에서 line-clamp 플러그인 없을 때 대비 */
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
   </style>
 </head>
+
 <body class="bg-slate-50">
 <!-- Header -->
 <div th:replace="~{fragments/basicheader :: basicheader-fragment}"></div>
 
-  <!-- Main Content -->
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Header -->
-    <div class="mb-8">
-      <h2 class="text-slate-900 mb-3">투자 토론 커뮤니티</h2>
-      <p class="text-slate-600">산업군과 기업에 대한 투자 아이디어를 공유하고 토론하세요</p>
-    </div>
+<!-- Main Content -->
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    <!-- Filter Tabs -->
-    <div class="flex items-center gap-2 mb-6 border-b border-slate-200">
-      <button onclick="filterCategory('all')" id="tab-all" class="px-6 py-3 border-b-2 border-blue-600 text-blue-600 transition-colors" style="font-weight: 500;">
-        전체
-      </button>
-      <button onclick="filterCategory('analysis')" id="tab-analysis" class="px-6 py-3 border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition-colors" style="font-weight: 500;">
-        산업 분석
-      </button>
-      <button onclick="filterCategory('discussion')" id="tab-discussion" class="px-6 py-3 border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition-colors" style="font-weight: 500;">
-        투자 토론
-      </button>
-      <button onclick="filterCategory('news')" id="tab-news" class="px-6 py-3 border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition-colors" style="font-weight: 500;">
-        뉴스 공유
-      </button>
-    </div>
-
-    <!-- Write Button -->
-    <div class="mb-6" sec:authorize="isAuthenticated()">
-      <a href="/createpost" class="w-full px-6 py-4 bg-white border-2 border-dashed border-slate-300 rounded-lg text-slate-600 hover:border-blue-400 hover:text-blue-600 transition-colors flex items-center justify-center gap-2">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-        </svg>
-        <span style="font-weight: 500;">새 글 작성하기</span>
-      </a>
-    </div>
-
-    <!-- Posts List -->
-    <div id="postsList" class="space-y-4">
-      <!-- Posts will be loaded here -->
-    </div>
+  <!-- Title -->
+  <div class="mb-8">
+    <h2 class="text-slate-900 mb-3">투자 토론 커뮤니티</h2>
+    <p class="text-slate-600">산업군과 기업에 대한 투자 아이디어를 공유하고 토론하세요</p>
   </div>
 
-  <script src="/js/data.js"></script>
-  <script>
-    // 실제 환경에서는 서버 API에서 데이터를 받아옴
-    // fetch('/api/posts')
-    const posts = postsData;
+  <!-- Filter Tabs (자동 생성) -->
+  <div id="categoryTabs" class="flex items-center gap-2 mb-6 border-b border-slate-200"></div>
 
-    let currentCategory = 'all';
+  <!-- Write Button (로그인 사용자만) -->
+  <div class="mb-6" sec:authorize="isAuthenticated()">
+    <a href="/createpost"
+       class="w-full px-6 py-4 bg-white border-2 border-dashed border-slate-300 rounded-lg text-slate-600 hover:border-blue-400 hover:text-blue-600 transition-colors flex items-center justify-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+      <span style="font-weight: 500;">새 글 작성하기</span>
+    </a>
+  </div>
 
-    function getCategoryLabel(category) {
-      const labels = {
-        analysis: '산업 분석',
-        discussion: '투자 토론',
-        news: '뉴스 공유'
-      };
-      return labels[category] || category;
-    }
+  <!-- Posts List (SSR + Thymeleaf) -->
+  <div id="postsList" class="space-y-4">
 
-    function getCategoryColor(category) {
-      const colors = {
-        analysis: 'bg-blue-100 text-blue-700',
-        discussion: 'bg-green-100 text-green-700',
-        news: 'bg-purple-100 text-purple-700'
-      };
-      return colors[category] || 'bg-slate-100 text-slate-700';
-    }
+    <!-- 게시글 없을 때 메시지 -->
+    <p id="noPostsMessage"
+       class="text-slate-500 text-center py-8"
+       th:style="${#lists.isEmpty(posts)} ? '' : 'display:none;'">
+      게시글이 없습니다
+    </p>
 
-    function filterCategory(category) {
-      currentCategory = category;
-      
-      // Update tabs
-      document.querySelectorAll('[id^="tab-"]').forEach(tab => {
-        tab.className = 'px-6 py-3 border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition-colors';
-        tab.style.fontWeight = '500';
-      });
-      
-      const activeTab = document.getElementById('tab-' + category);
-      activeTab.className = 'px-6 py-3 border-b-2 border-blue-600 text-blue-600 transition-colors';
-      activeTab.style.fontWeight = '500';
-      
-      renderPosts();
-    }
+    <!-- 게시글 렌더링 -->
+    <a th:each="post : ${posts}"
+       th:href="@{/discussion-detail(id=${post.id})}"
+       th:attr="data-category=${post.category}"
+       class="post-item block bg-white rounded-lg border border-slate-200 p-6 hover:shadow-lg hover:border-blue-200 transition-all">
 
-    function renderPosts() {
-      const filtered = currentCategory === 'all' 
-        ? posts 
-        : posts.filter(post => post.category === currentCategory);
-      
-      const postsList = document.getElementById('postsList');
-      postsList.innerHTML = filtered.map(post => `
-        <a href="discussion-detail?id=${post.postId}" class="block bg-white rounded-lg border border-slate-200 p-6 hover:shadow-lg hover:border-blue-200 transition-all">
-          <div class="flex items-start gap-4">
-            <div class="flex-1">
-              <div class="flex items-center gap-2 mb-3">
-                <span class="px-3 py-1 rounded-full text-sm ${getCategoryColor(post.category)}">${getCategoryLabel(post.category)}</span>
-              </div>
-              
-              <h3 class="text-slate-900 mb-2">${post.title}</h3>
-              <p class="text-slate-600 mb-4 line-clamp-2">${post.content}</p>
-              
-              <div class="flex items-center gap-6 text-sm text-slate-500">
-                <span style="font-weight: 500;">${post.author}</span>
-                <span>•</span>
-                <span>${post.createdAt}</span>
-                <span>•</span>
-                <div class="flex items-center gap-1">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                  </svg>
-                  <span>${post.views.toLocaleString()}</span>
-                </div>
-                <div class="flex items-center gap-1">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                  </svg>
-                  <span>${post.likes}</span>
-                </div>
-                <div class="flex items-center gap-1">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                  </svg>
-                  <span>${post.commentCount}</span>
-                </div>
-              </div>
+      <div class="flex items-start gap-4">
+        <div class="flex-1">
+
+          <!-- 카테고리 / 산업태그 -->
+          <div class="flex items-center gap-2 mb-3">
+            <!-- 카테고리 배지: 색상은 JS가 data-category 기준으로 자동 부여 -->
+            <span class="category-badge px-3 py-1 rounded-full text-sm"
+                  th:text="${post.category}">
+              카테고리
+            </span>
+
+            <span th:if="${post.industryTag != null and !#strings.isEmpty(post.industryTag)}"
+                  class="px-3 py-1 rounded-full text-sm bg-slate-100 text-slate-700"
+                  th:text="${post.industryTag}">
+              산업태그
+            </span>
+          </div>
+
+          <!-- 제목 / 내용 -->
+          <h3 class="text-slate-900 mb-2" th:text="${post.title}">제목</h3>
+          <p class="text-slate-600 mb-4 line-clamp-2" th:text="${post.content}">내용</p>
+
+          <!-- 메타 -->
+          <div class="flex items-center gap-6 text-sm text-slate-500">
+            <span style="font-weight: 500;" th:text="${post.nickname}">닉네임</span>
+            <span>•</span>
+            <span th:text="${post.dateminute}">시간</span>
+            <span>•</span>
+
+            <!-- 좋아요 -->
+            <div class="flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+              </svg>
+              <span th:text="${post.likenum}">0</span>
+            </div>
+
+            <!-- 댓글 -->
+            <div class="flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+              </svg>
+              <span th:text="${post.commentnum}">0</span>
             </div>
           </div>
-        </a>
-      `).join('');
-    }
 
-    // Initial render
-    renderPosts();
-  </script>
+        </div>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<script>
+  // 탭 자동 생성용 카테고리
+  const CATEGORIES = [
+    { key: 'all', label: '전체' },
+    { key: '일반', label: '일반' },
+    { key: '산업 분석', label: '산업 분석' },
+    { key: '질문', label: '질문' },
+    { key: '투자 토론', label: '투자 토론' },
+    { key: '뉴스 공유', label: '뉴스 공유' },
+  ];
+
+  // 카테고리 배지 색상(자동 적용)
+  const CATEGORY_BADGE_CLASS = {
+    '일반': 'bg-slate-100 text-slate-700',
+    '산업 분석': 'bg-blue-100 text-blue-700',
+    '질문': 'bg-amber-100 text-amber-700',
+    '투자 토론': 'bg-green-100 text-green-700',
+    '뉴스 공유': 'bg-purple-100 text-purple-700',
+  };
+
+  let currentCategory = 'all';
+
+  function slugifyCategory(key) {
+    return key.replace(/\s+/g, '-'); // '산업 분석' -> '산업-분석'
+  }
+
+  function buildCategoryTabs() {
+    const container = document.getElementById('categoryTabs');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    CATEGORIES.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = cat.label;
+
+      const id = (cat.key === 'all') ? 'tab-all' : `tab-${slugifyCategory(cat.key)}`;
+      btn.id = id;
+      btn.dataset.category = cat.key;
+
+      // 기본(비활성) 스타일
+      btn.className = 'px-6 py-3 border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition-colors';
+      btn.style.fontWeight = '500';
+
+      btn.addEventListener('click', () => filterCategory(cat.key));
+      container.appendChild(btn);
+    });
+
+    setActiveTab('all');
+  }
+
+  function setActiveTab(category) {
+    document.querySelectorAll('#categoryTabs button').forEach(tab => {
+      tab.className = 'px-6 py-3 border-b-2 border-transparent text-slate-600 hover:text-slate-900 transition-colors';
+      tab.style.fontWeight = '500';
+    });
+
+    const activeId = (category === 'all') ? 'tab-all' : `tab-${slugifyCategory(category)}`;
+    const activeTab = document.getElementById(activeId);
+
+    if (activeTab) {
+      activeTab.className = 'px-6 py-3 border-b-2 border-blue-600 text-blue-600 transition-colors';
+      activeTab.style.fontWeight = '500';
+    }
+  }
+
+  function applyCategoryBadgeStyles() {
+    document.querySelectorAll('.post-item').forEach(item => {
+      const category = item.getAttribute('data-category'); // 한글 카테고리
+      const badge = item.querySelector('.category-badge');
+      if (!badge) return;
+
+      // 기본 배지 클래스 유지 + 색상 클래스만 갱신
+      badge.className = 'category-badge px-3 py-1 rounded-full text-sm';
+
+      const colorClass = CATEGORY_BADGE_CLASS[category] || 'bg-slate-100 text-slate-700';
+      badge.classList.add(...colorClass.split(' '));
+    });
+  }
+
+  function filterCategory(category) {
+    currentCategory = category;
+    setActiveTab(category);
+
+    const items = Array.from(document.querySelectorAll('.post-item'));
+    items.forEach(el => {
+      const c = el.getAttribute('data-category');
+      el.style.display = (category === 'all' || c === category) ? '' : 'none';
+    });
+
+    updateEmptyMessage();
+  }
+
+  function updateEmptyMessage() {
+    const msg = document.getElementById('noPostsMessage');
+    if (!msg) return;
+
+    const items = Array.from(document.querySelectorAll('.post-item'));
+    const anyVisible = items.some(el => el.style.display !== 'none');
+    msg.style.display = anyVisible ? 'none' : '';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    buildCategoryTabs();
+    applyCategoryBadgeStyles(); // 배지 색상 자동 적용
+    filterCategory('all');      // 처음엔 전체
+  });
+</script>
 </body>
 </html>

@@ -2,13 +2,14 @@ package project7.tulipmetric.domain.Post;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project7.tulipmetric.domain.Member.Member;
 import project7.tulipmetric.domain.Member.Role;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class Post {
 
     @Id

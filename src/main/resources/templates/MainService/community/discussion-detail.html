@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시글 상세 - Tulipmetric</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    h1 { font-size: 2.5rem; font-weight: 700; line-height: 1.2; }
+    h2 { font-size: 2rem; font-weight: 700; line-height: 1.3; }
+    h3 { font-size: 1.5rem; font-weight: 600; line-height: 1.4; }
+    h4 { font-size: 1.25rem; font-weight: 600; line-height: 1.4; }
+    p  { font-size: 1rem; line-height: 1.6; }
+
+    /* 줄바꿈 유지 */
+    .whitespace-pre-line { white-space: pre-line; }
+  </style>
+</head>
+
+<body class="bg-slate-50">
+<!-- Header -->
+<div th:replace="~{fragments/basicheader :: basicheader-fragment}"></div>
+
+<!-- Main Content -->
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  <!-- Back Button -->
+  <div class="mb-6">
+    <a href="/community" class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
+      <svg class="w-5 h-5" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      커뮤니티로 돌아가기
+    </a>
+  </div>
+
+  <!-- Post Content -->
+  <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 mb-6">
+
+    <!-- Category / IndustryTag -->
+    <div class="flex items-center gap-2 mb-6">
+      <span class="category-badge px-3 py-1 rounded-full text-sm"
+            th:attr="data-category=${post.category}"
+            th:text="${post.category}">
+        카테고리
+      </span>
+
+      <span th:if="${post.industryTag != null and !#strings.isEmpty(post.industryTag)}"
+            class="px-3 py-1 rounded-full text-sm bg-slate-100 text-slate-700"
+            th:text="${post.industryTag}">
+        산업태그
+      </span>
+    </div>
+
+    <!-- Title -->
+    <h1 class="text-slate-900 mb-6" th:text="${post.title}">제목</h1>
+
+    <!-- Author / Date / Meta -->
+    <div class="flex items-center gap-4 mb-6 pb-6 border-b border-slate-200">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white"
+             style="font-weight: 600;"
+             th:text="${post.nickname != null and !#strings.isEmpty(post.nickname) ? #strings.substring(post.nickname,0,1) : '-'}">
+          -
+        </div>
+        <div>
+          <div class="text-slate-900" style="font-weight: 500;" th:text="${post.nickname}">-</div>
+          <div class="text-sm text-slate-500" th:text="${post.dateminute}">-</div>
+        </div>
+      </div>
+
+      <div class="ml-auto flex items-center gap-6 text-sm text-slate-500">
+        <!-- Likes -->
+        <div class="flex items-center gap-1">
+          <svg class="w-4 h-4" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+          </svg>
+          <span th:text="${post.likenum}">0</span>
+        </div>
+
+        <!-- Comments Count (실제 리스트 기준) -->
+        <div class="flex items-center gap-1">
+          <svg class="w-4 h-4" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+          </svg>
+          <span th:text="${#lists.size(comments)}">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="max-w-none text-slate-700 whitespace-pre-line" th:text="${post.content}">
+      내용
+    </div>
+
+    <!-- Actions (그대로 유지) -->
+    <div class="mt-8 flex items-center gap-4">
+      <button onclick="alert('로그인이 필요합니다')"
+              class="flex items-center gap-2 px-6 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
+        <svg class="w-5 h-5" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+        </svg>
+        <span>좋아요</span>
+      </button>
+
+      <button onclick="alert('로그인이 필요합니다')"
+              class="flex items-center gap-2 px-6 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
+        <svg class="w-5 h-5" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+        </svg>
+        <span>북마크</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Comments Section -->
+  <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+    <h3 class="text-slate-900 mb-6">
+      댓글 <span class="text-slate-500" th:text="${#lists.size(comments)}">0</span>
+    </h3>
+
+    <!-- Comment Form (로그인) -->
+    <form sec:authorize="isAuthenticated()"
+          action="/createcomment"
+          method="post"
+          class="flex gap-3 items-start mb-8">
+
+      <!-- postid 꼭 같이 보냄 -->
+      <input type="hidden" name="postid" th:value="${post.id}"/>
+
+      <label class="flex-1">
+        <textarea
+                id="commentContent"
+                name="content"
+                placeholder="댓글을 입력하세요"
+                class="w-full px-4 py-3 border border-slate-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                rows="3"
+                required
+        ></textarea>
+      </label>
+
+      <button type="submit"
+              class="px-5 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors whitespace-nowrap">
+        댓글 등록
+      </button>
+    </form>
+
+    <!-- 비로그인 사용자 -->
+    <div sec:authorize="isAnonymous()" class="mb-8">
+      <label>
+        <textarea
+                placeholder="댓글을 작성하려면 로그인이 필요합니다"
+                disabled
+                class="w-full px-4 py-3 border border-slate-300 rounded-lg resize-none bg-slate-50"
+                rows="3"
+        ></textarea>
+      </label>
+    </div>
+
+    <!-- Comments List -->
+    <div id="commentsList" class="space-y-6">
+
+      <p th:if="${#lists.isEmpty(comments)}" class="text-slate-500 text-center py-8">
+        댓글이 없습니다
+      </p>
+
+      <div th:each="comment, iter : ${comments}" class="flex gap-4" th:if="${!#lists.isEmpty(comments)}">
+
+        <!-- 아바타(인덱스 기반으로 색상 고정) -->
+        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white flex-shrink-0"
+             style="font-weight: 600;"
+             th:classappend="${iter.index % 5 == 0 ? ' bg-green-500'
+                          : (iter.index % 5 == 1 ? ' bg-purple-500'
+                          : (iter.index % 5 == 2 ? ' bg-orange-500'
+                          : (iter.index % 5 == 3 ? ' bg-blue-500'
+                          : ' bg-pink-500')))}"
+             th:text="${comment.nickname != null and !#strings.isEmpty(comment.nickname) ? #strings.substring(comment.nickname,0,1) : '-'}">
+          -
+        </div>
+
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-slate-900" style="font-weight: 500;" th:text="${comment.nickname}">작성자</span>
+            <span class="text-sm text-slate-500" th:text="${comment.dateminute}">날짜</span>
+
+            <!-- 댓글 좋아요 수(0이면 숨김) -->
+            <span th:if="${comment.likenum > 0}" class="ml-2 text-sm text-slate-500">
+              <svg class="w-3 h-3 inline" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+              </svg>
+              <span th:text="${comment.likenum}">0</span>
+            </span>
+          </div>
+
+          <p class="text-slate-700 mb-3 whitespace-pre-line" th:text="${comment.content}">댓글 내용</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // 카테고리 배지 색상 자동 적용 (post.category가 한글로 온다는 전제)
+  const CATEGORY_BADGE_CLASS = {
+    '일반': 'bg-slate-100 text-slate-700',
+    '산업 분석': 'bg-blue-100 text-blue-700',
+    '질문': 'bg-amber-100 text-amber-700',
+    '투자 토론': 'bg-green-100 text-green-700',
+    '뉴스 공유': 'bg-purple-100 text-purple-700',
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const badge = document.querySelector('.category-badge');
+    if (!badge) return;
+
+    const category = badge.getAttribute('data-category');
+    badge.className = 'category-badge px-3 py-1 rounded-full text-sm';
+
+    const colorClass = CATEGORY_BADGE_CLASS[category] || 'bg-slate-100 text-slate-700';
+    badge.classList.add(...colorClass.split(' '));
+  });
+</script>
+</body>
+</html>
