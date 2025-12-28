@@ -1,9 +1,10 @@
-package project7.tulipmetric.domain.Post;
+package project7.tulipmetric.domain.Post.Comment;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import project7.tulipmetric.domain.Post.Post.Post;
 
 @Entity
 @AllArgsConstructor

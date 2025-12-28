@@ -8,18 +8,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import project7.tulipmetric.domain.Member.Member;
-import project7.tulipmetric.domain.Member.MemberRepository;
+import project7.tulipmetric.domain.Member.MemberService;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
 public class MypageController {
 
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     @GetMapping("/mypage")
     public String mypage(@AuthenticationPrincipal Jwt jwt , Model model) {
-        Member member = memberRepository.findByLoginid(jwt.getSubject());
+        Member member = memberService.FindByLoginIdMember(jwt.getSubject());
         log.info("회원인증 완료 {}",member.toString());
         model.addAttribute("member", member);
         return "/Mypage/mypage";

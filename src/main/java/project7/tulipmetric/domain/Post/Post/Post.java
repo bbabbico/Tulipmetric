@@ -1,9 +1,10 @@
-package project7.tulipmetric.domain.Post;
+package project7.tulipmetric.domain.Post.Post;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import project7.tulipmetric.domain.Member.Role;
 
 @Entity
@@ -34,9 +35,11 @@ public class Post {
     @Column(length = 61 , nullable = false)
     private String dateminute; // 작성 년도/월/일/시간/분
 
+    @Setter
     @Column(nullable = false)
     private int likenum; // 좋아요수
 
+    @Setter
     @Column(nullable = false)
     private int commentnum; // 댓글수
 

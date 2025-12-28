@@ -1,4 +1,4 @@
-package project7.tulipmetric.domain.Post;
+package project7.tulipmetric.domain.Post.Post;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

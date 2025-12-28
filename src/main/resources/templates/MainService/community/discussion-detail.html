@@ -31,7 +31,7 @@
   <!-- Back Button -->
   <div class="mb-6">
     <a href="/community" class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
-      <svg class="w-5 h-5" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
       </svg>
       커뮤니티로 돌아가기
@@ -76,16 +76,16 @@
       <div class="ml-auto flex items-center gap-6 text-sm text-slate-500">
         <!-- Likes -->
         <div class="flex items-center gap-1">
-          <svg class="w-4 h-4" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
           </svg>
-          <span th:text="${post.likenum}">0</span>
+          <span id="likeCount" th:text="${post.likenum}">0</span>
         </div>
 
         <!-- Comments Count (실제 리스트 기준) -->
         <div class="flex items-center gap-1">
-          <svg class="w-4 h-4" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
           </svg>
@@ -99,20 +99,23 @@
       내용
     </div>
 
-    <!-- Actions (그대로 유지) -->
-    <div class="mt-8 flex items-center gap-4">
-      <button onclick="alert('로그인이 필요합니다')"
+    <!-- Actions -->
+    <div sec:authorize="isAuthenticated()" class="mt-8 flex items-center gap-4">
+      <button id="likeBtn" type="button"
+              data-liked="false" aria-pressed="false"
+              th:attr="data-liked=${check},aria-pressed=${check}"
+              th:data-id="${post.id}"
               class="flex items-center gap-2 px-6 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
-        <svg class="w-5 h-5" stroke="currentColor" viewBox="0 0 24 24">
+        <svg id="likeIcon" class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
         </svg>
         <span>좋아요</span>
       </button>
 
-      <button onclick="alert('로그인이 필요합니다')"
+      <button
               class="flex items-center gap-2 px-6 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
-        <svg class="w-5 h-5" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
         </svg>
@@ -132,8 +135,6 @@
           action="/createcomment"
           method="post"
           class="flex gap-3 items-start mb-8">
-
-      <!-- postid 꼭 같이 보냄 -->
       <input type="hidden" name="postid" th:value="${post.id}"/>
 
       <label class="flex-1">
@@ -229,5 +230,128 @@
     badge.classList.add(...colorClass.split(' '));
   });
 </script>
+
+<script>
+  /**
+   * 좋아요 토글 + 초기 상태(thymeleaf model "check" 사용) + 좋아요 수 즉시 반영
+   *
+   * - 페이지 진입 시: likeBtn의 data-liked(th:attr로 check 주입)를 읽어 UI를 맞춤
+   * - 클릭 시:
+   *   liked=false -> POST /likeAction   (body: id=...)
+   *   liked=true  -> POST /unlikeAction (body: id=...)
+   *
+   * 컨트롤러가 @RequestParam Long id 이므로 반드시 form-urlencoded로 보냅니다.
+   */
+  const LIKE_ENDPOINT = '/likeAction';
+  const UNLIKE_ENDPOINT = '/unlikeAction';
+
+  function getPostId() {
+    const qp = new URLSearchParams(window.location.search);
+    const idFromQuery = qp.get('id');
+    if (idFromQuery) return idFromQuery;
+
+    const btn = document.getElementById('likeBtn');
+    return btn?.dataset?.id || null;
+  }
+
+  // (선택) Spring Security CSRF meta 태그를 쓰는 경우 자동 포함
+  function getCsrfHeaders() {
+    const tokenMeta = document.querySelector('meta[name="_csrf"]');
+    const headerMeta = document.querySelector('meta[name="_csrf_header"]');
+    if (tokenMeta && headerMeta) {
+      return { [headerMeta.content]: tokenMeta.content };
+    }
+
+    // (선택) Cookie 기반(XSRF-TOKEN)일 때도 대응
+    const m = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
+    if (m) return { 'X-XSRF-TOKEN': decodeURIComponent(m[1]) };
+
+    return {};
+  }
+
+  function setLikedUI(liked) {
+    const btn = document.getElementById('likeBtn');
+    const icon = document.getElementById('likeIcon');
+    const label = btn?.querySelector('span');
+    if (!btn || !icon) return;
+
+    btn.dataset.liked = liked ? 'true' : 'false';
+    btn.setAttribute('aria-pressed', liked ? 'true' : 'false');
+
+    if (liked) {
+      icon.classList.add('text-rose-600');
+      icon.classList.remove('text-slate-500');
+      icon.setAttribute('fill', 'currentColor');
+      icon.setAttribute('stroke', 'currentColor');
+      if (label) label.textContent = '좋아요 취소';
+    } else {
+      icon.classList.remove('text-rose-600');
+      icon.classList.add('text-slate-500');
+      icon.setAttribute('fill', 'none');
+      icon.setAttribute('stroke', 'currentColor');
+      if (label) label.textContent = '좋아요';
+    }
+  }
+
+  function updateLikeCount(delta) {
+    const el = document.getElementById('likeCount');
+    if (!el) return;
+
+    const current = parseInt(String(el.textContent).replace(/,/g, ''), 10);
+    if (Number.isNaN(current)) return;
+
+    const next = Math.max(0, current + delta);
+    el.textContent = String(next);
+  }
+
+  async function sendLikeToggleRequest(currentlyLiked) {
+    const endpoint = currentlyLiked ? UNLIKE_ENDPOINT : LIKE_ENDPOINT;
+
+    const id = getPostId();
+    if (!id) throw new Error('Missing id (no ?id=... in URL and no data-id on likeEntity button)');
+
+    const body = new URLSearchParams({ id: String(id) });
+
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        ...getCsrfHeaders(),
+      },
+      body,
+    });
+
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('likeBtn');
+    if (!btn) return;
+
+    // 초기 상태: thymeleaf의 check가 data-liked로 들어온다고 가정
+    const initialLiked = btn.dataset.liked === 'true';
+    setLikedUI(initialLiked);
+
+    btn.addEventListener('click', async () => {
+      const currentlyLiked = btn.dataset.liked === 'true';
+
+      btn.disabled = true;
+      btn.classList.add('opacity-60', 'cursor-not-allowed');
+
+      try {
+        await sendLikeToggleRequest(currentlyLiked);
+        setLikedUI(!currentlyLiked);
+        updateLikeCount(currentlyLiked ? -1 : +1);
+      } catch (e) {
+        console.error('좋아요 토글 요청 실패:', e);
+        alert('좋아요 처리에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove('opacity-60', 'cursor-not-allowed');
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
