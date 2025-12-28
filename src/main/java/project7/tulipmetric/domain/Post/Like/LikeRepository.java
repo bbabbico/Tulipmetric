@@ -9,4 +9,6 @@ public interface LikeRepository extends JpaRepository<LikeEntity,Long> {
     List<LikeEntity> findAllByLoginid(String loginid);
     List<LikeEntity> findAllByPostid(Post postid);
     LikeEntity findByLoginidAndPostid(String loginid,Post postid);
+
+    void deleteAllByPostid(Post postid);
 }

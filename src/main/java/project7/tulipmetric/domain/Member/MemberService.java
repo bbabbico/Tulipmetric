@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public class MemberService {
     private final MemberRepository memberRepository;
 
-    public String FindByJwtNickname(Jwt jwt){
+    public String NicknameFindByJwt(Jwt jwt){
         return memberRepository.findByNickname(jwt.getSubject()).getNickname();
     }
 

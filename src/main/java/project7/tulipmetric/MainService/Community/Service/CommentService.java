@@ -1,4 +1,4 @@
-package project7.tulipmetric.MainService.Post.Service;
+package project7.tulipmetric.MainService.Community.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +31,22 @@ public class CommentService {
             log.info("comment Saved Successfully");
         } else{log.info("comment Saved Failed : post is null");}
     }
+
+    @Transactional
+    public void EditComment(Long id, String content){
+        Comment comment = commentRepository.findById(id).get();
+        comment.setContent(content);
+        commentRepository.save(comment);
+    }
+
+    @Transactional
+    public void DeleteCommentById(Long id){
+        Post post = commentRepository.findById(id).get().getPostid();
+        post.setCommentnum(post.getCommentnum()-1);
+        commentRepository.deleteById(id);
+    }
+
+
     public List<Comment> FindAllByPostid(Post post){
         return commentRepository.findAllByPostid(post);
     }

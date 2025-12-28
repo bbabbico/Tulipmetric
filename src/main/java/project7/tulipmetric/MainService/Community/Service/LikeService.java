@@ -1,4 +1,4 @@
-package project7.tulipmetric.MainService.Post.Service;
+package project7.tulipmetric.MainService.Community.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,10 @@ public class LikeService {
     }
 
     @Transactional
-    public Boolean CheckLike(Jwt jwt,Post post) { // TODO 북마크 , 좋아요 이미 누른 사용자 인지 보내줌,
+    public Boolean CheckLike(Jwt jwt,Post post) { // TODO 좋아요 이미 누른 사용자 인지 보내줌,
+        if (jwt==null) {
+            return false;
+        }
         List<LikeEntity> postid = likeRepository.findAllByPostid(post);
         for  (LikeEntity likeEntity : postid) {
             if (likeEntity.getLoginid().equals(jwt.getSubject())) {
