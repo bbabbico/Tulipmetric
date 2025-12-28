@@ -20,15 +20,19 @@ public class Post {
     @Column(length = 20 , nullable = false)
     private String nickname; //작성자 식별 외래키
 
+    @Setter
     @Column(length = 10 , nullable = false)
     private String category; // 글 카테고리
 
+    @Setter
     @Column(length = 30 , nullable = false)
     private String industryTag; // 글 관련 산업군
 
+    @Setter
     @Column(length = 50 , nullable = false)
     private String title; // 글 제목
 
+    @Setter
     @Column(columnDefinition = "TEXT" , nullable = false)
     private String content; // 글 내용
 

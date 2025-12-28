@@ -85,7 +85,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/join", "/login","/loginidcheck","/nicknamecheck").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/join", "/signup", "/login").permitAll()
                                 .requestMatchers("/mypage","/activity","/accountsettings","/saved").authenticated() //마이 페이지
-                                .requestMatchers("/createpost").authenticated() //Post , Comment
+                                .requestMatchers("/createpost","/deletepost","/editpost").authenticated() //Post , Comment , Creat/Delete/Edit
                                 .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
 
 //                                .anyRequest().authenticated() // 운영 기준

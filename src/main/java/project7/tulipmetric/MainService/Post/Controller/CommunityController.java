@@ -7,10 +7,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import project7.tulipmetric.MainService.Post.Service.CommentService;
 import project7.tulipmetric.MainService.Post.Service.LikeService;
 import project7.tulipmetric.domain.Member.MemberService;
@@ -18,10 +15,8 @@ import project7.tulipmetric.domain.Member.Role;
 import project7.tulipmetric.MainService.Post.Service.PostService;
 import project7.tulipmetric.domain.Post.Comment.Comment;
 import project7.tulipmetric.domain.Post.Comment.CommentDto;
-import project7.tulipmetric.domain.Post.Comment.CommentRepository;
 import project7.tulipmetric.domain.Post.Post.Post;
 import project7.tulipmetric.domain.Post.Post.PostDto;
-import project7.tulipmetric.domain.Post.Post.PostRepository;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -47,6 +42,10 @@ public class CommunityController {
         Post post = postService.FindByPostId(id);
         List<Comment> comments = commentService.FindAllByPostid(post);
         Boolean Check = likeService.CheckLike(jwt,post);
+        
+        if (post.getNickname().equals(memberService.FindByJwtNickname(jwt))) { //작성자 본인인지 확인
+            model.addAttribute("host",true);
+        }
 
         model.addAttribute("check",Check); // 사용자 좋아요/북마크 여부
         model.addAttribute("post",post); //게시글 정보
@@ -71,6 +70,28 @@ public class CommunityController {
         return "redirect:/community";
     }
 
+    @GetMapping("/editpost") // 수정 페이지 Get
+    public String GetEditPost(Model model,@RequestParam Long id){
+        Post post = postService.FindByPostId(id);
+        model.addAttribute("postDto",new PostDto(post.getCategory(),post.getIndustryTag(),post.getTitle(),post.getContent()));
+        model.addAttribute("postid",id);
+
+        return "/MainService/community/editpost";
+    }
+
+    @PostMapping("/editpost") // 수정 로직
+    public String EditPost(@ModelAttribute PostDto postDto, @RequestParam Long id){
+        Post post = postService.FindByPostId(id);
+        postService.EditPost(post,postDto);
+        return "redirect:/discussion-detail?id="+id;
+    }
+
+    @PostMapping("/deletepost")
+    public String DeletePost(@RequestParam Long id){
+        postService.DeletePost(id);
+        return "redirect:/community";
+    }
+
     @PostMapping("/createcomment")
     public String SaveComment(@AuthenticationPrincipal Jwt jwt, CommentDto commentDto){
         String nickname= memberService.FindByJwtNickname(jwt);
@@ -88,8 +109,6 @@ public class CommunityController {
         likeService.PostLikeAction(jwt,id);
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
-
-
 
     @ResponseBody
     @PostMapping("/unlikeAction")
