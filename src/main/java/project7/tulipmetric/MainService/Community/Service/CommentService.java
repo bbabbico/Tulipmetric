@@ -46,6 +46,11 @@ public class CommentService {
         commentRepository.deleteById(id);
     }
 
+    @Transactional
+    public List<Comment> FindAllByNickname(String nickname){
+        return commentRepository.findAllByNickname(nickname);
+    }
+
 
     public List<Comment> FindAllByPostid(Post post){
         return commentRepository.findAllByPostid(post);

@@ -53,5 +53,10 @@ public class PostService {
     }
 
     @Transactional
+    public List<Post> FindAllByNickname(String nickname){
+        return postRepository.findAllByNickname(nickname);
+    }
+
+    @Transactional
     public List<Post> FindAll(){return postRepository.findAll();}
 }
