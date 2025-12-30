@@ -16,7 +16,7 @@ public class LikeEntity {
     private Long id;
 
     @Column(length = 100,nullable = false)
-    private String loginid;
+    private String loginid; //TODO : 나중에 닉네임 기반으로 통일해야함.
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="postid")
