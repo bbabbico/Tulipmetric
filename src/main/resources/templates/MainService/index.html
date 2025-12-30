@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,26 +7,22 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
-    
+
     h1 { font-size: 1.5rem; font-weight: 500; line-height: 1.5; }
     h2 { font-size: 1.25rem; font-weight: 500; line-height: 1.5; }
     h3 { font-size: 1.125rem; font-weight: 500; line-height: 1.5; }
     h4 { font-size: 1rem; font-weight: 500; line-height: 1.5; }
     label, button { font-size: 1rem; font-weight: 500; line-height: 1.5; }
     input { font-size: 1rem; font-weight: 400; line-height: 1.5; }
-    
+
     .line-clamp-2 {
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -36,8 +32,8 @@
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-<!-- Header -->
-<div th:replace="~{fragments/basicheader :: basicheader-fragment}"></div>
+  <!-- Header -->
+  <div th:replace="~{fragments/basicheader :: basicheader-fragment}"></div>
 
   <!-- Main Content -->
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -57,9 +53,9 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
           <input
-            type="text" 
+            type="text"
             id="searchInput"
-            placeholder="산업군명 또는 기업명으로 검색..." 
+            placeholder="산업군명으로 검색..."
             class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
@@ -81,36 +77,29 @@
       <div class="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50 rounded-3xl shadow-xl border border-slate-200">
         <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl"></div>
         <div class="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-200/30 to-indigo-200/30 rounded-full blur-3xl"></div>
-        
+
         <div class="relative px-8 py-16">
           <div class="text-center max-w-3xl mx-auto">
-            <!-- Market Title -->
             <div class="mb-8">
               <p class="text-sm tracking-wider uppercase text-slate-400 mb-3" style="font-weight: 300;">현재 시장은...</p>
-              <h2 id="marketTitle" class="text-5xl md:text-6xl mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600" style="font-weight: 300; letter-spacing: -0.025em;">
-                안정적인 시장
-              </h2>
+              <h2 id="marketTitle" class="text-5xl md:text-6xl mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600"
+                  style="font-weight: 300; letter-spacing: -0.025em;">안정적인 시장</h2>
             </div>
-            
-            <!-- Large Tulip Icon with glow effect -->
+
             <div class="flex justify-center mb-8">
               <div class="relative">
                 <div class="absolute inset-0 blur-2xl opacity-40 bg-blue-400"></div>
                 <div id="marketTulip" class="relative transform hover:scale-110 transition-transform duration-500 ease-out"></div>
               </div>
             </div>
-            
-            <!-- Market Description -->
+
             <div class="mb-8">
-              <p id="marketDescription" class="text-xl md:text-2xl text-blue-700" style="font-weight: 300;">
-                신기술 중심으로 관심이 쏠립니다
-              </p>
+              <p id="marketDescription" class="text-xl md:text-2xl text-blue-700" style="font-weight: 300;">신기술 중심으로 관심이 쏠립니다</p>
             </div>
-            
-            <!-- Subtle growth rate indicator -->
+
             <div class="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full border border-slate-200 shadow-sm">
               <span class="text-sm text-slate-500">평균 성장률</span>
-              <span id="avgGrowthRate" class="text-xl text-green-600">+12.8%</span>
+              <span id="avgGrowthRate" class="text-xl text-green-600">+0.0%</span>
             </div>
           </div>
         </div>
@@ -136,7 +125,86 @@
         </svg>
         <h2 class="text-slate-900">빠르게 성장중인 산업군</h2>
       </div>
-      <div id="trendingList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+      <div id="trendingList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <th:block th:each="m : ${market}">
+          <th:block th:if="${m.trending}">
+            <div class="relative industry-card"
+                 th:attr="data-id=${m.id},data-name=${m.name},data-status=${m.marketStatus},data-growth=${m.growthRate30d}">
+              <!-- Favorite Button -->
+              <button type="button"
+                      class="favorite-btn absolute top-2 right-2 z-10 p-1.5 rounded-full transition-all duration-200 shadow-sm bg-white/80 text-slate-400 hover:bg-white hover:text-slate-600"
+                      th:attr="data-id=${m.id}"
+                      title="즐겨찾기 추가">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </button>
+
+              <a th:href="@{/industry-detail(id=${m.id})}"
+                 class="block bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-slate-300 group">
+                <div class="p-6">
+                  <div class="flex items-start justify-between mb-4">
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2 mb-2">
+                        <h3 class="text-slate-900 group-hover:text-blue-600 transition-colors" th:text="${m.name}">산업군명</h3>
+                        <span class="px-2 py-1 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-xs rounded-full">급상승</span>
+                      </div>
+                      <p class="text-slate-600 text-sm line-clamp-2"
+                         th:text="${#strings.isEmpty(m.description) ? '산업군 설명이 없습니다.' : m.description}">
+                        산업군 설명
+                      </p>
+                    </div>
+                    <div class="ml-4 tulip-icon" th:attr="data-status=${m.marketStatus},data-size='md'"></div>
+                  </div>
+
+                  <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                    <div>
+                      <div class="flex items-center gap-2 mb-1">
+                        <th:block th:if="${m.growthRate30d >= 0}">
+                          <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                          </svg>
+                        </th:block>
+                        <th:block th:unless="${m.growthRate30d >= 0}">
+                          <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>
+                          </svg>
+                        </th:block>
+
+                        <span th:class="${m.growthRate30d >= 0 ? 'text-green-600' : 'text-red-600'}"
+                              th:text="${(m.growthRate30d >= 0 ? '+' : '') + #numbers.formatDecimal(m.growthRate30d,1,1) + '%'}">
+                          +0.0%
+                        </span>
+                      </div>
+                      <p class="text-xs text-slate-500">30일 성장률</p>
+                    </div>
+
+                    <div class="text-right">
+                      <p class="marketcap"
+                         th:attr="data-marketcap=${m.totalmarketcap}">
+                        -
+                      </p>
+                      <p class="text-xs text-slate-500">총 시가총액</p>
+                    </div>
+
+                    <div>
+                      <span class="status-badge px-3 py-1 rounded-full text-sm"
+                            th:attr="data-status=${m.marketStatus}"></span>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 flex items-center gap-2 text-sm text-slate-600">
+                    <span th:text="${#numbers.formatInteger(m.stockcount,3,'COMMA')} + ' 거래량'">거래량</span>
+                    <span class="text-slate-300">•</span>
+                    <span class="text-blue-600 group-hover:underline">자세히 보기 →</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </th:block>
+        </th:block>
+      </div>
     </section>
 
     <!-- Other Industries -->
@@ -147,7 +215,85 @@
         </svg>
         <h2 class="text-slate-900">주요 산업군</h2>
       </div>
-      <div id="otherList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+      <div id="otherList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <th:block th:each="m : ${market}">
+          <th:block th:unless="${m.trending}">
+            <div class="relative industry-card"
+                 th:attr="data-id=${m.id},data-name=${m.name},data-status=${m.marketStatus},data-growth=${m.growthRate30d}">
+              <!-- Favorite Button -->
+              <button type="button"
+                      class="favorite-btn absolute top-2 right-2 z-10 p-1.5 rounded-full transition-all duration-200 shadow-sm bg-white/80 text-slate-400 hover:bg-white hover:text-slate-600"
+                      th:attr="data-id=${m.id}"
+                      title="즐겨찾기 추가">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </button>
+
+              <a th:href="@{/industry-detail(id=${m.id})}"
+                 class="block bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-slate-300 group">
+                <div class="p-6">
+                  <div class="flex items-start justify-between mb-4">
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2 mb-2">
+                        <h3 class="text-slate-900 group-hover:text-blue-600 transition-colors" th:text="${m.name}">산업군명</h3>
+                      </div>
+                      <p class="text-slate-600 text-sm line-clamp-2"
+                         th:text="${#strings.isEmpty(m.description) ? '산업군 설명이 없습니다.' : m.description}">
+                        산업군 설명
+                      </p>
+                    </div>
+                    <div class="ml-4 tulip-icon" th:attr="data-status=${m.marketStatus},data-size='md'"></div>
+                  </div>
+
+                  <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                    <div>
+                      <div class="flex items-center gap-2 mb-1">
+                        <th:block th:if="${m.growthRate30d >= 0}">
+                          <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                          </svg>
+                        </th:block>
+                        <th:block th:unless="${m.growthRate30d >= 0}">
+                          <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>
+                          </svg>
+                        </th:block>
+
+                        <span th:class="${m.growthRate30d >= 0 ? 'text-green-600' : 'text-red-600'}"
+                              th:text="${(m.growthRate30d >= 0 ? '+' : '') + #numbers.formatDecimal(m.growthRate30d,1,1) + '%'}">
+                          +0.0%
+                        </span>
+                      </div>
+                      <p class="text-xs text-slate-500">30일 성장률</p>
+                    </div>
+
+                    <div class="text-right">
+                      <p class="marketcap"
+                         th:attr="data-marketcap=${m.totalmarketcap}">
+                        -
+                      </p>
+                      <p class="text-xs text-slate-500">총 시가총액</p>
+                    </div>
+
+                    <div>
+                      <span class="status-badge px-3 py-1 rounded-full text-sm"
+                            th:attr="data-status=${m.marketStatus}"></span>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 flex items-center gap-2 text-sm text-slate-600">
+                    <span th:text="${#numbers.formatInteger(m.stockcount,3,'COMMA')} + ' 거래량'">거래량</span>
+                    <span class="text-slate-300">•</span>
+                    <span class="text-blue-600 group-hover:underline">자세히 보기 →</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </th:block>
+        </th:block>
+      </div>
     </section>
 
     <!-- No Results -->
@@ -167,8 +313,46 @@
     </div>
   </div>
 
-  <script src="/js/data.js"></script>
+  <!-- data.js 제거: 이제 서버에서 model로 내려옴 -->
   <script src="/js/tulip.js"></script>
-  <script src="/js/index.js"></script>
+  <script src="/js/index-ssr.js"></script>
 </body>
+<script>
+  function comma(str) {
+    return str.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  function formatMarketCap(raw) {
+    if (raw == null || raw === "") return "-";
+
+    let sign = "";
+    let v = BigInt(raw);
+    if (v < 0n) { sign = "-"; v = -v; }
+
+    const JO  = 1_000_000_000_000n; // 1조
+    const EOK = 100_000_000n;       // 1억
+
+    if (v >= JO) {
+      // 소수 1자리 반올림: (v/JO).toFixed(1)과 비슷하게
+      const scaled = (v * 10n + JO / 2n) / JO; // x10 후 반올림
+      const intPart = scaled / 10n;
+      const dec = scaled % 10n;
+      return `${sign}${comma(intPart.toString())}.${dec}조`;
+    }
+
+    if (v >= EOK) {
+      // 억 단위 정수 반올림 (원하면 반올림 빼고 v/EOK로 바꿔도 됨)
+      const eok = (v + EOK / 2n) / EOK;
+      return `${sign}${comma(eok.toString())}억`;
+    }
+
+    return `${sign}₩${comma(v.toString())}`;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".marketcap[data-marketcap]").forEach(el => {
+      el.textContent = formatMarketCap(el.dataset.marketcap);
+    });
+  });
+</script>
 </html>
