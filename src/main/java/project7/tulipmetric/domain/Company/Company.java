@@ -1,8 +1,10 @@
 package project7.tulipmetric.domain.Company;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

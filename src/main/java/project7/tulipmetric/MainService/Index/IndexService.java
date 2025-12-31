@@ -16,7 +16,13 @@ public class IndexService {
     private final CompanyRepoitory companyRepoitory;
 
     public List<Market> IndexMarketLoad(){
+
         return marketRepository.findAll();
+    }
+
+    public Market IndexMarketLoadById(Long id){
+
+        return marketRepository.findById(id).get();
     }
 
     public List<Company> IndexCompanyFindByMarketLoad(String market){

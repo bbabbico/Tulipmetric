@@ -27,7 +27,7 @@ public class Market {
     private String chart; //12 개월 코스피 지수 변동.
 
     @Column(nullable = false)
-    private int growthRate30d;
+    private double growthRate30d;
 
     @Column(length = 20,nullable = false)
     private String marketStatus;    // crashed/declining/stable/growing/overvalued
