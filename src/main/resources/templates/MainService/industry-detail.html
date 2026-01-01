@@ -126,7 +126,7 @@
         
         <div class="flex flex-col items-center gap-4 ml-8">
           <div id="tulipIcon" class="flex items-center justify-center"></div>
-          <button onclick="toggleFavorite()" id="favoriteBtn" class="flex items-center gap-2 px-6 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
+          <button type="button" id="favoriteBtn" data-fav="false" class="flex items-center gap-2 px-6 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
             <svg id="favoriteStar" class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
@@ -138,7 +138,7 @@
 
     <!-- Growth Chart -->
     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
-      <h3 class="text-slate-900 mb-4">산업군 지수 추이 KOSIS (최근 1년)</h3>
+      <h3 class="text-slate-900 mb-4">산업군 지수 추이 (최근 1년)</h3>
       <div id="chartContainer" class="h-64 overflow-x-auto"></div>
     </div>
 
@@ -190,15 +190,11 @@
 
   <script src="/js/tulip.js"></script>
 
-<script th:inline="javascript">
-  window.marketChart = /*[[${market.chart}]]*/ [];
-  if (typeof window.marketChart === 'string') {
-    window.marketChart = window.marketChart
-            .split(',')
-            .map(s => Number(s.trim()))
-            .filter(Number.isFinite);
-  }
-</script>
+  <script th:inline="javascript">
+      /*<![CDATA[*/
+      window.marketChart = /*[[${market.chart}]]*/ [];
+      /*]]>*/
+    </script>
 
     <!-- index 페이지에서 쓰던 formatNumber() 재사용 (없으면 아래 fallback 사용) -->
     <script src="/js/index-ssr.js" defer></script>
@@ -280,106 +276,157 @@
         }
       });
 
-      function renderIndexChart(indexSeries) {
+            function renderIndexChart(indexSeries) {
         const chartContainer = document.getElementById('chartContainer');
         if (!chartContainer) return;
 
         const values = (Array.isArray(indexSeries) ? indexSeries : [])
-                .map(Number)
-                .filter(Number.isFinite);
+          .map(Number)
+          .filter(Number.isFinite);
 
         if (values.length === 0) {
           chartContainer.innerHTML = '<div class="text-sm text-slate-500 p-4">차트 데이터가 없습니다.</div>';
           return;
         }
 
-        // 12개월 고정 라벨(데이터 길이가 12가 아닐 수도 있으니 length 기반)
-        const months = Array.from({ length: values.length }, (_, i) => `${values.length - i}개월 전`);
+        // 데이터가 오래된 → 최신 순서라고 가정 (12개월 데이터면 12개월 전 ~ 1개월 전)
+        const months = values.length === 12
+          ? ['12개월 전','11개월 전','10개월 전','9개월 전','8개월 전','7개월 전','6개월 전','5개월 전','4개월 전','3개월 전','2개월 전','1개월 전']
+          : Array.from({ length: values.length }, (_, i) => `${values.length - i}개월 전`);
 
-        // 높이는 min~max 기준으로 스케일(지수는 전부 양수라 abs 기준이 부자연스러움)
+        // 지수는 min~max 기준으로 스케일링
         const minV = Math.min(...values);
         const maxV = Math.max(...values);
         const range = (maxV - minV) || 1;
 
         chartContainer.innerHTML = `
-    <div class="flex items-end justify-between h-full gap-2 px-4 min-w-max">
-      ${values.map((v, i) => {
-          const prev = i > 0 ? values[i - 1] : null;
-          const delta = prev === null ? 0 : (v - prev);
+          <div class="flex items-end justify-between h-full gap-2 px-4 min-w-max">
+            ${values.map((v, i) => {
+              const prev = i > 0 ? values[i - 1] : null;
+              const delta = prev === null ? 0 : (v - prev);
 
-          const barColor =
-                  prev === null ? 'bg-slate-400'
-                          : delta > 0 ? 'bg-green-500'
-                                  : delta < 0 ? 'bg-red-500'
-                                          : 'bg-slate-400';
+              const barColor =
+                prev === null ? 'bg-slate-400'
+                : delta > 0 ? 'bg-green-500'
+                : delta < 0 ? 'bg-red-500'
+                : 'bg-slate-400';
 
-          const textColor =
-                  prev === null ? 'text-slate-500'
-                          : delta > 0 ? 'text-green-600'
-                                  : delta < 0 ? 'text-red-600'
-                                          : 'text-slate-500';
+              const textColor =
+                prev === null ? 'text-slate-500'
+                : delta > 0 ? 'text-green-600'
+                : delta < 0 ? 'text-red-600'
+                : 'text-slate-500';
 
-          // 최소 높이 보장
-          const heightPercent = ((v - minV) / range) * 75 + 5;
+              const heightPercent = ((v - minV) / range) * 75 + 5;
 
-          return `
-          <div class="flex-1 flex flex-col items-center justify-end h-full min-w-[60px]">
-            <div class="text-xs font-medium ${textColor} mb-1 whitespace-nowrap">
-              ${Math.round(v).toLocaleString()}
-            </div>
-            <div class="${barColor} w-full rounded-t" style="height:${heightPercent}%; min-height:4px;"></div>
-            <div class="text-xs text-slate-500 mt-2 whitespace-nowrap">
-              ${months[i] ?? ''}
-            </div>
+              return `
+                <div class="flex-1 flex flex-col items-center justify-end h-full min-w-[60px]">
+                  <div class="text-xs font-medium ${textColor} mb-1 whitespace-nowrap">
+                    ${Math.round(v).toLocaleString()}
+                  </div>
+                  <div class="${barColor} w-full rounded-t" style="height: ${heightPercent}%; min-height: 4px;"></div>
+                  <div class="text-xs text-slate-500 mt-2 whitespace-nowrap">
+                    ${months[i] ?? ''}
+                  </div>
+                </div>
+              `;
+            }).join('')}
           </div>
         `;
-        }).join('')}
-    </div>
-  `;
       }
 
-      renderIndexChart(window.marketChart);
+      renderIndexChart(window.marketChart);      // ---- 즐겨찾기(UI 토글만) ---- TODO 로그인 안한 사용자는 로컬 스토리지에 보관해서 나중에도 즐겨찾기한거 볼 수 있도록 구현, 로그인하면 로컬스토리지 비우고 사용자 데이터에서 즐겨찾기 불러오기. 마이페이지에는 로컬 스토리지에서 저장된 산업군 뽑아씀.
+      const favoriteBtn = document.getElementById('favoriteBtn');
+      const favoriteStar = document.getElementById('favoriteStar');
+      const favoriteText = document.getElementById('favoriteText');
 
-      // ---- 즐겨찾기(기존 UI 유지) ----
-      const favoriteButton = document.getElementById('favoriteButton');
-      if (favoriteButton) {
-        const industryNameEl = document.getElementById('industryName');
-        const industryName = (industryNameEl?.textContent || '').trim();
+      function setFavoriteUI(isFav) {
+        if (!favoriteBtn || !favoriteStar || !favoriteText) return;
 
-        const getFavorites = () => {
-          try {
-            return JSON.parse(localStorage.getItem('favoriteIndustries') || '[]');
-          } catch (e) {
-            return [];
+        favoriteBtn.dataset.fav = isFav ? 'true' : 'false';
+
+        favoriteBtn.classList.toggle('border-amber-300', isFav);
+        favoriteBtn.classList.toggle('bg-amber-50', isFav);
+        favoriteBtn.classList.toggle('text-amber-700', isFav);
+
+        favoriteBtn.classList.toggle('border-slate-300', !isFav);
+        favoriteBtn.classList.toggle('bg-white', !isFav);
+        favoriteBtn.classList.toggle('text-slate-700', !isFav);
+
+        favoriteStar.setAttribute('fill', isFav ? 'currentColor' : 'none');
+        favoriteStar.classList.toggle('text-amber-500', isFav);
+        favoriteStar.classList.toggle('text-slate-400', !isFav);
+
+        favoriteText.textContent = isFav ? '즐겨찾기 해제' : '즐겨찾기 추가';
+      }
+
+      // ✅ 현재 URL에서 id 추출 (?id=123 우선, 없으면 /.../123 같은 마지막 path 숫자 시도)
+      function getIdFromCurrentUrl() {
+        const url = new URL(window.location.href);
+        const qsId = url.searchParams.get('id');
+        if (qsId && /^\d+$/.test(qsId)) return qsId;
+
+        const seg = url.pathname.split('/').filter(Boolean).pop();
+        if (seg && /^\d+$/.test(seg)) return seg;
+
+        return null;
+      }
+
+      async function postSaveWishMarket(id) {
+        const body = new URLSearchParams();
+        body.set('id', id);
+
+        const res = await fetch('/savewishmarket', {
+          method: 'POST',
+          credentials: 'same-origin', // 세션/쿠키 필요하면 필수
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+          },
+          body: body.toString(),
+        });
+
+        const text = await res.text(); // 서버가 0/1 “문자”로 준다고 했으니 text로 받음
+        return { ok: res.ok, code: Number(String(text).trim()) };
+      }
+
+      if (favoriteBtn) {
+        setFavoriteUI(favoriteBtn.dataset.fav === 'true');
+
+        favoriteBtn.addEventListener('click', async () => {
+          const id = getIdFromCurrentUrl();
+          if (!id) {
+            alert('id 값을 URL에서 찾지 못했습니다.');
+            return;
           }
-        };
 
-        const setFavorites = (arr) => {
+          const before = (favoriteBtn.dataset.fav === 'true');
+
+          // 중복 클릭 방지
+          favoriteBtn.disabled = true;
+          favoriteBtn.classList.add('opacity-60', 'cursor-not-allowed');
+
           try {
-            localStorage.setItem('favoriteIndustries', JSON.stringify(arr));
-          } catch (e) {}
-        };
+            const { ok, code } = await postSaveWishMarket(id);
 
-        const syncButton = () => {
-          const favorites = getFavorites();
-          const isFavorite = favorites.includes(industryName);
-          favoriteButton.textContent = isFavorite ? '★ 즐겨찾기 해제' : '☆ 즐겨찾기';
-        };
-
-        syncButton();
-
-        favoriteButton.addEventListener('click', () => {
-          const favorites = getFavorites();
-          const idx = favorites.indexOf(industryName);
-
-          if (idx >= 0) favorites.splice(idx, 1);
-          else favorites.push(industryName);
-
-          setFavorites(favorites);
-          syncButton();
+            // 성공: 0, 실패: 1
+            if (ok && code === 0) {
+              setFavoriteUI(!before);
+            } else {
+              alert('즐겨찾기 저장에 실패했습니다.');
+              setFavoriteUI(before);
+            }
+          } catch (e) {
+            console.error(e);
+            alert('네트워크 오류로 즐겨찾기 저장에 실패했습니다.');
+            setFavoriteUI(before);
+          } finally {
+            favoriteBtn.disabled = false;
+            favoriteBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+          }
         });
       }
-    })();
+
+      })();
     </script>
 </body>
 </html>

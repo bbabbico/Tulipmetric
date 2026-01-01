@@ -65,15 +65,15 @@
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-sm text-slate-600">좋아요 누른 게시글</span>
-                <span class="text-sm text-blue-600" th:text="${likecount} 개" style="font-weight: 600;" id="favoriteCount">0개</span>
+                <span class="text-sm text-blue-600" th:text="|${likecount} 개|" style="font-weight: 600;" id="favoriteCount">0개</span>
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-sm text-slate-600">작성한 글</span>
-                <span class="text-sm text-slate-900" th:text="${postcount} 개" style="font-weight: 500;">0개</span>
+                <span class="text-sm text-slate-900" th:text="|${postcount} 개|" style="font-weight: 500;">0개</span>
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-sm text-slate-600">작성한 댓글</span>
-                <span class="text-sm text-slate-900" th:text="${commentcount} 개" style="font-weight: 500;">0개</span>
+                <span class="text-sm text-slate-900" th:text="|${commentcount} 개|" style="font-weight: 500;">0개</span>
               </div>
             </div>
           </div>

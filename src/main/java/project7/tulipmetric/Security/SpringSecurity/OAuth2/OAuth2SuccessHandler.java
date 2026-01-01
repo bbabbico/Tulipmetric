@@ -40,13 +40,13 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.addCookie(cookie);
 
 //         OAuth2는 보통 브라우저 리다이렉트 흐름이 아니라 API 형태로 JSON 반환 하려면 실험용으로
-        response.setStatus(200);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        objectMapper.writeValue(response.getWriter(), Map.of(
-                "accessToken", accessToken,
-                "tokenType", "Bearer"
-        ));
+//        response.setStatus(200);
+//        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+//        objectMapper.writeValue(response.getWriter(), Map.of(
+//                "accessToken", accessToken,
+//                "tokenType", "Bearer"
+//        ));
 
-//         response.sendRedirect("/");
+         response.sendRedirect("/");
     }
 }

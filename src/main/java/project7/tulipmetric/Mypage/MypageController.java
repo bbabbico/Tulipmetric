@@ -27,6 +27,7 @@ public class MypageController {
     public String mypage(@AuthenticationPrincipal Jwt jwt , Model model) {
         Member member = memberService.FindByLoginIdMember(jwt.getSubject());
         log.info("회원인증 완료 {}",member.toString());
+        log.info("{}",likeService.findAllByLoginid(member.getLoginid()).size());
         model.addAttribute("likecount",likeService.findAllByLoginid(member.getLoginid()).size());
         model.addAttribute("commentcount",commentService.FindAllByNickname(member.getNickname()).size());
         model.addAttribute("postcount",postService.FindAllByNickname(member.getNickname()).size());
