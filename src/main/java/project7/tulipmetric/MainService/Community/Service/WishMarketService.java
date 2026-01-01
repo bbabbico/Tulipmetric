@@ -17,15 +17,33 @@ public class WishMarketService {
     private final MarketRepository marketRepository;
     private final WishMarketRepository wishMarketRepository;
 
-    public List<Wishmarket> findAllByLoginid(String loginid) {
-        return wishMarketRepository.findAllByLoginid(loginid);
-    }
-
     @Transactional
     public void saveWishMarket(Jwt jwt, Long marketid) {
         Market market= marketRepository.findById(marketid).get();
         String loginid =  jwt.getSubject();
 
         wishMarketRepository.save(new Wishmarket(null,loginid,market));
+    }
+
+    @Transactional
+    public void deletWishMarket(Jwt jwt, Long marketid) {
+        Market market= marketRepository.findById(marketid).get();
+        String loginid =  jwt.getSubject();
+        wishMarketRepository.deleteByLoginidAndMarketid(loginid,market);
+    }
+
+    @Transactional
+    public Boolean CheckWishMarket(Jwt jwt, Long id) { // 좋아요 이미 누른 사용자 인지 보내줌,
+        if (jwt==null) {
+            return false;
+        }
+
+        List<Wishmarket> wishmarkets =  wishMarketRepository.findAllByMarketid(marketRepository.findById(id).get());
+        for  (Wishmarket wishmarket : wishmarkets) {
+            if (wishmarket.getLoginid().equals(jwt.getSubject())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

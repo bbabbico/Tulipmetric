@@ -21,4 +21,10 @@ public class WishMarketController {
         wishMarketService.saveWishMarket(jwt,id);
         return new ResponseEntity<>(0, HttpStatus.OK);
     }
+
+    @PostMapping("/deletwishmarket")
+    public ResponseEntity<Integer> deletWishMarket(@AuthenticationPrincipal Jwt jwt, @RequestParam Long id) {
+        wishMarketService.deletWishMarket(jwt,id);
+        return new ResponseEntity<>(0, HttpStatus.OK);
+    }
 }

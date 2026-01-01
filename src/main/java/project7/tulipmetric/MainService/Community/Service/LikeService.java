@@ -31,7 +31,7 @@ public class LikeService {
     }
 
     @Transactional
-    public Boolean CheckLike(Jwt jwt,Post post) { // TODO 좋아요 이미 누른 사용자 인지 보내줌,
+    public Boolean CheckLike(Jwt jwt,Post post) { // 좋아요 이미 누른 사용자 인지 보내줌,
         if (jwt==null) {
             return false;
         }
