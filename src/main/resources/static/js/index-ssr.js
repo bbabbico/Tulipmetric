@@ -1,5 +1,7 @@
 // SSR(Thymeleaf) 버전: 카드 생성은 서버가 하고, JS는 '상태/검색/즐겨찾기/가이드'만 담당
 
+//TODO : 로그인한 회원이면, 로컬스토리지 사용 안하고 Db 요청으로 즐겨찾기 목록 최신화, 회원 아니면 로컬스토리지 사용.
+
 // State
 let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
 let searchQuery = '';
