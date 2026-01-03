@@ -115,13 +115,37 @@ function setFavoriteButtonUI(btn, isFav) {
   svg.setAttribute('fill', isFav ? 'currentColor' : 'none');
 }
 
-function toggleFavorite(id) {
+async function toggleFavorite(id) {
   const idx = favorites.indexOf(id);
-  if (idx > -1) favorites.splice(idx, 1);
-  else favorites.push(id);
+  const isFav = idx > -1;
 
-  saveFavorites();
-  renderAll();
+  if (useLocalFavorites) {
+    if (isFav) favorites.splice(idx, 1);
+    else favorites.push(id);
+
+    saveFavorites();
+    renderAll();
+    return;
+  }
+
+  const url = isFav ? '/deletwishmarket' : '/savewishmarket';
+  const body = new URLSearchParams();
+  body.set('id', id);
+
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+      body
+    });
+
+    if (isFav) favorites.splice(idx, 1);
+    else favorites.push(id);
+
+    renderAll();
+  } catch (err) {
+    console.error('즐겨찾기 요청 실패', err);
+  }
 }
 
 // 카드 내부의 튤립/배지 텍스트를 클라이언트에서 채움 (tulip.js 함수 사용)
