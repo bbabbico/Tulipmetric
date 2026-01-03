@@ -343,7 +343,15 @@
         `;
       }
 
-      renderIndexChart(window.marketChart);      // ---- 즐겨찾기(SSR 초기상태 + 클릭 시 저장/삭제) ----
+      const rawChart = window.marketChart;
+      const chartData = Array.isArray(rawChart)
+        ? rawChart
+        : String(rawChart || '')
+            .split(',')
+            .map(Number)
+            .filter(Number.isFinite);
+
+      renderIndexChart(chartData);      // ---- 즐겨찾기(SSR 초기상태 + 클릭 시 저장/삭제) ----
       const favoriteBtn = document.getElementById('favoriteBtn');
       const favoriteStar = document.getElementById('favoriteStar');
       const favoriteText = document.getElementById('favoriteText');
