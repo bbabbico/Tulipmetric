@@ -390,14 +390,6 @@
         return null;
       }
 
-      // ✅ Spring Security CSRF 메타가 있으면 자동 첨부 (없으면 그냥 진행)
-      function getCsrfHeader() {
-        const token = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
-        const headerName = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
-        if (token && headerName) return { [headerName]: token };
-        return {};
-      }
-
       async function postWish(url, id) {
         const body = new URLSearchParams();
         body.set('id', id); // ✅ 요청 바디는 form 포맷 + id 키
@@ -407,7 +399,6 @@
           credentials: 'same-origin',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-            ...getCsrfHeader(),
           },
           body: body.toString(),
         });
