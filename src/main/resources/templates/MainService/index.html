@@ -131,7 +131,7 @@
         <th:block th:each="m : ${market}">
           <th:block th:if="${m.trending}">
             <div class="relative industry-card"
-                 th:with="isFavorite=${wishlist != null and (wishlist.?[marketid.id == m.id]).size() > 0}"
+                 th:with="isFavorite=${wishlist != null and !(wishlist.?[marketid?.id == #vars.m.id]).isEmpty()}"
                  th:attr="data-id=${m.id},data-name=${m.name},data-status=${m.marketStatus},data-growth=${m.growthRate30d},data-is-favorite=${isFavorite}">
               <!-- Favorite Button -->
               <button type="button"
@@ -226,7 +226,7 @@
         <th:block th:each="m : ${market}">
           <th:block th:unless="${m.trending}">
             <div class="relative industry-card"
-                 th:with="isFavorite=${wishlist != null and (wishlist.?[marketid.id == m.id]).size() > 0}"
+                 th:with="isFavorite=${wishlist != null and !(wishlist.?[marketid?.id == #vars.m.id]).isEmpty()}"
                  th:attr="data-id=${m.id},data-name=${m.name},data-status=${m.marketStatus},data-growth=${m.growthRate30d},data-is-favorite=${isFavorite}">
               <!-- Favorite Button -->
               <button type="button"
