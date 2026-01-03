@@ -1,11 +1,14 @@
 package project7.tulipmetric.MainService.Index;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import project7.tulipmetric.domain.Company.Company;
 import project7.tulipmetric.domain.Company.CompanyRepoitory;
 import project7.tulipmetric.domain.Market.Market;
 import project7.tulipmetric.domain.Market.MarketRepository;
+import project7.tulipmetric.domain.WishMarket.WishMarketRepository;
+import project7.tulipmetric.domain.WishMarket.Wishmarket;
 
 import java.util.List;
 
@@ -14,14 +17,20 @@ import java.util.List;
 public class IndexService {
     private final MarketRepository marketRepository;
     private final CompanyRepoitory companyRepoitory;
+    private final WishMarketRepository wishMarketRepository;
+
+    public List<Wishmarket> IndexWishMarketFindByLoginId(Jwt jwt) {
+        if (jwt==null) {
+            return null;
+        }
+        return wishMarketRepository.findAllByLoginid(jwt.getSubject());
+    }
 
     public List<Market> IndexMarketLoad(){
-
         return marketRepository.findAll();
     }
 
     public Market IndexMarketLoadById(Long id){
-
         return marketRepository.findById(id).get();
     }
 

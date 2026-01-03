@@ -18,7 +18,8 @@ public class IndexController {
     private final WishMarketService wishMarketService;
 
     @GetMapping("/")
-    public String index(Model model) {
+    public String index(@AuthenticationPrincipal Jwt jwt,Model model) {
+        model.addAttribute("wishlist",indexService.IndexWishMarketFindByLoginId(jwt));
         model.addAttribute("market",indexService.IndexMarketLoad());
         return "/MainService/index";
     }
