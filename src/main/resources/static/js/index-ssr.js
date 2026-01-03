@@ -1,9 +1,8 @@
 // SSR(Thymeleaf) 버전: 카드 생성은 서버가 하고, JS는 '상태/검색/즐겨찾기/가이드'만 담당
 
-//TODO : 로그인한 회원이면, 로컬스토리지 사용 안하고 Db 요청으로 즐겨찾기 목록 최신화, 회원 아니면 로컬스토리지 사용.
-
 // State
-let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+let favorites = [];
+let useLocalFavorites = true;
 let searchQuery = '';
 let statusFilter = 'all';
 
@@ -11,7 +10,31 @@ function $(sel, root = document) { return root.querySelector(sel); }
 function $$(sel, root = document) { return Array.from(root.querySelectorAll(sel)); }
 
 function saveFavorites() {
+  if (!useLocalFavorites) return;
   localStorage.setItem('favorites', JSON.stringify(favorites));
+}
+
+function hasServerWishlist() {
+  const body = document.body;
+  if (!body) return false;
+  return body.dataset.hasServerWishlist === 'true';
+}
+
+function loadServerFavorites() {
+  return getAllMasterCards()
+    .filter(card => card.dataset.isFavorite === 'true')
+    .map(card => card.dataset.id);
+}
+
+function initializeFavorites() {
+  useLocalFavorites = !hasServerWishlist();
+
+  if (useLocalFavorites) {
+    favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    return;
+  }
+
+  favorites = loadServerFavorites();
 }
 
 // 기존 index.js 로직(평균 성장률 기반 시장 온도) 그대로 사용 (industries -> DOM 카드 데이터로 대체)
@@ -92,13 +115,37 @@ function setFavoriteButtonUI(btn, isFav) {
   svg.setAttribute('fill', isFav ? 'currentColor' : 'none');
 }
 
-function toggleFavorite(id) {
+async function toggleFavorite(id) {
   const idx = favorites.indexOf(id);
-  if (idx > -1) favorites.splice(idx, 1);
-  else favorites.push(id);
+  const isFav = idx > -1;
 
-  saveFavorites();
-  renderAll();
+  if (useLocalFavorites) {
+    if (isFav) favorites.splice(idx, 1);
+    else favorites.push(id);
+
+    saveFavorites();
+    renderAll();
+    return;
+  }
+
+  const url = isFav ? '/deletwishmarket' : '/savewishmarket';
+  const body = new URLSearchParams();
+  body.set('id', id);
+
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+      body
+    });
+
+    if (isFav) favorites.splice(idx, 1);
+    else favorites.push(id);
+
+    renderAll();
+  } catch (err) {
+    console.error('즐겨찾기 요청 실패', err);
+  }
 }
 
 // 카드 내부의 튤립/배지 텍스트를 클라이언트에서 채움 (tulip.js 함수 사용)
@@ -305,6 +352,8 @@ function renderTulipGuide() {
 document.addEventListener('DOMContentLoaded', () => {
   const searchInput = $('#searchInput');
   const filterSelect = $('#statusFilter');
+
+  initializeFavorites();
 
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
