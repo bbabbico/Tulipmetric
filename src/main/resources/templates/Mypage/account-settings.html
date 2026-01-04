@@ -66,7 +66,7 @@
       <h3 class="text-slate-900 mb-6">프로필 정보</h3>
 
       <!-- Form -->
-      <div class="space-y-6">
+      <form action="/ddd" method="post" class="space-y-6">
         <div>
           <label for="nickname" class="block text-sm text-slate-700 mb-2">별명</label>
           <input 
@@ -92,26 +92,28 @@
         </div>
 
         <div class="flex justify-end">
-          <button class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
             변경사항 저장
           </button>
         </div>
-      </div>
+      </form>
     </div>
 
     <!-- Password Settings -->
     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
       <h3 class="text-slate-900 mb-6">비밀번호 변경</h3>
-      <form action="/ddd" method="post">
+      <form action="/ppp" method="post" onsubmit="return handlePasswordSubmit(event)">
         <div class="space-y-6">
           <div>
             <label for="currentPassword" class="block text-sm text-slate-700 mb-2">현재 비밀번호</label>
             <input
               type="password"
               id="currentPassword"
+              name="currentPassword"
               minlength="8"
               required
               placeholder="현재 비밀번호를 입력하세요"
+              autocomplete="current-password"
               class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -121,9 +123,11 @@
             <input
               type="password"
               id="newPassword"
+              name="newPassword"
               minlength="8"
               required
               placeholder="새 비밀번호를 입력하세요"
+              autocomplete="new-password"
               class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <p class="text-sm text-slate-500 mt-2">최소 8자 이상, 영문/숫자/특수문자 포함</p>
@@ -137,12 +141,14 @@
               minlength="8"
               required
               placeholder="새 비밀번호를 다시 입력하세요"
+              autocomplete="new-password"
               class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
+            <p id="passwordMatchMessage" class="text-sm mt-2"></p>
           </div>
 
           <div class="flex justify-end">
-            <button class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
               비밀번호 변경
             </button>
           </div>
@@ -153,7 +159,7 @@
 
 
     <!-- Danger Zone -->
-    <form action="dddd" method="post" class="bg-white rounded-xl shadow-sm border border-red-200 p-6">
+    <form action="/mmm" method="post" class="bg-white rounded-xl shadow-sm border border-red-200 p-6">
       <h3 class="text-red-600 mb-4">위험 구역</h3>
       <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
         <p class="text-sm text-red-700">계정을 삭제하면 모든 데이터가 영구적으로 삭제되며 복구할 수 없습니다.</p>
@@ -163,5 +169,54 @@
       </button>
     </form>
   </div>
+  <script>
+    function setPasswordMessage(ok, message) {
+      const msg = document.getElementById('passwordMatchMessage');
+      const newPw = document.getElementById('newPassword');
+      const confirmPw = document.getElementById('confirmPassword');
+
+      if (!msg || !newPw || !confirmPw) return;
+
+      msg.textContent = message || '';
+      msg.className = 'text-sm mt-2 ' + (ok ? 'text-slate-500' : 'text-red-600');
+
+      const validClasses = ['border-slate-300', 'focus:ring-blue-500'];
+      const invalidClasses = ['border-red-400', 'focus:ring-red-500'];
+
+      [newPw, confirmPw].forEach((input) => {
+        if (ok) {
+          input.classList.remove(...invalidClasses);
+          input.classList.add(...validClasses);
+        } else {
+          input.classList.remove(...validClasses);
+          input.classList.add(...invalidClasses);
+        }
+      });
+    }
+
+    function handlePasswordSubmit(event) {
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (newPassword !== confirmPassword) {
+        setPasswordMessage(false, '새 비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+        event.preventDefault();
+        return false;
+      }
+
+      setPasswordMessage(true, '');
+      return true;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const newPwInput = document.getElementById('newPassword');
+      const confirmPwInput = document.getElementById('confirmPassword');
+
+      const resetMessage = () => setPasswordMessage(true, '');
+
+      newPwInput.addEventListener('input', resetMessage);
+      confirmPwInput.addEventListener('input', resetMessage);
+    });
+  </script>
 </body>
 </html>
