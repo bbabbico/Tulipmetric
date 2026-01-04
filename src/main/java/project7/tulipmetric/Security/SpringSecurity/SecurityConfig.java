@@ -23,6 +23,7 @@ import project7.tulipmetric.Security.SpringSecurity.JWT.*;
 import project7.tulipmetric.Security.SpringSecurity.OAuth2.CookieOAuth2AuthorizationRequestRepository;
 import project7.tulipmetric.Security.SpringSecurity.OAuth2.CustomOAuth2UserService;
 import project7.tulipmetric.Security.SpringSecurity.OAuth2.OAuth2SuccessHandler;
+import project7.tulipmetric.domain.Member.Role;
 
 @Configuration
 @EnableWebSecurity
@@ -74,6 +75,8 @@ public class SecurityConfig {
         // 폼 로그인 JWT 발급 필터
         JwtLoginFilter jwtLoginFilter = new JwtLoginFilter(authenticationManager, tokenProvider);
 
+        String[] userAndLootRoles = {Role.USER.name(), Role.LOOT.name()};
+
         http
                 .csrf(AbstractHttpConfigurer::disable)
 
@@ -85,11 +88,11 @@ public class SecurityConfig {
 
                                 .requestMatchers(HttpMethod.GET, "/join", "/login","/loginidcheck","/nicknamecheck").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/join", "/signup", "/login").permitAll()
-                                .requestMatchers("/mypage","/activity","/accountsettings","/saved").authenticated() //마이 페이지
-                                .requestMatchers("/createpost","/deletepost","/editpost").authenticated() //Post , Comment , Creat/Delete/Edit
-                                .requestMatchers("/createcomment","/deletecomment","/editcomment").authenticated()
-                                .requestMatchers(HttpMethod.POST, "/likeAction", "/unlikeAction").authenticated()
-                                .requestMatchers(HttpMethod.POST, "/savewishmarket", "/deletwishmarket").authenticated()
+                                .requestMatchers("/mypage","/activity","/accountsettings","/saved").hasAnyRole(userAndLootRoles) //마이 페이지
+                                .requestMatchers("/createpost","/deletepost","/editpost").hasAnyRole(userAndLootRoles) //Post , Comment , Creat/Delete/Edit
+                                .requestMatchers("/createcomment","/deletecomment","/editcomment").hasAnyRole(userAndLootRoles)
+                                .requestMatchers(HttpMethod.POST, "/likeAction", "/unlikeAction").hasAnyRole(userAndLootRoles)
+                                .requestMatchers(HttpMethod.POST, "/savewishmarket", "/deletwishmarket").hasAnyRole(userAndLootRoles)
                                 .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
 
 //                                .anyRequest().authenticated() // 운영 기준
@@ -145,10 +148,9 @@ public class SecurityConfig {
 
     @Bean
     RoleHierarchy roleHierarchy(){
-        // "ROLE_ADMIN > ROLE_MANAGER"는 ROLE_ADMIN이 ROLE_MANAGER의 권한을 포함함을 의미.
+        // "ROLE_LOOT > ROLE_USER"는 ROLE_LOOT이 ROLE_USER의 권한을 포함함을 의미.
         // 줄 바꿈 문자(\n)를 사용하여 여러 계층을 정의가능.
-        String roleHierarchyStringRepresentation = "ADMIN > USER\n" +
-                "ROLE_MANAGER > ROLE_USER";
+        String roleHierarchyStringRepresentation = "ROLE_LOOT > ROLE_USER";
 
         // 정적 팩토리 메서드 fromHierarchy()를 사용하여 RoleHierarchyImpl 인스턴스를 생성.
         return RoleHierarchyImpl.fromHierarchy(roleHierarchyStringRepresentation);
