@@ -2,11 +2,13 @@ package project7.tulipmetric.Mypage;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.server.ResponseStatusException;
 import project7.tulipmetric.MainService.Community.Service.CommentService;
 import project7.tulipmetric.MainService.Community.Service.LikeService;
 import project7.tulipmetric.MainService.Community.Service.PostService;
@@ -38,20 +40,19 @@ public class MypageController {
         return "/Mypage/mypage";
     }
 
-    @GetMapping("/accountsettings")
-    public String accountSettings(){
+    @GetMapping("/accountsettings") //TODO : MemberService 수정해야함.
+    public String accountSettings(@AuthenticationPrincipal Jwt jwt,Model model){
+        model.addAttribute("member",memberService.findMemberByJwt(jwt).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.")));
         return "/Mypage/account-settings";
     }
 
-    @GetMapping("/activity") // TODO : 내가 작성한 게시글 , 댓글, 좋아요한 게시글 표시하는 페이지
+    @GetMapping("/activity")
     public String activity(@AuthenticationPrincipal Jwt jwt,Model model){
-
         model.addAttribute("likes",mypageService.LoadPostsByLike(jwt));
         model.addAttribute("posts",mypageService.LoadPostsByNickname(jwt));
         model.addAttribute("comments",mypageService.LoadPostsByComment(jwt));
 
         model.addAttribute("commentcount",commentService.CommentCountFindJwt(jwt));
-
         return "/Mypage/activity";
     }
 }
