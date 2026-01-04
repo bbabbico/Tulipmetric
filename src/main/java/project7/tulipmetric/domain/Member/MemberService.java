@@ -3,21 +3,38 @@ package project7.tulipmetric.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+import project7.tulipmetric.domain.Member.Member;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
 
-    public String NicknameFindByJwt(Jwt jwt){
-        return memberRepository.findByNickname(jwt.getSubject()).getNickname();
+    public Optional<String> NicknameFindByJwt(Jwt jwt){
+        if (jwt == null || jwt.getSubject() == null) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(memberRepository.findByLoginid(jwt.getSubject()))
+                .map(Member::getNickname);
     }
 
-    public String FindByJwtLoginId(Jwt jwt){
-        return memberRepository.findByLoginid(jwt.getSubject()).getLoginid();
+    public Optional<String> FindByJwtLoginId(Jwt jwt){
+        if (jwt == null || jwt.getSubject() == null) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(memberRepository.findByLoginid(jwt.getSubject()))
+                .map(Member::getLoginid);
     }
 
-    public Member FindByLoginIdMember(String loginid){
-        return memberRepository.findByLoginid(loginid);
+    public Optional<Member> FindByLoginIdMember(String loginid){
+        if (loginid == null) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(memberRepository.findByLoginid(loginid));
     }
 }
