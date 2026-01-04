@@ -3,7 +3,9 @@ package project7.tulipmetric.MainService.Community.Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import project7.tulipmetric.domain.Post.Comment.CommentRepository;
 import project7.tulipmetric.domain.Post.Like.LikeRepository;
 import project7.tulipmetric.domain.Post.Post.Post;
@@ -38,18 +40,25 @@ public class PostService {
 
     @Transactional
     public void DeletePost(Long id){
-        likeRepository.deleteAllByPostid(postRepository.findById(id).get());
-        commentRepository.deleteAllByPostid(postRepository.findById(id).get());
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."));
+
+        likeRepository.deleteAllByPostid(post);
+        commentRepository.deleteAllByPostid(post);
         postRepository.deleteById(id);
     }
 
     @Transactional
     public String NickNameFindByPostid(Long id){
-        return postRepository.findById(id).get().getNickname();}
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."));
+        return post.getNickname();
+    }
 
     @Transactional
     public Post FindByPostId(Long id){
-        return postRepository.findById(id).get();
+        return postRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."));
     }
 
     @Transactional

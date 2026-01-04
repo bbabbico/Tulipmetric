@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import project7.tulipmetric.MainService.Community.Service.WishMarketService;
 
 @RestController
@@ -18,13 +19,21 @@ public class WishMarketController {
 
     @PostMapping("/savewishmarket")
     public ResponseEntity<Integer> saveWishMarket(@AuthenticationPrincipal Jwt jwt, @RequestParam Long id) {
-        wishMarketService.saveWishMarket(jwt,id);
-        return new ResponseEntity<>(0, HttpStatus.OK);
+        try {
+            wishMarketService.saveWishMarket(jwt, id);
+            return new ResponseEntity<>(0, HttpStatus.OK);
+        } catch (ResponseStatusException exception) {
+            return ResponseEntity.status(exception.getStatusCode()).build();
+        }
     }
 
     @PostMapping("/deletwishmarket")
     public ResponseEntity<Integer> deletWishMarket(@AuthenticationPrincipal Jwt jwt, @RequestParam Long id) {
-        wishMarketService.deletWishMarket(jwt,id);
-        return new ResponseEntity<>(0, HttpStatus.OK);
+        try {
+            wishMarketService.deletWishMarket(jwt, id);
+            return new ResponseEntity<>(0, HttpStatus.OK);
+        } catch (ResponseStatusException exception) {
+            return ResponseEntity.status(exception.getStatusCode()).build();
+        }
     }
 }
