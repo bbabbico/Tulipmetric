@@ -55,4 +55,9 @@ public class CommentService {
     public List<Comment> FindAllByPostid(Post post){
         return commentRepository.findAllByPostid(post);
     }
+
+    @Transactional
+    public Comment FindById(Long id) {
+        return commentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
+    }
 }

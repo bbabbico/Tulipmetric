@@ -125,7 +125,7 @@
         </button>
       </form>
 
-      <form th:if="${host}" action="/deletepost" method="post">
+      <form th:if="${canDeletePost}" action="/deletepost" method="post">
         <input type="hidden" name="postid" th:value="${post.id}"/>
         <button
                 class="flex items-center gap-2 px-6 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
@@ -213,10 +213,11 @@
             <span class="text-sm text-slate-500" th:text="${comment.dateminute}">날짜</span>
 
 
-            <!-- 로그인 사용자 nickname == comment.nickname 이면 노출 -->
-            <span th:if="${nickname != null and nickname == comment.nickname}"
+            <!-- 삭제는 LOOT 권한 허용, 수정은 작성자만 -->
+            <span th:if="${(nickname != null and nickname == comment.nickname) or isLoot}"
                   class="ml-auto inline-flex items-center gap-2">
               <button type="button"
+                      th:if="${nickname != null and nickname == comment.nickname}"
                       class="text-xs text-blue-600 hover:underline"
                       th:attr="data-comment-id=${comment.id}"
                       data-action="edit"
