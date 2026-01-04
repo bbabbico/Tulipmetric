@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 import project7.tulipmetric.domain.Market.Market;
 
 @Entity
+@Table(name = "wishmarket",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_wishmarket_loginid_marketid", columnNames = {"loginid", "marketid"})
+        })
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor

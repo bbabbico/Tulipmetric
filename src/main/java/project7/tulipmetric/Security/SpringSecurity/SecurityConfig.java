@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
@@ -16,7 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import project7.tulipmetric.Security.SpringSecurity.JWT.*;
 import project7.tulipmetric.Security.SpringSecurity.OAuth2.CookieOAuth2AuthorizationRequestRepository;
@@ -88,6 +89,7 @@ public class SecurityConfig {
                                 .requestMatchers("/createpost","/deletepost","/editpost").authenticated() //Post , Comment , Creat/Delete/Edit
                                 .requestMatchers("/createcomment","/deletecomment","/editcomment").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/likeAction", "/unlikeAction").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/savewishmarket", "/deletwishmarket").authenticated()
                                 .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
 
 //                                .anyRequest().authenticated() // 운영 기준
@@ -129,7 +131,7 @@ public class SecurityConfig {
 
                 // 인증 실패시 401 내려주기(페이지가 아니라 API면 특히 중요)
                 .exceptionHandling(e -> e
-                        .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")) //로그인 안했는데 로그인 필요한 페이지 접근하면 = 로그인 페이지로 이동
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)) //로그인 안했는데 로그인 필요한 페이지 접근하면 = 로그인 페이지로 이동
                         .accessDeniedHandler((req, res, ex) -> res.sendError(403))
                 );
 
