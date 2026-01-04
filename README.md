@@ -10,6 +10,11 @@ figma
 - 로그인을 하지 않아도 메인 페이지에서 산업군을 즐겨찾기가 가능하고 컴퓨터 껐다 켜도 로컬 스토리지를 활용해 즐겨찾기가 유지됨.
 - 로그인을 하면 커뮤니티 사이트 게시글 게시, 댓글 등록등의 활동이 가능하며, 즐겨찾기한 산업군을 외부 컴퓨터 에서도 접근가능함.
 
+## 환경 설정
+1. `src/main/resources/application-example.properties`를 `application.properties`로 복사한 뒤, 데이터베이스 비밀번호, OAuth 클라이언트 ID/Secret, JWT 시크릿 등 민감한 값을 채웁니다.
+2. 민감 정보는 환경 변수나 `.env`/`.env.properties` 파일을 통해 주입할 수 있으며, `spring.config.import=optional:file:.env[.properties]` 설정으로 외부 파일 로딩을 허용합니다.
+3. 이 레포지토리에서 노출된 이전 자격 증명(DB 비밀번호, Google/Naver OAuth 클라이언트, JWT 시크릿)은 모두 폐기/재발급하고, 관련 보안 이슈를 추적하세요.
+
 ### 개발 환경
 - java 17
 - springframework 4.0.1
