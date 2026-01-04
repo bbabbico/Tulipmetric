@@ -34,19 +34,19 @@ public class CommunityController {
     private final CommentService commentService;
     private final LikeService likeService;
 
-    @GetMapping("/community")
+    @GetMapping("/community") // 커뮤니티 메인 페이지 GET
     public String community(Model model){
         model.addAttribute("posts",postService.FindAll());
         return "/MainService/community/community";
     }
 
-    @GetMapping("/discussion-detail")
+    @GetMapping("/discussion-detail") // 커뮤니티 게시글 상세 페이지 GET
     public String discussion_detail(@RequestParam Long id,@AuthenticationPrincipal Jwt jwt ,Model model){
         Post post = postService.FindByPostId(id);
         List<Comment> comments = commentService.FindAllByPostid(post);
         Boolean Check = likeService.CheckLike(jwt,post);
         String nickname = memberService.NicknameFindByJwt(jwt).orElse(null);
-        boolean isHost = nickname != null && post.getNickname().equals(nickname);
+        boolean isHost = post.getNickname().equals(nickname);
         boolean isLoot = memberService.RoleFindByJwt(jwt).map(role -> role == Role.LOOT).orElse(false);
 
         model.addAttribute("host", isHost); //작성자 본인인지 확인
@@ -91,7 +91,7 @@ public class CommunityController {
         return "/MainService/community/editpost";
     }
 
-    @PostMapping("/editpost") // 수정 로직
+    @PostMapping("/editpost") // 게시글 수정
     public String EditPost(@ModelAttribute PostDto postDto, @RequestParam Long postid, @AuthenticationPrincipal Jwt jwt){
         Post post = postService.FindByPostId(postid);
         String nickname = memberService.NicknameFindByJwt(jwt)
@@ -103,7 +103,7 @@ public class CommunityController {
         return "redirect:/discussion-detail?id="+postid;
     }
 
-    @PostMapping("/deletepost")
+    @PostMapping("/deletepost") // 게시글 삭제
     public String DeletePost(@RequestParam Long postid, @AuthenticationPrincipal Jwt jwt){
         Post post = postService.FindByPostId(postid);
         String nickname = memberService.NicknameFindByJwt(jwt)
@@ -117,7 +117,7 @@ public class CommunityController {
     }
 
     @ResponseBody
-    @PostMapping("/likeAction")
+    @PostMapping("/likeAction") // 좋아요 등록
     public ResponseEntity<Boolean> LikeAction(@RequestParam Long id, @AuthenticationPrincipal Jwt jwt){
         LikeService.LikeActionResult result = likeService.PostLikeAction(jwt,id);
         return switch (result) {
@@ -130,7 +130,7 @@ public class CommunityController {
     }
 
     @ResponseBody
-    @PostMapping("/unlikeAction")
+    @PostMapping("/unlikeAction") // 좋아요 취소
     public ResponseEntity<Boolean> UnLikeAction(@RequestParam Long id, @AuthenticationPrincipal Jwt jwt){
         LikeService.LikeActionResult result = likeService.PostUnLikeAction(jwt,id);
         return switch (result) {
@@ -144,7 +144,7 @@ public class CommunityController {
 
     //////////////////////////////////post
 
-    @PostMapping("/createcomment")
+    @PostMapping("/createcomment") // 댓글 등록
     public String SaveComment(@AuthenticationPrincipal Jwt jwt, CommentDto commentDto){
         String nickname = memberService.NicknameFindByJwt(jwt)
                 .orElseThrow(() -> new IllegalArgumentException("인증된 사용자만 댓글을 작성할 수 있습니다."));
@@ -156,7 +156,7 @@ public class CommunityController {
         return "redirect:/discussion-detail?id="+commentDto.postid();
     }
 
-    @PostMapping("/editcomment")
+    @PostMapping("/editcomment") // 댓글 수정
     public ResponseEntity<Integer> EditComment(@AuthenticationPrincipal Jwt jwt, Long id , String content){
         Comment comment = commentService.FindById(id);
         String nickname = memberService.NicknameFindByJwt(jwt)
@@ -168,7 +168,7 @@ public class CommunityController {
         return new ResponseEntity<>(0, HttpStatus.OK);
     }
 
-    @PostMapping("/deletecomment")
+    @PostMapping("/deletecomment") // 댓글 삭제
     public ResponseEntity<Integer> DeleteComment(@AuthenticationPrincipal Jwt jwt, Long id){
         Comment comment = commentService.FindById(id);
         String nickname = memberService.NicknameFindByJwt(jwt)
