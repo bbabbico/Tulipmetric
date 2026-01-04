@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import project7.tulipmetric.MainService.Community.Service.CommentService;
 import project7.tulipmetric.MainService.Community.Service.LikeService;
 import project7.tulipmetric.domain.Member.MemberService;
@@ -44,12 +45,14 @@ public class CommunityController {
         Post post = postService.FindByPostId(id);
         List<Comment> comments = commentService.FindAllByPostid(post);
         Boolean Check = likeService.CheckLike(jwt,post);
-        memberService.NicknameFindByJwt(jwt).ifPresent(nickname -> {
-            if (post.getNickname().equals(nickname)) { //작성자 본인인지 확인
-                model.addAttribute("host",true);
-            }
-            model.addAttribute("nickname",nickname); //작성자 닉네임
-        });
+        String nickname = memberService.NicknameFindByJwt(jwt).orElse(null);
+        boolean isHost = nickname != null && post.getNickname().equals(nickname);
+        boolean isLoot = memberService.RoleFindByJwt(jwt).map(role -> role == Role.LOOT).orElse(false);
+
+        model.addAttribute("host", isHost); //작성자 본인인지 확인
+        model.addAttribute("nickname",nickname); //작성자 닉네임
+        model.addAttribute("isLoot", isLoot);
+        model.addAttribute("canDeletePost", isHost || isLoot);
         model.addAttribute("check",Check); // 사용자 좋아요/북마크 여부
         model.addAttribute("post",post); //게시글 정보
         model.addAttribute("comments",comments); // 댓글 정보
@@ -75,8 +78,13 @@ public class CommunityController {
     }
 
     @GetMapping("/editpost") // 수정 페이지 Get
-    public String GetEditPost(Model model,@RequestParam Long postid){
+    public String GetEditPost(Model model,@RequestParam Long postid, @AuthenticationPrincipal Jwt jwt){
         Post post = postService.FindByPostId(postid);
+        String nickname = memberService.NicknameFindByJwt(jwt)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+        if (!post.getNickname().equals(nickname)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
         model.addAttribute("postDto",new PostDto(post.getCategory(),post.getIndustryTag(),post.getTitle(),post.getContent()));
         model.addAttribute("postid",postid);
 
@@ -84,14 +92,26 @@ public class CommunityController {
     }
 
     @PostMapping("/editpost") // 수정 로직
-    public String EditPost(@ModelAttribute PostDto postDto, @RequestParam Long postid){
+    public String EditPost(@ModelAttribute PostDto postDto, @RequestParam Long postid, @AuthenticationPrincipal Jwt jwt){
         Post post = postService.FindByPostId(postid);
+        String nickname = memberService.NicknameFindByJwt(jwt)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+        if (!post.getNickname().equals(nickname)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
         postService.EditPost(post,postDto);
         return "redirect:/discussion-detail?id="+postid;
     }
 
     @PostMapping("/deletepost")
-    public String DeletePost(@RequestParam Long postid){
+    public String DeletePost(@RequestParam Long postid, @AuthenticationPrincipal Jwt jwt){
+        Post post = postService.FindByPostId(postid);
+        String nickname = memberService.NicknameFindByJwt(jwt)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+        boolean isLoot = memberService.RoleFindByJwt(jwt).map(role -> role == Role.LOOT).orElse(false);
+        if (!isLoot && !post.getNickname().equals(nickname)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
         postService.DeletePost(postid);
         return "redirect:/community";
     }
@@ -137,13 +157,26 @@ public class CommunityController {
     }
 
     @PostMapping("/editcomment")
-    public ResponseEntity<Integer> EditComment(Long id , String content){
+    public ResponseEntity<Integer> EditComment(@AuthenticationPrincipal Jwt jwt, Long id , String content){
+        Comment comment = commentService.FindById(id);
+        String nickname = memberService.NicknameFindByJwt(jwt)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+        if (!comment.getNickname().equals(nickname)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
         commentService.EditComment(id,content);
         return new ResponseEntity<>(0, HttpStatus.OK);
     }
 
     @PostMapping("/deletecomment")
-    public ResponseEntity<Integer> DeleteComment(Long id){
+    public ResponseEntity<Integer> DeleteComment(@AuthenticationPrincipal Jwt jwt, Long id){
+        Comment comment = commentService.FindById(id);
+        String nickname = memberService.NicknameFindByJwt(jwt)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+        boolean isLoot = memberService.RoleFindByJwt(jwt).map(role -> role == Role.LOOT).orElse(false);
+        if (!isLoot && !comment.getNickname().equals(nickname)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
         commentService.DeleteCommentById(id);
         return new ResponseEntity<>(0, HttpStatus.OK);
     }
