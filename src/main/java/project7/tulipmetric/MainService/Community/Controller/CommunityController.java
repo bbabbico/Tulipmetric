@@ -99,15 +99,27 @@ public class CommunityController {
     @ResponseBody
     @PostMapping("/likeAction")
     public ResponseEntity<Boolean> LikeAction(@RequestParam Long id, @AuthenticationPrincipal Jwt jwt){
-        likeService.PostLikeAction(jwt,id);
-        return new ResponseEntity<>(true, HttpStatus.OK);
+        LikeService.LikeActionResult result = likeService.PostLikeAction(jwt,id);
+        return switch (result) {
+            case SUCCESS -> new ResponseEntity<>(true, HttpStatus.OK);
+            case UNAUTHORIZED -> new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+            case POST_NOT_FOUND -> new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+            case DUPLICATE_LIKE -> new ResponseEntity<>(false, HttpStatus.CONFLICT);
+            default -> new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        };
     }
 
     @ResponseBody
     @PostMapping("/unlikeAction")
     public ResponseEntity<Boolean> UnLikeAction(@RequestParam Long id, @AuthenticationPrincipal Jwt jwt){
-        likeService.PostUnLikeAction(jwt,id);
-        return new ResponseEntity<>(true, HttpStatus.OK);
+        LikeService.LikeActionResult result = likeService.PostUnLikeAction(jwt,id);
+        return switch (result) {
+            case SUCCESS -> new ResponseEntity<>(true, HttpStatus.OK);
+            case UNAUTHORIZED -> new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+            case POST_NOT_FOUND -> new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+            case LIKE_NOT_FOUND -> new ResponseEntity<>(false, HttpStatus.CONFLICT);
+            default -> new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        };
     }
 
     //////////////////////////////////post
