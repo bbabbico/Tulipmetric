@@ -3,11 +3,14 @@ package project7.tulipmetric.Mypage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import project7.tulipmetric.MainService.Community.Service.CommentService;
 import project7.tulipmetric.MainService.Community.Service.LikeService;
@@ -54,5 +57,34 @@ public class MypageController {
 
         model.addAttribute("commentcount",commentService.CommentCountFindJwt(jwt));
         return "/Mypage/activity";
+    }
+
+    @PostMapping("/editprofile")
+    public String editProfile(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestParam(required = false) String nickname,
+            @RequestParam(required = false) String email,
+            Model model
+    ) {
+        memberService.updateProfile(jwt, nickname, email);
+        model.addAttribute("member", memberService.findMemberByJwt(jwt)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.")));
+        return "redirect:/accountsettings";
+    }
+
+    @PostMapping("/editpassword")
+    public String editPassword(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestParam String currentPassword,
+            @RequestParam String newPassword
+    ) {
+        memberService.updatePassword(jwt, currentPassword, newPassword);
+        return "redirect:/accountsettings";
+    }
+
+    @PostMapping("/deletprofile")
+    public ResponseEntity<Void> deleteProfile(@AuthenticationPrincipal Jwt jwt) {
+        memberService.deleteByJwt(jwt);
+        return ResponseEntity.noContent().build();
     }
 }
