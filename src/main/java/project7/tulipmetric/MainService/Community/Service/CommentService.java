@@ -3,7 +3,9 @@ package project7.tulipmetric.MainService.Community.Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+import project7.tulipmetric.domain.Member.MemberRepository;
 import project7.tulipmetric.domain.Post.Comment.Comment;
 import project7.tulipmetric.domain.Post.Comment.CommentRepository;
 import project7.tulipmetric.domain.Post.Post.Post;
@@ -18,6 +20,7 @@ import java.util.Optional;
 public class CommentService {
     public final CommentRepository commentRepository;
     public final PostRepository postRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public void SaveComment(Comment comment){
@@ -54,6 +57,10 @@ public class CommentService {
 
     public List<Comment> FindAllByPostid(Post post){
         return commentRepository.findAllByPostid(post);
+    }
+
+    public int CommentCountFindJwt(Jwt jwt){
+       return commentRepository.findAllByNickname(memberRepository.findByLoginid(jwt.getSubject()).getNickname()).size();
     }
 
     @Transactional

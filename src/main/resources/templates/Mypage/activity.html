@@ -65,12 +65,12 @@
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-slate-500 mb-1">즐겨찾기 활동</p>
-            <p class="text-3xl text-yellow-600" style="font-weight: 600;" id="favoriteActivityCount">0</p>
+            <p class="text-sm text-slate-500 mb-1">좋아요한 게시글</p>
+            <p class="text-3xl" style="font-weight: 600;" th:text="${likes.size()}" id="favoriteActivityCount">0</p>
           </div>
-          <div class="w-12 h-12 rounded-lg bg-yellow-100 flex items-center justify-center">
-            <svg class="w-6 h-6 text-yellow-600 fill-current" viewBox="0 0 24 24">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          <div class="w-12 h-12 rounded-lg text-rose-600 bg-yellow-100 flex items-center justify-center">
+            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+              <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
             </svg>
           </div>
         </div>
@@ -80,7 +80,7 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm text-slate-500 mb-1">작성한 글</p>
-            <p class="text-3xl text-blue-600" style="font-weight: 600;">0</p>
+            <p class="text-3xl text-blue-600" style="font-weight: 600;" th:text="${posts.size()}">0</p>
           </div>
           <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
             <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,7 +94,7 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm text-slate-500 mb-1">작성한 댓글</p>
-            <p class="text-3xl text-green-600" style="font-weight: 600;">0</p>
+            <p class="text-3xl text-green-600" style="font-weight: 600;" th:text="${commentcount}">0</p>
           </div>
           <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
             <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,7 +147,6 @@
     </div>
   </div>
 
-<script src="/js/data.js"></script>
   <script>
     let currentFilter = 'all';
     let activityData = [];

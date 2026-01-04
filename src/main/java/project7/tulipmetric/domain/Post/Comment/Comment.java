@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import project7.tulipmetric.domain.Post.Post.Post;
 
+import java.util.Objects;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,6 +31,18 @@ public class Comment {
 
     @Column(length = 61 , nullable = false)
     private String dateminute; // 작성 년도/월/일/시간/분
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Comment comment = (Comment) o;
+        return Objects.equals(id, comment.id) && Objects.equals(postid, comment.postid) && Objects.equals(nickname, comment.nickname) && Objects.equals(content, comment.content) && Objects.equals(dateminute, comment.dateminute);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, postid, nickname, content, dateminute);
+    }
 
     @Override
     public String toString() {

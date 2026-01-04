@@ -22,15 +22,17 @@ public class MypageController {
     private final PostService postService;
     private final CommentService commentService;
     private final LikeService likeService;
+    private final MypageService mypageService;
 
     @GetMapping("/mypage")
     public String mypage(@AuthenticationPrincipal Jwt jwt , Model model) {
         Member member = memberService.FindByLoginIdMember(jwt.getSubject())
                 .orElseThrow(() -> new IllegalArgumentException("인증된 사용자만 접근할 수 있습니다."));
         log.info("회원인증 완료 {}",member.toString());
+
         log.info("{}",likeService.findAllByLoginid(member.getLoginid()).size());
         model.addAttribute("likecount",likeService.findAllByLoginid(member.getLoginid()).size());
-        model.addAttribute("commentcount",commentService.FindAllByNickname(member.getNickname()).size());
+        model.addAttribute("commentcount",commentService.CommentCountFindJwt(jwt));
         model.addAttribute("postcount",postService.FindAllByNickname(member.getNickname()).size());
         model.addAttribute("member", member);
         return "/Mypage/mypage";
@@ -41,13 +43,15 @@ public class MypageController {
         return "/Mypage/account-settings";
     }
 
-    @GetMapping("/activity")
-    public String activity(){
-        return "/Mypage/activity";
-    }
+    @GetMapping("/activity") // TODO : 내가 작성한 게시글 , 댓글, 좋아요한 게시글 표시하는 페이지
+    public String activity(@AuthenticationPrincipal Jwt jwt,Model model){
 
-    @GetMapping("/saved")
-    public String saved(){
-        return "/Mypage/saved";
+        model.addAttribute("likes",mypageService.LoadPostsByLike(jwt));
+        model.addAttribute("posts",mypageService.LoadPostsByNickname(jwt));
+        model.addAttribute("comments",mypageService.LoadPostsByComment(jwt));
+
+        model.addAttribute("commentcount",commentService.CommentCountFindJwt(jwt));
+
+        return "/Mypage/activity";
     }
 }

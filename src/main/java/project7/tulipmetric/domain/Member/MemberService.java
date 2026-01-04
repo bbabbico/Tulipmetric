@@ -3,8 +3,6 @@ package project7.tulipmetric.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
-import project7.tulipmetric.domain.Member.Member;
-import project7.tulipmetric.domain.Member.Role;
 
 import java.util.Optional;
 
@@ -17,7 +15,7 @@ public class MemberService {
         return findMemberByJwt(jwt).map(Member::getNickname);
     }
 
-    public Optional<String> FindByJwtLoginId(Jwt jwt){
+    public Optional<String> LoginIdFindByJwt(Jwt jwt){
         return findMemberByJwt(jwt).map(Member::getLoginid);
     }
 
@@ -33,7 +31,7 @@ public class MemberService {
         return findMemberByJwt(jwt).map(Member::getRole);
     }
 
-    private Optional<Member> findMemberByJwt(Jwt jwt) {
+    public Optional<Member> findMemberByJwt(Jwt jwt) {
         if (jwt == null || jwt.getSubject() == null) {
             return Optional.empty();
         }

@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import project7.tulipmetric.domain.Member.Role;
 
+import java.util.Objects;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -50,6 +52,18 @@ public class Post {
     @Enumerated(EnumType.STRING)
     @Column(length = 10 , nullable = false)
     private Role role;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Post post = (Post) o;
+        return likenum == post.likenum && commentnum == post.commentnum && Objects.equals(id, post.id) && Objects.equals(nickname, post.nickname) && Objects.equals(category, post.category) && Objects.equals(industryTag, post.industryTag) && Objects.equals(title, post.title) && Objects.equals(content, post.content) && Objects.equals(dateminute, post.dateminute) && role == post.role;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, nickname, category, industryTag, title, content, dateminute, likenum, commentnum, role);
+    }
 
     @Override
     public String toString() {

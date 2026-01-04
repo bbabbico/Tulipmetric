@@ -65,7 +65,7 @@
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-sm text-slate-600">좋아요 누른 게시글</span>
-                <span class="text-sm text-blue-600" th:text="|${likecount} 개|" style="font-weight: 600;" id="favoriteCount">0개</span>
+                <span class="text-sm text-blue-600" th:text="|${likecount} 개|" style="font-weight: 600;">0개</span>
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-sm text-slate-600">작성한 글</span>
@@ -81,7 +81,6 @@
           <!-- Logout Button -->
           <div class="mt-6 pt-4 border-t border-slate-200">
             <form action="/logout" method="post">
-<!--              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
               <button
                       type="submit"
                       class="w-full px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-200"
@@ -92,29 +91,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Right Content - Menu Cards -->
-      <div class="lg:col-span-2">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Saved Industries Card -->
-          <a href="/saved" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-lg hover:border-blue-300 transition-all duration-300">
-            <div class="flex items-start justify-between mb-4">
-              <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
-                <svg class="w-6 h-6 text-white fill-current" viewBox="0 0 24 24">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-              </div>
-              <svg class="w-5 h-5 text-slate-400 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-              </svg>
-            </div>
-            <h4 class="text-slate-900 mb-2">즐겨찾기한 산업군</h4>
-            <p class="text-sm text-slate-600">관심있는 산업군을 모아보세요</p>
-            <div class="mt-4 flex items-center gap-2">
-              <span class="text-2xl text-blue-600" style="font-weight: 600;" id="savedCount">0</span>
-              <span class="text-sm text-slate-500">개의 산업군</span>
-            </div>
-          </a>
 
           <!-- Account Settings Card -->
           <a href="/accountsettings" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-lg hover:border-slate-300 transition-all duration-300 cursor-pointer">
@@ -148,51 +124,7 @@
             <h4 class="text-slate-900 mb-2">활동 내역</h4>
             <p class="text-sm text-slate-600">커뮤니티 활동 기록을 확인하세요</p>
           </a>
-
-          <!-- Notifications Card -->
-          <div class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-lg hover:border-slate-300 transition-all duration-300 cursor-pointer">
-            <div class="flex items-start justify-between mb-4">
-              <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                </svg>
-              </div>
-              <svg class="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-              </svg>
-            </div>
-            <h4 class="text-slate-900 mb-2">알림 설정</h4>
-            <p class="text-sm text-slate-600">관심 산업군의 변동을 알림받으세요</p>
-          </div>
-        </div>
-
-        <!-- Recent Activity -->
-        <div class="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-          <h3 class="text-slate-900 mb-4">최근 활동</h3>
-          <div class="space-y-4">
-            <div class="flex items-start gap-4 pb-4 border-b border-slate-100">
-              <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 text-blue-600 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-              </div>
-              <div class="flex-1">
-                <p class="text-sm text-slate-900 mb-1">즐겨찾기에 추가했습니다</p>
-                <p class="text-xs text-slate-500">활동 내역이 없습니다</p>
-              </div>
-              <span class="text-xs text-slate-400">방금</span>
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
   </div>
-
-  <script>
-    // Load user favorites count
-    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-    document.getElementById('favoriteCount').textContent = favorites.length + '개';
-    document.getElementById('savedCount').textContent = favorites.length;
-  </script>
 </body>
 </html>
