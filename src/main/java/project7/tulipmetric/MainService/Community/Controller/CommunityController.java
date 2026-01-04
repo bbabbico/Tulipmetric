@@ -44,15 +44,12 @@ public class CommunityController {
         Post post = postService.FindByPostId(id);
         List<Comment> comments = commentService.FindAllByPostid(post);
         Boolean Check = likeService.CheckLike(jwt,post);
-        try {
-            String nickname = memberService.NicknameFindByJwt(jwt);
+        memberService.NicknameFindByJwt(jwt).ifPresent(nickname -> {
             if (post.getNickname().equals(nickname)) { //작성자 본인인지 확인
                 model.addAttribute("host",true);
             }
             model.addAttribute("nickname",nickname); //작성자 닉네임
-        } catch (NullPointerException e) {
-            log.info("미인증사용자 요청");
-        }
+        });
         model.addAttribute("check",Check); // 사용자 좋아요/북마크 여부
         model.addAttribute("post",post); //게시글 정보
         model.addAttribute("comments",comments); // 댓글 정보
@@ -67,7 +64,8 @@ public class CommunityController {
 
     @PostMapping("/createpost")
     public String SavePost(@AuthenticationPrincipal Jwt jwt, PostDto postDto){
-        String nickname= memberService.NicknameFindByJwt(jwt);
+        String nickname = memberService.NicknameFindByJwt(jwt)
+                .orElseThrow(() -> new IllegalArgumentException("인증된 사용자만 게시글을 작성할 수 있습니다."));
         Date nowDate = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 ss초");
 
@@ -116,7 +114,8 @@ public class CommunityController {
 
     @PostMapping("/createcomment")
     public String SaveComment(@AuthenticationPrincipal Jwt jwt, CommentDto commentDto){
-        String nickname= memberService.NicknameFindByJwt(jwt);
+        String nickname = memberService.NicknameFindByJwt(jwt)
+                .orElseThrow(() -> new IllegalArgumentException("인증된 사용자만 댓글을 작성할 수 있습니다."));
         Date nowDate = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 ss초");
 
