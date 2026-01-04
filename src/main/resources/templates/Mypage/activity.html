@@ -45,7 +45,7 @@
     <!-- Breadcrumb -->
     <div class="mb-6">
       <nav class="flex items-center gap-2 text-sm">
-        <a href="mypage.html" class="text-slate-600 hover:text-slate-900 transition-colors">마이페이지</a>
+        <a href="/mypage" class="text-slate-600 hover:text-slate-900 transition-colors">마이페이지</a>
         <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
         </svg>
@@ -102,7 +102,7 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm text-slate-500 mb-1">작성한 댓글</p>
-            <p class="text-3xl text-green-600" style="font-weight: 600;" th:text="${comments.size()}">0</p>
+            <p class="text-3xl text-green-600" style="font-weight: 600;" th:text="${commentcount}">0</p>
           </div>
           <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
             <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
