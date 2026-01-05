@@ -99,7 +99,7 @@
     </form>
 
     <!-- Password Settings -->
-    <form action="/editpassword" method="post" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6" onsubmit="return handlePasswordChange(event)">
+    <form th:if="${member.getJointype().name()=='FORM'}" action="/editpassword" method="post" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6" onsubmit="return handlePasswordChange(event)">
       <h3 class="text-slate-900 mb-6">비밀번호 변경</h3>
         <div class="space-y-6">
           <div>

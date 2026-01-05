@@ -19,10 +19,6 @@ public class MemberService {
         return findMemberByJwt(jwt).map(Member::getNickname);
     }
 
-    public Optional<String> LoginIdFindByJwt(Jwt jwt){
-        return findMemberByJwt(jwt).map(Member::getLoginid);
-    }
-
     public Optional<Member> FindByLoginIdMember(String loginid){
         if (loginid == null) {
             return Optional.empty();

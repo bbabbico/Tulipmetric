@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql-server:1
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile
+    container_name: mysql-container
+    restart: always
+    env_file:
+      - ./.env #env 파일로 sql 중요 정보 감춤
+    environment:
+      TZ: Asia/Seoul
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  spring-server:
+    image: spring-server:1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spring-server
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./.env #env 파일로 sql 중요 정보 감춤
+
+volumes:
+  mysql_data:
