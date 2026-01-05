@@ -31,5 +31,23 @@ services:
     env_file:
       - ./.env #env 파일로 sql 중요 정보 감춤
 
+  python-loader:
+    image: python-loader:1
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    container_name: python-loader
+    restart: "no"
+    depends_on:
+      - mysql
+    env_file:
+      - ./.env
+    environment:
+      DB_HOST: mysql
+      DB_NAME: tulipmetric
+      AUTO_INIT: "true"
+    volumes:
+      - ./python:/app
+
 volumes:
   mysql_data:
