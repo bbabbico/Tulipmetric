@@ -21,7 +21,7 @@ public class IndexController {
     public String index(@AuthenticationPrincipal Jwt jwt,Model model) {
         model.addAttribute("wishlist",indexService.IndexWishMarketFindByLoginId(jwt));
         model.addAttribute("market",indexService.IndexMarketLoad());
-        return "/MainService/index";
+        return "MainService/index";
     }
     @GetMapping("/industry-detail")
     public String industry_detail(@AuthenticationPrincipal Jwt jwt, @RequestParam Long id, Model model) {
@@ -33,7 +33,7 @@ public class IndexController {
 
         model.addAttribute("market",market);
         model.addAttribute("company",indexService.IndexCompanyFindByMarketLoad(market.getName()));
-        return "/MainService/industry-detail";
+        return "MainService/industry-detail";
     }
 
 

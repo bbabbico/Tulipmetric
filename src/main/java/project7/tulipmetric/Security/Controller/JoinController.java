@@ -19,13 +19,13 @@ public class JoinController {
 
     @GetMapping("/join")
     public String Getjoin() {
-        return "/Login/join";
+        return "Login/join";
     }
 
     @PostMapping("/join")
     public String Postjoin(JoinDto joinDto) {
         joinService.Join(joinDto);
-        return "/Login/login";
+        return "Login/login";
     }
 
     @ResponseBody

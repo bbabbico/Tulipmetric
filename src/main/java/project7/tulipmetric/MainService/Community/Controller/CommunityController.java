@@ -37,7 +37,7 @@ public class CommunityController {
     @GetMapping("/community") // 커뮤니티 메인 페이지 GET
     public String community(Model model){
         model.addAttribute("posts",postService.FindAll());
-        return "/MainService/community/community";
+        return "MainService/community/community";
     }
 
     @GetMapping("/discussion-detail") // 커뮤니티 게시글 상세 페이지 GET
@@ -57,12 +57,12 @@ public class CommunityController {
         model.addAttribute("post",post); //게시글 정보
         model.addAttribute("comments",comments); // 댓글 정보
 
-        return "/MainService/community/discussion-detail";
+        return "MainService/community/discussion-detail";
     }
 
     @GetMapping("/createpost")
     public String createpost(){
-        return "/MainService/community/createpost";
+        return "MainService/community/createpost";
     }
 
     @PostMapping("/createpost")
@@ -88,7 +88,7 @@ public class CommunityController {
         model.addAttribute("postDto",new PostDto(post.getCategory(),post.getIndustryTag(),post.getTitle(),post.getContent()));
         model.addAttribute("postid",postid);
 
-        return "/MainService/community/editpost";
+        return "MainService/community/editpost";
     }
 
     @PostMapping("/editpost") // 게시글 수정
