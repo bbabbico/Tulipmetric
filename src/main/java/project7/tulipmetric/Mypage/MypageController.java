@@ -40,13 +40,13 @@ public class MypageController {
         model.addAttribute("commentcount",commentService.CommentCountFindJwt(jwt));
         model.addAttribute("postcount",postService.FindAllByNickname(member.getNickname()).size());
         model.addAttribute("member", member);
-        return "/Mypage/mypage";
+        return "Mypage/mypage";
     }
 
     @GetMapping("/accountsettings") //TODO : MemberService 수정해야함.
     public String accountSettings(@AuthenticationPrincipal Jwt jwt,Model model){
         model.addAttribute("member",memberService.findMemberByJwt(jwt).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.")));
-        return "/Mypage/account-settings";
+        return "Mypage/account-settings";
     }
 
     @GetMapping("/activity")
@@ -56,7 +56,7 @@ public class MypageController {
         model.addAttribute("comments",mypageService.LoadPostsByComment(jwt));
 
         model.addAttribute("commentcount",commentService.CommentCountFindJwt(jwt));
-        return "/Mypage/activity";
+        return "Mypage/activity";
     }
 
     @PostMapping("/editprofile")
