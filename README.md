@@ -7,6 +7,14 @@
 ## <a href="https://www.figma.com/board/ky0Sb60izZ4Ah3MlDtEusG/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98?node-id=0-1&t=WhjYw5i6j7hK7Kfi-1">아키텍처</a>
 figma
 
+## 빌드
+.env 파일 에서 SQL 설정 수정한뒤
+mysql 폴더의 Dockerfile 에서 SQL 설정 수정해야됨.
+
+최종빌드
+
+`docker compose up -d --build`
+
 ## 사이트 주요 기능
 - 코스피 시장에 등록된 모든 26개 산업군에 대한 성장률 과 최근 12개월간의 지수 변동을 이용해 시장 과열도를 비교할 수 있는 사이트임.
 - 커뮤니티는 주식과 시장에 대해 자유롭게 토론과 소통을 할 수 있는 페이지임.
@@ -25,3 +33,4 @@ figma
 - Spring Data JPA
 - Spring Security
 - Thymeleaf
+- python:3.11-slim (Docker)
