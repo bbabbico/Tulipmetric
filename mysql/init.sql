@@ -12,7 +12,7 @@ CREATE TABLE `company` (
                            `mrkttotamt` bigint NOT NULL,
                            `market` varchar(20) NOT NULL,
                            PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=856 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 
@@ -28,7 +28,7 @@ CREATE TABLE `market` (
                           `trending` bit(1) NOT NULL,
                           `description` varchar(255) NOT NULL,
                           PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 CREATE TABLE `member` (
@@ -43,7 +43,7 @@ CREATE TABLE `member` (
                           PRIMARY KEY (`id`),
                           UNIQUE KEY `UniqueLoginid` (`loginid`),
                           UNIQUE KEY `UniqueNickname` (`nickname`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 CREATE TABLE `post` (
@@ -58,7 +58,7 @@ CREATE TABLE `post` (
                         `content` text NOT NULL,
                         `role` enum('LOOT','USER') NOT NULL,
                         PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `wishmarket` (
                               `id` bigint NOT NULL AUTO_INCREMENT,
@@ -67,7 +67,7 @@ CREATE TABLE `wishmarket` (
                               PRIMARY KEY (`id`),
                               KEY `marketfk_idx` (`marketid`),
                               CONSTRAINT `marketfk` FOREIGN KEY (`marketid`) REFERENCES `market` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `comment` (
                            `id` bigint NOT NULL AUTO_INCREMENT,
@@ -78,7 +78,7 @@ CREATE TABLE `comment` (
                            PRIMARY KEY (`id`),
                            KEY `FKlovp15gs1pi5dvo88erc45sk7` (`postid`),
                            CONSTRAINT `FKlovp15gs1pi5dvo88erc45sk7` FOREIGN KEY (`postid`) REFERENCES `post` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `like_entity` (
                                `id` bigint NOT NULL AUTO_INCREMENT,
@@ -87,4 +87,4 @@ CREATE TABLE `like_entity` (
                                PRIMARY KEY (`id`),
                                KEY `FK93fhuqo714ifrnj1qbjjlkbfr` (`postid`),
                                CONSTRAINT `FK93fhuqo714ifrnj1qbjjlkbfr` FOREIGN KEY (`postid`) REFERENCES `post` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

@@ -88,6 +88,7 @@ public class SecurityConfig {
 
                                 .requestMatchers(HttpMethod.GET, "/join", "/login","/loginidcheck","/nicknamecheck").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/join", "/signup", "/login").permitAll()
+                                .requestMatchers("/","/industry-detail").permitAll()
                                 .requestMatchers("/mypage","/activity","/accountsettings","/saved").hasAnyRole(userAndLootRoles) //마이 페이지
                                 .requestMatchers("/editprofile","/editpassword","/deletprofile").hasAnyRole(userAndLootRoles) //마이 페이지 - 사용자 정보 수정
                                 .requestMatchers("/createpost","/deletepost","/editpost").hasAnyRole(userAndLootRoles) //Post , Comment , Creat/Delete/Edit

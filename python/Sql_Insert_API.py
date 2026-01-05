@@ -56,13 +56,6 @@ STOCK_URL = "https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoServi
 REQUEST_TIMEOUT_SEC = 20
 
 
-def env_flag(name: str, default: bool = False) -> bool:
-    val = os.getenv(name)
-    if val is None:
-        return default
-    return val.strip().lower() in {"1", "true", "yes", "y", "on"}
-
-
 # -----------------------------
 # KOSIS URL templates (apiKey만 환경변수로 주입)
 # -----------------------------
@@ -500,7 +493,7 @@ def connect_db(cfg: DbConfig) -> pymysql.connections.Connection:
     return pymysql.connect(host=cfg.host, user=cfg.user, password=cfg.password, db=cfg.db, charset=cfg.charset)
 
 
-def wait_for_db(cfg: DbConfig, *, retries: int = 10, delay: float = 3.0) -> bool:
+def wait_for_db(cfg: DbConfig, *, retries: int = 20, delay: float = 10.0) -> bool:
     """DB 연결이 될 때까지 재시도."""
     import time
 
@@ -510,7 +503,7 @@ def wait_for_db(cfg: DbConfig, *, retries: int = 10, delay: float = 3.0) -> bool
             conn.close()
             return True
         except Exception as exc:  # pylint: disable=broad-except
-            print(f"[wait_for_db] attempt {attempt}/{retries} failed: {exc}")
+            print(f"DB 재연결중.. [wait_for_db] attempt {attempt}/{retries} failed: {exc}")
             if attempt == retries:
                 return False
             time.sleep(delay)
@@ -600,6 +593,11 @@ def insert_companies(conn: pymysql.connections.Connection, companies: list[dict[
 # -----------------------------
 
 def main() -> None:
+
+    cfg = DbConfig()
+    if not wait_for_db(cfg):
+        raise RuntimeError("데이터베이스 연결에 실패했습니다. 환경변수를 확인하세요.")
+
     chart_url = kosis_url(CHART_URL_TEMPLATE)
     cap_url = kosis_url(CAP_URL_TEMPLATE)
     per_url = kosis_url(PER_URL_TEMPLATE)
@@ -619,10 +617,6 @@ def main() -> None:
     )
     companies = fetch_stock_prices(STOCK_URL, params=KOSPI_PARAMS)
 
-    cfg = DbConfig()
-    if not wait_for_db(cfg):
-        raise RuntimeError("데이터베이스 연결에 실패했습니다. 환경변수를 확인하세요.")
-
     conn = connect_db(cfg)
     try:
         insert_markets(conn, result)
@@ -633,24 +627,5 @@ def main() -> None:
         conn.close()
 
 
-def wait_for_init() -> bool:
-    """
-    init 입력 전까지 대기.
-    init 입력하면 True(실행), quit/exit 입력하거나 Ctrl+C/D면 False(그냥 종료)
-    """
-    try:
-        while True:
-            cmd = input('최초 배포시 데이터베이스에 현재 산업군과 상장 종목 입력을 위해 "init" 를 입력하시오. (데이터 베이스 입력이 필요없을시 "quit") ').strip().lower()
-            if cmd == "init":
-                return True
-            if cmd in ("quit", "exit", "q"):
-                return False
-    except (KeyboardInterrupt, EOFError):
-        return False
-
-
 if __name__ == "__main__":
-    if env_flag("AUTO_INIT", False):
-        main()
-    elif wait_for_init():
-        main()
+    main()

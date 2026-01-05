@@ -78,29 +78,29 @@ public class CommunityController {
     }
 
     @GetMapping("/editpost") // 수정 페이지 Get
-    public String GetEditPost(Model model,@RequestParam Long postid, @AuthenticationPrincipal Jwt jwt){
-        Post post = postService.FindByPostId(postid);
+    public String GetEditPost(Model model,@RequestParam Long id, @AuthenticationPrincipal Jwt jwt){
+        Post post = postService.FindByPostId(id);
         String nickname = memberService.NicknameFindByJwt(jwt)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
         if (!post.getNickname().equals(nickname)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         model.addAttribute("postDto",new PostDto(post.getCategory(),post.getIndustryTag(),post.getTitle(),post.getContent()));
-        model.addAttribute("postid",postid);
+        model.addAttribute("postid",id);
 
         return "MainService/community/editpost";
     }
 
     @PostMapping("/editpost") // 게시글 수정
-    public String EditPost(@ModelAttribute PostDto postDto, @RequestParam Long postid, @AuthenticationPrincipal Jwt jwt){
-        Post post = postService.FindByPostId(postid);
+    public String EditPost(@ModelAttribute PostDto postDto, @RequestParam Long id, @AuthenticationPrincipal Jwt jwt){
+        Post post = postService.FindByPostId(id);
         String nickname = memberService.NicknameFindByJwt(jwt)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
         if (!post.getNickname().equals(nickname)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         postService.EditPost(post,postDto);
-        return "redirect:/discussion-detail?id="+postid;
+        return "redirect:/discussion-detail?id="+id;
     }
 
     @PostMapping("/deletepost") // 게시글 삭제
