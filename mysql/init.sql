@@ -2,6 +2,7 @@ SET NAMES utf8mb4; -- 한글 지원 --
 
 CREATE DATABASE `tulipmetric`;
 
+USE `tulipmetric`;
 
 CREATE TABLE `company` (
                            `id` bigint NOT NULL AUTO_INCREMENT,
