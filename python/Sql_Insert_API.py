@@ -28,10 +28,10 @@ load_dotenv()
 
 @dataclass(frozen=True)
 class DbConfig:
-    host: str = "mysql"
+    host: str = os.getenv("DB_HOST", "mysql")
     user: str = os.getenv("DB_USERNAME", "user") #.env
     password: str = os.getenv("DB_PASSWORD", "") #.env
-    db: str = "tulipmetric"
+    db: str = os.getenv("DB_NAME", "tulipmetric")
     charset: str = "utf8"
 
 
@@ -54,6 +54,13 @@ KOSPI_PARAMS = {
 STOCK_URL = "https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo"
 
 REQUEST_TIMEOUT_SEC = 20
+
+
+def env_flag(name: str, default: bool = False) -> bool:
+    val = os.getenv(name)
+    if val is None:
+        return default
+    return val.strip().lower() in {"1", "true", "yes", "y", "on"}
 
 
 # -----------------------------
@@ -493,6 +500,22 @@ def connect_db(cfg: DbConfig) -> pymysql.connections.Connection:
     return pymysql.connect(host=cfg.host, user=cfg.user, password=cfg.password, db=cfg.db, charset=cfg.charset)
 
 
+def wait_for_db(cfg: DbConfig, *, retries: int = 10, delay: float = 3.0) -> bool:
+    """DB 연결이 될 때까지 재시도."""
+    import time
+
+    for attempt in range(1, retries + 1):
+        try:
+            conn = connect_db(cfg)
+            conn.close()
+            return True
+        except Exception as exc:  # pylint: disable=broad-except
+            print(f"[wait_for_db] attempt {attempt}/{retries} failed: {exc}")
+            if attempt == retries:
+                return False
+            time.sleep(delay)
+
+
 def insert_markets(conn: pymysql.connections.Connection, markets: list[dict[str, Any]]) -> None:
     rows = []
     for m in markets:
@@ -594,13 +617,17 @@ def main() -> None:
         stock_count,
         market_order=MARKET_ORDER,
     )
+    companies = fetch_stock_prices(STOCK_URL, params=KOSPI_PARAMS)
 
-    conn = connect_db(DbConfig())
+    cfg = DbConfig()
+    if not wait_for_db(cfg):
+        raise RuntimeError("데이터베이스 연결에 실패했습니다. 환경변수를 확인하세요.")
+
+    conn = connect_db(cfg)
     try:
         insert_markets(conn, result)
 
         # 개별 주식(company) 삽입
-        companies = fetch_stock_prices(STOCK_URL, params=KOSPI_PARAMS)
         insert_companies(conn, companies)
     finally:
         conn.close()
@@ -623,5 +650,7 @@ def wait_for_init() -> bool:
 
 
 if __name__ == "__main__":
-    if wait_for_init():
+    if env_flag("AUTO_INIT", False):
+        main()
+    elif wait_for_init():
         main()
