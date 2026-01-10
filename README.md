@@ -2,7 +2,7 @@
 산업군 비교 서비스
 
 # 개발 단계
-배포 전 최종 통합 테스트 / 리팩터링 단계
+엔드포인트 스프링 부트 로 설정했을때 모두 정상작동함. nginx 설정중
 
 ## <a href="https://www.figma.com/board/ky0Sb60izZ4Ah3MlDtEusG/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98?node-id=0-1&t=WhjYw5i6j7hK7Kfi-1">아키텍처</a>
 figma
