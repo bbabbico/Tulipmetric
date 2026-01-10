@@ -35,7 +35,7 @@ KOSIS_API_KEY=ZmVmMjhjMjMwYTBlZjcxODdlMWE4NGM0YjA5NjgxMWU=
 
 ### 개발 환경
 - java 17
-- springframework 4.0.1
+- springframework
 - Spring Data JPA
 - Spring Security
 - Thymeleaf
