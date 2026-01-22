@@ -16,7 +16,7 @@ mysql 폴더의 Dockerfile 에서 SQL 설정 수정해야됨.
 DATA_GO_KR_SERVICE_KEY=9k9a3/dWfMNnVqG9mRPMQQ28gKPieL/zP8QrxRrOr6gP71ukyqvL7voKvS6fYOooEJiA1/UjQ/SS0sg49nZEUA==
 KOSIS_API_KEY=ZmVmMjhjMjMwYTBlZjcxODdlMWE4NGM0YjA5NjgxMWU=
 
-한시적으로 테스트를위해 위에 API를 사용. 
+한시적으로 테스트를위해 위 API를 사용. 
 
 최종빌드
 
