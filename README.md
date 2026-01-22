@@ -11,10 +11,10 @@ figma
 ## 빌드
 .env 파일 에서 SQL 설정 수정한뒤
 mysql 폴더의 Dockerfile 에서 SQL 설정 수정해야됨.
-그리고 실재 주식시장 데이터를 이용하기 때문에, KOSIS API 키와 공공데이터 포탈 API 가 필요함.
+그리고 실재 주식시장 데이터를 이용하기 때문에, KOSIS API 키와 공공데이터 포탈 API 가 필요함. 
 
-DATA_GO_KR_SERVICE_KEY=9k9a3/dWfMNnVqG9mRPMQQ28gKPieL/zP8QrxRrOr6gP71ukyqvL7voKvS6fYOooEJiA1/UjQ/SS0sg49nZEUA==
-KOSIS_API_KEY=ZmVmMjhjMjMwYTBlZjcxODdlMWE4NGM0YjA5NjgxMWU=
+DATA_GO_KR_SERVICE_KEY=DATA_GO_KR_SERVICE_KEY=9k9a3/dWfMNnVqG9mRPMQQ28gKPieL/zP8QrxRrOr6gP71ukyqvL7voKvS6fYOooEJiA1/UjQ/SS0sg49nZEUA==
+KOSIS_API_KEY=KOSIS_API_KEY=ZmVmMjhjMjMwYTBlZjcxODdlMWE4NGM0YjA5NjgxMWU=
 
 한시적으로 테스트를위해 위 API를 사용. 
 
