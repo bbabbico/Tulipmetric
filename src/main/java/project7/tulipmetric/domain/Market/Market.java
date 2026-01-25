@@ -14,27 +14,27 @@ public class Market {
     @Column(length = 45, nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private Long totalmarketcap;
+    @Column(name = "totalmarketcap", nullable = false)
+    private Long totalMarketCap;
 
-    @Column(nullable = false)
-    private int marketper;
+    @Column(name = "marketper", nullable = false)
+    private int marketPer;
 
-    @Column(nullable = false)
-    private int stockcount;
+    @Column(name = "stockcount", nullable = false)
+    private int stockCount;
 
-    @Column(length = 100,nullable = false)
-    private String chart; //12 개월 코스피 지수 변동.
+    @Column(length = 100, nullable = false)
+    private String chart; // 12 개월 코스피 지수 변동.
 
     @Column(nullable = false)
     private double growthRate30d;
 
-    @Column(length = 20,nullable = false)
-    private String marketStatus;    // crashed/declining/stable/growing/overvalued
+    @Column(length = 20, nullable = false)
+    private String marketStatus; // crashed/declining/stable/growing/overvalued
 
     @Column(nullable = false)
-    private boolean trending;       // 급상승 여부
+    private boolean trending; // 급상승 여부
 
     @Column(nullable = false)
-    private String description;     // 카드 설명(없으면 기본 문구)
+    private String description; // 카드 설명(없으면 기본 문구)
 }

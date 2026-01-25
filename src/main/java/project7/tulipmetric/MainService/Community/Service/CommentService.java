@@ -24,7 +24,7 @@ public class CommentService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void SaveComment(Comment comment){
+    public void saveComment(Comment comment) {
         log.info("{}", comment);
         Post post = postRepository.findById(comment.getPostid().getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."));
@@ -36,7 +36,7 @@ public class CommentService {
     }
 
     @Transactional
-    public void EditComment(Long id, String content){
+    public void editComment(Long id, String content) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다."));
         comment.setContent(content);
@@ -44,30 +44,30 @@ public class CommentService {
     }
 
     @Transactional
-    public void DeleteCommentById(Long id){
+    public void DeleteCommentById(Long id) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다."));
         Post post = comment.getPostid();
-        post.setCommentnum(post.getCommentnum()-1);
+        post.setCommentnum(post.getCommentnum() - 1);
         commentRepository.deleteById(id);
     }
 
     @Transactional
-    public List<Comment> FindAllByNickname(String nickname){
+    public List<Comment> findAllByNickname(String nickname) {
         return commentRepository.findAllByNickname(nickname);
     }
 
-
-    public List<Comment> FindAllByPostid(Post post){
+    public List<Comment> findAllByPostId(Post post) {
         return commentRepository.findAllByPostid(post);
     }
 
-    public int CommentCountFindJwt(Jwt jwt){
-       return commentRepository.findAllByNickname(memberRepository.findByLoginid(jwt.getSubject()).getNickname()).size();
+    public int countByJwt(Jwt jwt) {
+        return commentRepository.findAllByNickname(memberRepository.findByLoginid(jwt.getSubject()).getNickname())
+                .size();
     }
 
     @Transactional
-    public Comment FindById(Long id) {
+    public Comment findById(Long id) {
         return commentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다."));
     }

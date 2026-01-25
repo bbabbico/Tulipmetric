@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,554 +8,552 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-    h1 { font-size: 2.5rem; font-weight: 700; line-height: 1.2; }
-    h2 { font-size: 2rem; font-weight: 700; line-height: 1.3; }
-    h3 { font-size: 1.5rem; font-weight: 600; line-height: 1.4; }
-    h4 { font-size: 1.25rem; font-weight: 600; line-height: 1.4; }
-    p  { font-size: 1rem; line-height: 1.6; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    h4 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
 
     /* 줄바꿈 유지 */
-    .whitespace-pre-line { white-space: pre-line; }
+    .whitespace-pre-line {
+      white-space: pre-line;
+    }
   </style>
 </head>
 
 <body class="bg-slate-50">
-<!-- Header -->
-<div th:replace="~{fragments/basicheader :: basicheader-fragment}"></div>
+  <!-- Header -->
+  <div th:replace="~{fragments/basicheader :: basicheader-fragment}"></div>
 
-<!-- Main Content -->
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Main Content -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-  <!-- Back Button -->
-  <div class="mb-6">
-    <a href="/community" class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-      </svg>
-      커뮤니티로 돌아가기
-    </a>
-  </div>
-
-  <!-- Post Content -->
-  <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 mb-6">
-
-    <!-- Category / IndustryTag -->
-    <div class="flex items-center gap-2 mb-6">
-      <span class="category-badge px-3 py-1 rounded-full text-sm"
-            th:attr="data-category=${post.category}"
-            th:text="${post.category}">
-        카테고리
-      </span>
-
-      <span th:if="${post.industryTag != null and !#strings.isEmpty(post.industryTag)}"
-            class="px-3 py-1 rounded-full text-sm bg-slate-100 text-slate-700"
-            th:text="${post.industryTag}">
-        산업태그
-      </span>
-    </div>
-
-    <!-- Title -->
-    <h1 class="text-slate-900 mb-6" th:text="${post.title}">제목</h1>
-
-    <!-- Author / Date / Meta -->
-    <div class="flex items-center gap-4 mb-6 pb-6 border-b border-slate-200">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white"
-             style="font-weight: 600;"
-             th:text="${post.nickname != null and !#strings.isEmpty(post.nickname) ? #strings.substring(post.nickname,0,1) : '-'}">
-          -
-        </div>
-        <div>
-          <div class="text-slate-900" style="font-weight: 500;" th:text="${post.nickname}">-</div>
-          <div class="text-sm text-slate-500" th:text="${post.dateminute}">-</div>
-        </div>
-      </div>
-
-      <div class="ml-auto flex items-center gap-6 text-sm text-slate-500">
-        <!-- Likes -->
-        <div class="flex items-center gap-1">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-          </svg>
-          <span id="likeCount" th:text="${post.likenum}">0</span>
-        </div>
-
-        <!-- Comments Count (실제 리스트 기준) -->
-        <div class="flex items-center gap-1">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-          </svg>
-          <span id="commentCount" th:text="${#lists.size(comments)}">0</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Content -->
-    <div class="max-w-none text-slate-700 whitespace-pre-line" th:text="${post.content}">
-      내용
-    </div>
-
-    <!-- Actions -->
-    <div sec:authorize="isAuthenticated()" class="mt-8 flex items-center gap-4">
-      <button id="likeBtn" type="button"
-              data-liked="false" aria-pressed="false"
-              th:attr="data-liked=${check},aria-pressed=${check}"
-              th:data-id="${post.id}"
-              class="flex items-center gap-2 px-6 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
-        <svg id="likeIcon" class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+    <!-- Back Button -->
+    <div class="mb-6">
+      <a href="/community" class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
-        <span>좋아요</span>
-      </button>
+        커뮤니티로 돌아가기
+      </a>
+    </div>
 
-      <form th:if="${host}" action="/editpost" method="get">
-        <input type="hidden" name="id" th:value="${post.id}"/>
-        <button
-                class="flex items-center gap-2 px-6 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- Post Content -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 mb-6">
+
+      <!-- Category / IndustryTag -->
+      <div class="flex items-center gap-2 mb-6">
+        <span class="category-badge px-3 py-1 rounded-full text-sm" th:attr="data-category=${post.category}"
+          th:text="${post.category}">
+          카테고리
+        </span>
+
+        <span th:if="${post.industryTag != null and !#strings.isEmpty(post.industryTag)}"
+          class="px-3 py-1 rounded-full text-sm bg-slate-100 text-slate-700" th:text="${post.industryTag}">
+          산업태그
+        </span>
+      </div>
+
+      <!-- Title -->
+      <h1 class="text-slate-900 mb-6" th:text="${post.title}">제목</h1>
+
+      <!-- Author / Date / Meta -->
+      <div class="flex items-center gap-4 mb-6 pb-6 border-b border-slate-200">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white"
+            style="font-weight: 600;"
+            th:text="${post.nickname != null and !#strings.isEmpty(post.nickname) ? #strings.substring(post.nickname,0,1) : '-'}">
+            -
+          </div>
+          <div>
+            <div class="text-slate-900" style="font-weight: 500;" th:text="${post.nickname}">-</div>
+            <div class="text-sm text-slate-500" th:text="${post.dateminute}">-</div>
+          </div>
+        </div>
+
+        <div class="ml-auto flex items-center gap-6 text-sm text-slate-500">
+          <!-- Likes -->
+          <div class="flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+            <span id="likeCount" th:text="${post.likenum}">0</span>
+          </div>
+
+          <!-- Comments Count (실제 리스트 기준) -->
+          <div class="flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            <span id="commentCount" th:text="${#lists.size(comments)}">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="max-w-none text-slate-700 whitespace-pre-line" th:text="${post.content}">
+        내용
+      </div>
+
+      <!-- Actions -->
+      <div sec:authorize="isAuthenticated()" class="mt-8 flex items-center gap-4">
+        <button id="likeBtn" type="button" data-liked="false" aria-pressed="false"
+          th:attr="data-liked=${check},aria-pressed=${check}" th:data-id="${post.id}"
+          class="flex items-center gap-2 px-6 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
+          <svg id="likeIcon" class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
           </svg>
-          <span>수정</span>
+          <span>좋아요</span>
+        </button>
+
+        <form th:if="${host}" action="/editpost" method="get">
+          <input type="hidden" name="id" th:value="${post.id}" />
+          <button
+            class="flex items-center gap-2 px-6 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
+            <span>수정</span>
+          </button>
+        </form>
+
+        <form th:if="${canDeletePost}" action="/deletepost" method="post">
+          <input type="hidden" name="postid" th:value="${post.id}" />
+          <button
+            class="flex items-center gap-2 px-6 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
+            <span>삭제</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+      <h3 class="text-slate-900 mb-6">
+        댓글 <span class="text-slate-500" th:text="${#lists.size(comments)}">0</span>
+      </h3>
+
+      <!-- Comment Form (로그인) -->
+      <form sec:authorize="isAuthenticated()" action="/createcomment" method="post" class="flex gap-3 items-start mb-8">
+        <input type="hidden" name="postid" th:value="${post.id}" />
+
+        <label class="flex-1">
+          <textarea id="commentContent" name="content" placeholder="댓글을 입력하세요"
+            class="w-full px-4 py-3 border border-slate-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+            rows="3" required></textarea>
+        </label>
+
+        <button type="submit"
+          class="px-5 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors whitespace-nowrap">
+          댓글 등록
         </button>
       </form>
 
-      <form th:if="${canDeletePost}" action="/deletepost" method="post">
-        <input type="hidden" name="postid" th:value="${post.id}"/>
-        <button
-                class="flex items-center gap-2 px-6 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
-          </svg>
-          <span>삭제</span>
-        </button>
-      </form>
-    </div>
-  </div>
+      <!-- 비로그인 사용자 -->
+      <div sec:authorize="isAnonymous()" class="mb-8">
+        <label>
+          <textarea placeholder="댓글을 작성하려면 로그인이 필요합니다" disabled
+            class="w-full px-4 py-3 border border-slate-300 rounded-lg resize-none bg-slate-50" rows="3"></textarea>
+        </label>
+      </div>
 
-  <!-- Comments Section -->
-  <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
-    <h3 class="text-slate-900 mb-6">
-      댓글 <span class="text-slate-500" th:text="${#lists.size(comments)}">0</span>
-    </h3>
+      <!-- Comments List -->
+      <div id="commentsList" class="space-y-6">
 
-    <!-- Comment Form (로그인) -->
-    <form sec:authorize="isAuthenticated()"
-          action="/createcomment"
-          method="post"
-          class="flex gap-3 items-start mb-8">
-      <input type="hidden" name="postid" th:value="${post.id}"/>
+        <p id="commentsEmpty" class="text-slate-500 text-center py-8"
+          th:classappend="${!#lists.isEmpty(comments)} ? ' hidden' : ''">
+          댓글이 없습니다
+        </p>
 
-      <label class="flex-1">
-        <textarea
-                id="commentContent"
-                name="content"
-                placeholder="댓글을 입력하세요"
-                class="w-full px-4 py-3 border border-slate-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                rows="3"
-                required
-        ></textarea>
-      </label>
+        <div th:each="comment, iter : ${comments}" class="flex gap-4 comment-item"
+          th:attr="data-comment-id=${comment.id}" th:if="${!#lists.isEmpty(comments)}">
 
-      <button type="submit"
-              class="px-5 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors whitespace-nowrap">
-        댓글 등록
-      </button>
-    </form>
-
-    <!-- 비로그인 사용자 -->
-    <div sec:authorize="isAnonymous()" class="mb-8">
-      <label>
-        <textarea
-                placeholder="댓글을 작성하려면 로그인이 필요합니다"
-                disabled
-                class="w-full px-4 py-3 border border-slate-300 rounded-lg resize-none bg-slate-50"
-                rows="3"
-        ></textarea>
-      </label>
-    </div>
-
-    <!-- Comments List -->
-    <div id="commentsList" class="space-y-6">
-
-      <p id="commentsEmpty"
-         class="text-slate-500 text-center py-8"
-         th:classappend="${!#lists.isEmpty(comments)} ? ' hidden' : ''">
-        댓글이 없습니다
-      </p>
-
-      <div th:each="comment, iter : ${comments}"
-           class="flex gap-4 comment-item"
-           th:attr="data-comment-id=${comment.id}"
-           th:if="${!#lists.isEmpty(comments)}">
-
-        <!-- 아바타(인덱스 기반으로 색상 고정) -->
-        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white flex-shrink-0"
-             style="font-weight: 600;"
-             th:classappend="${iter.index % 5 == 0 ? ' bg-green-500'
+          <!-- 아바타(인덱스 기반으로 색상 고정) -->
+          <div class="w-10 h-10 rounded-full flex items-center justify-center text-white flex-shrink-0"
+            style="font-weight: 600;" th:classappend="${iter.index % 5 == 0 ? ' bg-green-500'
                           : (iter.index % 5 == 1 ? ' bg-purple-500'
                           : (iter.index % 5 == 2 ? ' bg-orange-500'
                           : (iter.index % 5 == 3 ? ' bg-blue-500'
                           : ' bg-pink-500')))}"
-             th:text="${comment.nickname != null and !#strings.isEmpty(comment.nickname) ? #strings.substring(comment.nickname,0,1) : '-'}">
-          -
-        </div>
-
-        <div class="flex-1">
-          <div class="flex items-center gap-2 mb-2">
-            <span class="text-slate-900" style="font-weight: 500;" th:text="${comment.nickname}">작성자</span>
-            <span class="text-sm text-slate-500" th:text="${comment.dateminute}">날짜</span>
-
-
-            <!-- 삭제는 LOOT 권한 허용, 수정은 작성자만 -->
-            <span th:if="${(nickname != null and nickname == comment.nickname) or isLoot}"
-                  class="ml-auto inline-flex items-center gap-2">
-              <button type="button"
-                      th:if="${nickname != null and nickname == comment.nickname}"
-                      class="text-xs text-blue-600 hover:underline"
-                      th:attr="data-comment-id=${comment.id}"
-                      data-action="edit"
-                      onclick="onCommentAction(this)">
-                수정
-              </button>
-
-              <button type="button"
-                      class="text-xs text-rose-600 hover:underline"
-                      th:attr="data-comment-id=${comment.id}"
-                      data-action="delete"
-                      onclick="onCommentAction(this)">
-                삭제
-              </button>
-            </span>
+            th:text="${comment.nickname != null and !#strings.isEmpty(comment.nickname) ? #strings.substring(comment.nickname,0,1) : '-'}">
+            -
           </div>
 
-                    <!-- 표시용 -->
-          <p class="comment-content text-slate-700 mb-3 whitespace-pre-line"
-             th:text="${comment.content}">
-            댓글 내용
-          </p>
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-slate-900" style="font-weight: 500;" th:text="${comment.nickname}">작성자</span>
+              <span class="text-sm text-slate-500" th:text="${comment.dateminute}">날짜</span>
 
-          <!-- 편집용(기본 숨김) -->
-          <div class="comment-edit hidden mb-3">
-            <textarea
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-              rows="3"
-              th:text="${comment.content}"></textarea>
 
-            <div class="mt-2 flex gap-2 justify-end">
-              <button type="button"
-                      class="px-3 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700"
-                      data-role="save"
-                      onclick="onCommentEditSave(this)">
-                저장
-              </button>
-              <button type="button"
-                      class="px-3 py-2 text-sm rounded-lg border border-slate-300 hover:bg-slate-50"
-                      data-role="cancel"
-                      onclick="onCommentEditCancel(this)">
-                취소
-              </button>
+              <!-- 삭제는 LOOT 권한 허용, 수정은 작성자만 -->
+              <span th:if="${(nickname != null and nickname == comment.nickname) or isLoot}"
+                class="ml-auto inline-flex items-center gap-2">
+                <button type="button" th:if="${nickname != null and nickname == comment.nickname}"
+                  class="text-xs text-blue-600 hover:underline" th:attr="data-comment-id=${comment.id}"
+                  data-action="edit" onclick="onCommentAction(this)">
+                  수정
+                </button>
+
+                <button type="button" class="text-xs text-rose-600 hover:underline"
+                  th:attr="data-comment-id=${comment.id}" data-action="delete" onclick="onCommentAction(this)">
+                  삭제
+                </button>
+              </span>
+            </div>
+
+            <!-- 표시용 -->
+            <p class="comment-content text-slate-700 mb-3 whitespace-pre-line" th:text="${comment.content}">
+              댓글 내용
+            </p>
+
+            <!-- 편집용(기본 숨김) -->
+            <div class="comment-edit hidden mb-3">
+              <textarea
+                class="w-full px-4 py-3 border border-slate-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                rows="3" th:text="${comment.content}"></textarea>
+
+              <div class="mt-2 flex gap-2 justify-end">
+                <button type="button" class="px-3 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                  data-role="save" onclick="onCommentEditSave(this)">
+                  저장
+                </button>
+                <button type="button" class="px-3 py-2 text-sm rounded-lg border border-slate-300 hover:bg-slate-50"
+                  data-role="cancel" onclick="onCommentEditCancel(this)">
+                  취소
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-  const CATEGORY_BADGE_CLASS = {
-    '일반': 'bg-slate-100 text-slate-700',
-    '산업 분석': 'bg-blue-100 text-blue-700',
-    '질문': 'bg-amber-100 text-amber-700',
-    '투자 토론': 'bg-green-100 text-green-700',
-    '뉴스 공유': 'bg-purple-100 text-purple-700',
-  };
+  <script>
+    const CATEGORY_BADGE_CLASS = {
+      '일반': 'bg-slate-100 text-slate-700',
+      '산업 분석': 'bg-blue-100 text-blue-700',
+      '질문': 'bg-amber-100 text-amber-700',
+      '토론': 'bg-green-100 text-green-700',
+      '뉴스': 'bg-purple-100 text-purple-700',
+    };
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const badge = document.querySelector('.category-badge');
-    if (!badge) return;
+    document.addEventListener('DOMContentLoaded', () => {
+      const badge = document.querySelector('.category-badge');
+      if (!badge) return;
 
-    const category = badge.getAttribute('data-category');
-    badge.className = 'category-badge px-3 py-1 rounded-full text-sm';
+      const category = badge.getAttribute('data-category');
+      badge.className = 'category-badge px-3 py-1 rounded-full text-sm';
 
-    const colorClass = CATEGORY_BADGE_CLASS[category] || 'bg-slate-100 text-slate-700';
-    badge.classList.add(...colorClass.split(' '));
-  });
-</script>
-
-<script>
-  /**
-   * 좋아요 토글 + 초기 상태(thymeleaf model "check" 사용) + 좋아요 수 즉시 반영
-   *
-   * - 페이지 진입 시: likeBtn의 data-liked(th:attr로 check 주입)를 읽어 UI를 맞춤
-   * - 클릭 시:
-   *   liked=false -> POST /likeAction   (body: id=...)
-   *   liked=true  -> POST /unlikeAction (body: id=...)
-   *
-   * 컨트롤러가 @RequestParam Long id 이므로 반드시 form-urlencoded로 보냅니다.
-   */
-  const LIKE_ENDPOINT = '/likeAction';
-  const UNLIKE_ENDPOINT = '/unlikeAction';
-
-  function getPostId() {
-    const qp = new URLSearchParams(window.location.search);
-    const idFromQuery = qp.get('id');
-    if (idFromQuery) return idFromQuery;
-
-    const btn = document.getElementById('likeBtn');
-    return btn?.dataset?.id || null;
-  }
-
-  function setLikedUI(liked) {
-    const btn = document.getElementById('likeBtn');
-    const icon = document.getElementById('likeIcon');
-    const label = btn?.querySelector('span');
-    if (!btn || !icon) return;
-
-    btn.dataset.liked = liked ? 'true' : 'false';
-    btn.setAttribute('aria-pressed', liked ? 'true' : 'false');
-
-    if (liked) {
-      icon.classList.add('text-rose-600');
-      icon.classList.remove('text-slate-500');
-      icon.setAttribute('fill', 'currentColor');
-      icon.setAttribute('stroke', 'currentColor');
-      if (label) label.textContent = '좋아요 취소';
-    } else {
-      icon.classList.remove('text-rose-600');
-      icon.classList.add('text-slate-500');
-      icon.setAttribute('fill', 'none');
-      icon.setAttribute('stroke', 'currentColor');
-      if (label) label.textContent = '좋아요';
-    }
-  }
-
-  function updateLikeCount(delta) {
-    const el = document.getElementById('likeCount');
-    if (!el) return;
-
-    const current = parseInt(String(el.textContent).replace(/,/g, ''), 10);
-    if (Number.isNaN(current)) return;
-
-    const next = Math.max(0, current + delta);
-    el.textContent = String(next);
-  }
-
-  async function sendLikeToggleRequest(currentlyLiked) {
-    const endpoint = currentlyLiked ? UNLIKE_ENDPOINT : LIKE_ENDPOINT;
-
-    const id = getPostId();
-    if (!id) throw new Error('Missing id (no ?id=... in URL and no data-id on likeEntity button)');
-
-    const body = new URLSearchParams({ id: String(id) });
-
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-      },
-      body,
+      const colorClass = CATEGORY_BADGE_CLASS[category] || 'bg-slate-100 text-slate-700';
+      badge.classList.add(...colorClass.split(' '));
     });
+  </script>
 
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-  }
+  <script>
+    /**
+     * 좋아요 토글 + 초기 상태(thymeleaf model "check" 사용) + 좋아요 수 즉시 반영
+     *
+     * - 페이지 진입 시: likeBtn의 data-liked(th:attr로 check 주입)를 읽어 UI를 맞춤
+     * - 클릭 시:
+     *   liked=false -> POST /likeAction   (body: id=...)
+     *   liked=true  -> POST /unlikeAction (body: id=...)
+     *
+     * 컨트롤러가 @RequestParam Long id 이므로 반드시 form-urlencoded로 보냅니다.
+     */
+    const LIKE_ENDPOINT = '/likeAction';
+    const UNLIKE_ENDPOINT = '/unlikeAction';
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('likeBtn');
-    if (!btn) return;
+    function getPostId() {
+      const qp = new URLSearchParams(window.location.search);
+      const idFromQuery = qp.get('id');
+      if (idFromQuery) return idFromQuery;
 
-    // 초기 상태: thymeleaf의 check가 data-liked로 들어온다고 가정
-    const initialLiked = btn.dataset.liked === 'true';
-    setLikedUI(initialLiked);
+      const btn = document.getElementById('likeBtn');
+      return btn?.dataset?.id || null;
+    }
 
-    btn.addEventListener('click', async () => {
-      const currentlyLiked = btn.dataset.liked === 'true';
+    function setLikedUI(liked) {
+      const btn = document.getElementById('likeBtn');
+      const icon = document.getElementById('likeIcon');
+      const label = btn?.querySelector('span');
+      if (!btn || !icon) return;
 
-      btn.disabled = true;
-      btn.classList.add('opacity-60', 'cursor-not-allowed');
+      btn.dataset.liked = liked ? 'true' : 'false';
+      btn.setAttribute('aria-pressed', liked ? 'true' : 'false');
+
+      if (liked) {
+        icon.classList.add('text-rose-600');
+        icon.classList.remove('text-slate-500');
+        icon.setAttribute('fill', 'currentColor');
+        icon.setAttribute('stroke', 'currentColor');
+        if (label) label.textContent = '좋아요 취소';
+      } else {
+        icon.classList.remove('text-rose-600');
+        icon.classList.add('text-slate-500');
+        icon.setAttribute('fill', 'none');
+        icon.setAttribute('stroke', 'currentColor');
+        if (label) label.textContent = '좋아요';
+      }
+    }
+
+    function updateLikeCount(delta) {
+      const el = document.getElementById('likeCount');
+      if (!el) return;
+
+      const current = parseInt(String(el.textContent).replace(/,/g, ''), 10);
+      if (Number.isNaN(current)) return;
+
+      const next = Math.max(0, current + delta);
+      el.textContent = String(next);
+    }
+
+    async function sendLikeToggleRequest(currentlyLiked) {
+      const endpoint = currentlyLiked ? UNLIKE_ENDPOINT : LIKE_ENDPOINT;
+
+      const id = getPostId();
+      if (!id) throw new Error('Missing id (no ?id=... in URL and no data-id on likeEntity button)');
+
+      const body = new URLSearchParams({ id: String(id) });
+
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+        body,
+      });
+
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('likeBtn');
+      if (!btn) return;
+
+      // 초기 상태: thymeleaf의 check가 data-liked로 들어온다고 가정
+      const initialLiked = btn.dataset.liked === 'true';
+      setLikedUI(initialLiked);
+
+      btn.addEventListener('click', async () => {
+        const currentlyLiked = btn.dataset.liked === 'true';
+
+        btn.disabled = true;
+        btn.classList.add('opacity-60', 'cursor-not-allowed');
+
+        try {
+          await sendLikeToggleRequest(currentlyLiked);
+          setLikedUI(!currentlyLiked);
+          updateLikeCount(currentlyLiked ? -1 : +1);
+        } catch (e) {
+          console.error('좋아요 토글 요청 실패:', e);
+          alert('좋아요 처리에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        } finally {
+          btn.disabled = false;
+          btn.classList.remove('opacity-60', 'cursor-not-allowed');
+        }
+      });
+    });
+  </script>
+
+
+  <script>
+    const Edit_ENDPOINT = '/editcomment';
+    const Delete_ENDPOINT = '/deletecomment';
+
+    async function postCommentForm(params, endpoint) {
+      const body = new URLSearchParams(params);
+
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+        body,
+      });
+
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res;
+    }
+
+    function updateCommentCount(delta) {
+      const el = document.getElementById('commentCount');
+      if (!el) return;
+
+      const cur = parseInt((el.textContent ?? '0').trim(), 10) || 0;
+      const next = Math.max(0, cur + delta);
+      el.textContent = String(next);
+
+      const emptyEl = document.getElementById('commentsEmpty');
+      if (emptyEl) {
+        if (next === 0) emptyEl.classList.remove('hidden');
+        else emptyEl.classList.add('hidden');
+      }
+    }
+
+    function findCommentItem(el) {
+      return el.closest('.comment-item');
+    }
+
+    function toggleEditUI(item, editing) {
+      const contentP = item.querySelector('.comment-content');
+      const editBox = item.querySelector('.comment-edit');
+      if (!contentP || !editBox) return;
+
+      if (editing) {
+        contentP.classList.add('hidden');
+        editBox.classList.remove('hidden');
+
+        const ta = editBox.querySelector('textarea');
+        const saveBtn = editBox.querySelector('[data-role="save"]');
+        const cancelBtn = editBox.querySelector('[data-role="cancel"]');
+
+        if (ta) ta.value = contentP.textContent ?? '';
+        if (ta) ta.focus();
+
+        // Enter 저장(Shift+Enter 줄바꿈), ESC 취소 (중복 바인딩 방지)
+        if (ta && !ta.dataset.boundKeys) {
+          ta.dataset.boundKeys = '1';
+          ta.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+              e.preventDefault();
+              if (cancelBtn) onCommentEditCancel(cancelBtn);
+              return;
+            }
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              if (saveBtn) onCommentEditSave(saveBtn);
+            }
+          });
+        }
+      } else {
+        editBox.classList.add('hidden');
+        contentP.classList.remove('hidden');
+      }
+    }
+
+    async function onCommentAction(btn) {
+      const action = btn.dataset.action; // edit | delete
+      const commentId = btn.dataset.commentId;
+
+      const item = findCommentItem(btn);
+      if (!item || !commentId) {
+        console.error('Missing comment item / comment id');
+        return;
+      }
+
+      if (action === 'edit') {
+        toggleEditUI(item, true);
+        return;
+      }
+
+      if (action === 'delete') {
+        if (!confirm('댓글을 삭제할까요?')) return;
+
+        btn.disabled = true;
+        btn.classList.add('opacity-60', 'cursor-not-allowed');
+
+        try {
+          // HTTP 폼 포맷으로 전송
+          await postCommentForm({ id: String(commentId), action: 'delete' }, Delete_ENDPOINT);
+
+          // 새로고침 없이 DOM 제거 + 댓글 수 -1 반영
+          item.remove();
+          updateCommentCount(-1);
+        } catch (e) {
+          console.error('댓글 삭제 실패:', e);
+          alert('삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        } finally {
+          btn.disabled = false;
+          btn.classList.remove('opacity-60', 'cursor-not-allowed');
+        }
+      }
+    }
+
+    async function onCommentEditSave(saveBtn) {
+      const item = findCommentItem(saveBtn);
+      if (!item) return;
+
+      const commentId = item.getAttribute('data-comment-id');
+      const contentP = item.querySelector('.comment-content');
+      const ta = item.querySelector('.comment-edit textarea');
+
+      if (!commentId || !contentP || !ta) return;
+
+      const nextContent = (ta.value ?? '').trim();
+      if (!nextContent) {
+        alert('내용을 입력해주세요.');
+        ta.focus();
+        return;
+      }
+
+      saveBtn.disabled = true;
+      saveBtn.classList.add('opacity-60', 'cursor-not-allowed');
 
       try {
-        await sendLikeToggleRequest(currentlyLiked);
-        setLikedUI(!currentlyLiked);
-        updateLikeCount(currentlyLiked ? -1 : +1);
+        // ✅ 폼 포맷 전송 (서버가 id만 받는다면 content/action은 무시해도 됨)
+        await postCommentForm({
+          id: String(commentId),
+          action: 'edit',
+          content: nextContent,
+        }, Edit_ENDPOINT);
+
+        // ✅ 성공하면 화면 즉시 반영
+        contentP.textContent = nextContent;
+        toggleEditUI(item, false);
       } catch (e) {
-        console.error('좋아요 토글 요청 실패:', e);
-        alert('좋아요 처리에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        console.error('댓글 수정 실패:', e);
+        alert('수정에 실패했습니다. 잠시 후 다시 시도해주세요.');
       } finally {
-        btn.disabled = false;
-        btn.classList.remove('opacity-60', 'cursor-not-allowed');
-      }
-    });
-  });
-</script>
-
-
-<script>
-  const Edit_ENDPOINT = '/editcomment';
-  const Delete_ENDPOINT = '/deletecomment';
-
-  async function postCommentForm(params , endpoint) {
-    const body = new URLSearchParams(params);
-
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-      },
-      body,
-    });
-
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    return res;
-  }
-
-  function updateCommentCount(delta) {
-    const el = document.getElementById('commentCount');
-    if (!el) return;
-
-    const cur = parseInt((el.textContent ?? '0').trim(), 10) || 0;
-    const next = Math.max(0, cur + delta);
-    el.textContent = String(next);
-
-    const emptyEl = document.getElementById('commentsEmpty');
-    if (emptyEl) {
-      if (next === 0) emptyEl.classList.remove('hidden');
-      else emptyEl.classList.add('hidden');
-    }
-  }
-
-  function findCommentItem(el) {
-    return el.closest('.comment-item');
-  }
-
-  function toggleEditUI(item, editing) {
-    const contentP = item.querySelector('.comment-content');
-    const editBox = item.querySelector('.comment-edit');
-    if (!contentP || !editBox) return;
-
-    if (editing) {
-      contentP.classList.add('hidden');
-      editBox.classList.remove('hidden');
-
-      const ta = editBox.querySelector('textarea');
-      const saveBtn = editBox.querySelector('[data-role="save"]');
-      const cancelBtn = editBox.querySelector('[data-role="cancel"]');
-
-      if (ta) ta.value = contentP.textContent ?? '';
-      if (ta) ta.focus();
-
-      // Enter 저장(Shift+Enter 줄바꿈), ESC 취소 (중복 바인딩 방지)
-      if (ta && !ta.dataset.boundKeys) {
-        ta.dataset.boundKeys = '1';
-        ta.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') {
-            e.preventDefault();
-            if (cancelBtn) onCommentEditCancel(cancelBtn);
-            return;
-          }
-          if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            if (saveBtn) onCommentEditSave(saveBtn);
-          }
-        });
-      }
-    } else {
-      editBox.classList.add('hidden');
-      contentP.classList.remove('hidden');
-    }
-  }
-
-  async function onCommentAction(btn) {
-    const action = btn.dataset.action; // edit | delete
-    const commentId = btn.dataset.commentId;
-
-    const item = findCommentItem(btn);
-    if (!item || !commentId) {
-      console.error('Missing comment item / comment id');
-      return;
-    }
-
-    if (action === 'edit') {
-      toggleEditUI(item, true);
-      return;
-    }
-
-    if (action === 'delete') {
-      if (!confirm('댓글을 삭제할까요?')) return;
-
-      btn.disabled = true;
-      btn.classList.add('opacity-60', 'cursor-not-allowed');
-
-      try {
-        // HTTP 폼 포맷으로 전송
-        await postCommentForm({ id: String(commentId), action: 'delete' },Delete_ENDPOINT);
-
-        // 새로고침 없이 DOM 제거 + 댓글 수 -1 반영
-        item.remove();
-        updateCommentCount(-1);
-      } catch (e) {
-        console.error('댓글 삭제 실패:', e);
-        alert('삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
-      } finally {
-        btn.disabled = false;
-        btn.classList.remove('opacity-60', 'cursor-not-allowed');
+        saveBtn.disabled = false;
+        saveBtn.classList.remove('opacity-60', 'cursor-not-allowed');
       }
     }
-  }
 
-  async function onCommentEditSave(saveBtn) {
-    const item = findCommentItem(saveBtn);
-    if (!item) return;
-
-    const commentId = item.getAttribute('data-comment-id');
-    const contentP = item.querySelector('.comment-content');
-    const ta = item.querySelector('.comment-edit textarea');
-
-    if (!commentId || !contentP || !ta) return;
-
-    const nextContent = (ta.value ?? '').trim();
-    if (!nextContent) {
-      alert('내용을 입력해주세요.');
-      ta.focus();
-      return;
-    }
-
-    saveBtn.disabled = true;
-    saveBtn.classList.add('opacity-60', 'cursor-not-allowed');
-
-    try {
-      // ✅ 폼 포맷 전송 (서버가 id만 받는다면 content/action은 무시해도 됨)
-      await postCommentForm({
-        id: String(commentId),
-        action: 'edit',
-        content: nextContent,
-      },Edit_ENDPOINT);
-
-      // ✅ 성공하면 화면 즉시 반영
-      contentP.textContent = nextContent;
+    function onCommentEditCancel(cancelBtn) {
+      const item = findCommentItem(cancelBtn);
+      if (!item) return;
       toggleEditUI(item, false);
-    } catch (e) {
-      console.error('댓글 수정 실패:', e);
-      alert('수정에 실패했습니다. 잠시 후 다시 시도해주세요.');
-    } finally {
-      saveBtn.disabled = false;
-      saveBtn.classList.remove('opacity-60', 'cursor-not-allowed');
     }
-  }
-
-  function onCommentEditCancel(cancelBtn) {
-    const item = findCommentItem(cancelBtn);
-    if (!item) return;
-    toggleEditUI(item, false);
-  }
-</script>
+  </script>
 
 </body>
+
 </html>

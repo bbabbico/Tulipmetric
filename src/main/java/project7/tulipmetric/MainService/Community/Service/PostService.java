@@ -23,13 +23,13 @@ public class PostService {
     public final LikeRepository likeRepository;
 
     @Transactional
-    public void SavePost(Post post){
+    public void savePost(Post post) {
         postRepository.save(post);
         log.info("Post Saved Successfully");
     }
 
     @Transactional
-    public void EditPost(Post post, PostDto postDto){
+    public void editPost(Post post, PostDto postDto) {
         post.setCategory(postDto.category());
         post.setIndustryTag(postDto.industryTag());
         post.setTitle(postDto.title());
@@ -39,7 +39,7 @@ public class PostService {
     }
 
     @Transactional
-    public void DeletePost(Long id){
+    public void deletePost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."));
 
@@ -49,23 +49,25 @@ public class PostService {
     }
 
     @Transactional
-    public String NickNameFindByPostid(Long id){
+    public String findNicknameByPostId(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."));
         return post.getNickname();
     }
 
     @Transactional
-    public Post FindByPostId(Long id){
+    public Post findByPostId(Long id) {
         return postRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."));
     }
 
     @Transactional
-    public List<Post> FindAllByNickname(String nickname){
+    public List<Post> findAllByNickname(String nickname) {
         return postRepository.findAllByNickname(nickname);
     }
 
     @Transactional
-    public List<Post> FindAll(){return postRepository.findAll();}
+    public List<Post> findAll() {
+        return postRepository.findAll();
+    }
 }

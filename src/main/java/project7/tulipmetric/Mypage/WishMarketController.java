@@ -27,10 +27,10 @@ public class WishMarketController {
         }
     }
 
-    @PostMapping("/deletwishmarket")
-    public ResponseEntity<Integer> deletWishMarket(@AuthenticationPrincipal Jwt jwt, @RequestParam Long id) {
+    @PostMapping("/deletewishmarket")
+    public ResponseEntity<Integer> deleteWishMarket(@AuthenticationPrincipal Jwt jwt, @RequestParam Long id) {
         try {
-            wishMarketService.deletWishMarket(jwt, id);
+            wishMarketService.deleteWishMarket(jwt, id);
             return new ResponseEntity<>(0, HttpStatus.OK);
         } catch (ResponseStatusException exception) {
             return ResponseEntity.status(exception.getStatusCode()).build();

@@ -30,32 +30,33 @@ public class MypageController {
     private final MypageService mypageService;
 
     @GetMapping("/mypage")
-    public String mypage(@AuthenticationPrincipal Jwt jwt , Model model) {
-        Member member = memberService.FindByLoginIdMember(jwt.getSubject())
+    public String mypage(@AuthenticationPrincipal Jwt jwt, Model model) {
+        Member member = memberService.findByLoginId(jwt.getSubject())
                 .orElseThrow(() -> new IllegalArgumentException("인증된 사용자만 접근할 수 있습니다."));
-        log.info("회원인증 완료 {}",member.toString());
+        log.info("회원인증 완료 {}", member.toString());
 
-        log.info("{}",likeService.findAllByLoginid(member.getLoginid()).size());
-        model.addAttribute("likecount",likeService.findAllByLoginid(member.getLoginid()).size());
-        model.addAttribute("commentcount",commentService.CommentCountFindJwt(jwt));
-        model.addAttribute("postcount",postService.FindAllByNickname(member.getNickname()).size());
+        log.info("{}", likeService.findAllByLoginid(member.getLoginid()).size());
+        model.addAttribute("likecount", likeService.findAllByLoginid(member.getLoginid()).size());
+        model.addAttribute("commentcount", commentService.countByJwt(jwt));
+        model.addAttribute("postcount", postService.findAllByNickname(member.getNickname()).size());
         model.addAttribute("member", member);
         return "Mypage/mypage";
     }
 
-    @GetMapping("/accountsettings") //TODO : MemberService 수정해야함.
-    public String accountSettings(@AuthenticationPrincipal Jwt jwt,Model model){
-        model.addAttribute("member",memberService.findMemberByJwt(jwt).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.")));
+    @GetMapping("/accountsettings") // TODO : MemberService 수정해야함.
+    public String accountSettings(@AuthenticationPrincipal Jwt jwt, Model model) {
+        model.addAttribute("member", memberService.findMemberByJwt(jwt)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.")));
         return "Mypage/account-settings";
     }
 
     @GetMapping("/activity")
-    public String activity(@AuthenticationPrincipal Jwt jwt,Model model){
-        model.addAttribute("likes",mypageService.LoadPostsByLike(jwt));
-        model.addAttribute("posts",mypageService.LoadPostsByNickname(jwt));
-        model.addAttribute("comments",mypageService.LoadPostsByComment(jwt));
+    public String activity(@AuthenticationPrincipal Jwt jwt, Model model) {
+        model.addAttribute("likes", mypageService.LoadPostsByLike(jwt));
+        model.addAttribute("posts", mypageService.LoadPostsByNickname(jwt));
+        model.addAttribute("comments", mypageService.LoadPostsByComment(jwt));
 
-        model.addAttribute("commentcount",commentService.CommentCountFindJwt(jwt));
+        model.addAttribute("commentcount", commentService.countByJwt(jwt));
         return "Mypage/activity";
     }
 
@@ -64,8 +65,7 @@ public class MypageController {
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam(required = false) String nickname,
             @RequestParam(required = false) String email,
-            Model model
-    ) {
+            Model model) {
         memberService.updateProfile(jwt, nickname, email);
         model.addAttribute("member", memberService.findMemberByJwt(jwt)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.")));
@@ -76,8 +76,7 @@ public class MypageController {
     public String editPassword(
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam String currentPassword,
-            @RequestParam String newPassword
-    ) {
+            @RequestParam String newPassword) {
         memberService.updatePassword(jwt, currentPassword, newPassword);
         return "redirect:/accountsettings";
     }

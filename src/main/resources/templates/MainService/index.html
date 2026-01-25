@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,11 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -16,12 +21,42 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    h1 { font-size: 1.5rem; font-weight: 500; line-height: 1.5; }
-    h2 { font-size: 1.25rem; font-weight: 500; line-height: 1.5; }
-    h3 { font-size: 1.125rem; font-weight: 500; line-height: 1.5; }
-    h4 { font-size: 1rem; font-weight: 500; line-height: 1.5; }
-    label, button { font-size: 1rem; font-weight: 500; line-height: 1.5; }
-    input { font-size: 1rem; font-weight: 400; line-height: 1.5; }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    h3 {
+      font-size: 1.125rem;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    h4 {
+      font-size: 1rem;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    label,
+    button {
+      font-size: 1rem;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    input {
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.5;
+    }
 
     .line-clamp-2 {
       display: -webkit-box;
@@ -31,8 +66,9 @@
     }
   </style>
 </head>
+
 <body class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100"
-      th:attr="data-has-server-wishlist=${wishlist != null}">
+  th:attr="data-has-server-wishlist=${wishlist != null}">
   <!-- Header -->
   <div th:replace="~{fragments/basicheader :: basicheader-fragment}"></div>
 
@@ -50,18 +86,17 @@
     <div class="mb-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
       <div class="flex flex-col md:flex-row gap-4">
         <div class="flex-1 relative">
-          <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" fill="none"
+            stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          <input
-            type="text"
-            id="searchInput"
-            placeholder="산업군명으로 검색..."
-            class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+          <input type="text" id="searchInput" placeholder="산업군명으로 검색..."
+            class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
         </div>
         <div>
-          <select id="statusFilter" class="px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <select id="statusFilter"
+            class="px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
             <option value="all">전체 상태</option>
             <option value="overvalued">과열 (매우 화려한 튤립)</option>
             <option value="growing">강한 상승 (화려한 튤립)</option>
@@ -75,30 +110,39 @@
 
     <!-- Market Temperature Section -->
     <section class="mb-12" id="marketTempSection">
-      <div class="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50 rounded-3xl shadow-xl border border-slate-200">
-        <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl"></div>
-        <div class="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-200/30 to-indigo-200/30 rounded-full blur-3xl"></div>
+      <div
+        class="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50 rounded-3xl shadow-xl border border-slate-200">
+        <div
+          class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl">
+        </div>
+        <div
+          class="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-200/30 to-indigo-200/30 rounded-full blur-3xl">
+        </div>
 
         <div class="relative px-8 py-16">
           <div class="text-center max-w-3xl mx-auto">
             <div class="mb-8">
               <p class="text-sm tracking-wider uppercase text-slate-400 mb-3" style="font-weight: 300;">현재 시장은...</p>
-              <h2 id="marketTitle" class="text-5xl md:text-6xl mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600"
-                  style="font-weight: 300; letter-spacing: -0.025em;">안정적인 시장</h2>
+              <h2 id="marketTitle"
+                class="text-5xl md:text-6xl mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600"
+                style="font-weight: 300; letter-spacing: -0.025em;">안정적인 시장</h2>
             </div>
 
             <div class="flex justify-center mb-8">
               <div class="relative">
                 <div class="absolute inset-0 blur-2xl opacity-40 bg-blue-400"></div>
-                <div id="marketTulip" class="relative transform hover:scale-110 transition-transform duration-500 ease-out"></div>
+                <div id="marketTulip"
+                  class="relative transform hover:scale-110 transition-transform duration-500 ease-out"></div>
               </div>
             </div>
 
             <div class="mb-8">
-              <p id="marketDescription" class="text-xl md:text-2xl text-blue-700" style="font-weight: 300;">신기술 중심으로 관심이 쏠립니다</p>
+              <p id="marketDescription" class="text-xl md:text-2xl text-blue-700" style="font-weight: 300;">신기술 중심으로 관심이
+                쏠립니다</p>
             </div>
 
-            <div class="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full border border-slate-200 shadow-sm">
+            <div
+              class="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full border border-slate-200 shadow-sm">
               <span class="text-sm text-slate-500">평균 성장률</span>
               <span id="avgGrowthRate" class="text-xl text-green-600">+0.0%</span>
             </div>
@@ -111,7 +155,7 @@
     <section class="mb-12" id="favoritesSection" style="display: none;">
       <div class="flex items-center gap-3 mb-6">
         <svg class="w-7 h-7 text-yellow-500 fill-current" viewBox="0 0 24 24">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
         </svg>
         <h2 class="text-slate-900">즐겨찾기</h2>
       </div>
@@ -122,7 +166,8 @@
     <section class="mb-12" id="trendingSection">
       <div class="flex items-center gap-3 mb-6">
         <svg class="w-7 h-7 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
         </svg>
         <h2 class="text-slate-900">빠르게 성장중인 산업군</h2>
       </div>
@@ -131,33 +176,35 @@
         <th:block th:each="m : ${market}">
           <th:block th:if="${m.trending}">
             <div class="relative industry-card"
-                 th:with="isFavorite=${wishlist != null and !(wishlist.?[marketid?.id == #vars.m.id]).isEmpty()}"
-                 th:attr="data-id=${m.id},data-name=${m.name},data-status=${m.marketStatus},data-growth=${m.growthRate30d},data-is-favorite=${isFavorite}">
+              th:with="isFavorite=${wishlist != null and !(wishlist.?[marketid?.id == #vars.m.id]).isEmpty()}"
+              th:attr="data-id=${m.id},data-name=${m.name},data-status=${m.marketStatus},data-growth=${m.growthRate30d},data-is-favorite=${isFavorite}">
               <!-- Favorite Button -->
               <button type="button"
-                      th:class="${isFavorite} ?
+                th:class="${isFavorite} ?
                         'favorite-btn absolute top-2 right-2 z-10 p-1.5 rounded-full transition-all duration-200 shadow-sm bg-yellow-100 text-yellow-600 hover:bg-yellow-200' :
                         'favorite-btn absolute top-2 right-2 z-10 p-1.5 rounded-full transition-all duration-200 shadow-sm bg-white/80 text-slate-400 hover:bg-white hover:text-slate-600'"
-                      th:attr="data-id=${m.id}"
-                      title="즐겨찾기 추가">
+                th:attr="data-id=${m.id}" title="즐겨찾기 추가">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
-                     th:classappend="${isFavorite} ? ' fill-current' : ''"
-                     th:attr="fill=${isFavorite} ? 'currentColor' : 'none'">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  th:classappend="${isFavorite} ? ' fill-current' : ''"
+                  th:attr="fill=${isFavorite} ? 'currentColor' : 'none'">
+                  <path
+                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                 </svg>
               </button>
 
               <a th:href="@{/industry-detail(id=${m.id})}"
-                 class="block bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-slate-300 group">
+                class="block bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-slate-300 group">
                 <div class="p-6">
                   <div class="flex items-start justify-between mb-4">
                     <div class="flex-1">
                       <div class="flex items-center gap-2 mb-2">
-                        <h3 class="text-slate-900 group-hover:text-blue-600 transition-colors" th:text="${m.name}">산업군명</h3>
-                        <span class="px-2 py-1 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-xs rounded-full">급상승</span>
+                        <h3 class="text-slate-900 group-hover:text-blue-600 transition-colors" th:text="${m.name}">산업군명
+                        </h3>
+                        <span
+                          class="px-2 py-1 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-xs rounded-full">급상승</span>
                       </div>
                       <p class="text-slate-600 text-sm line-clamp-2"
-                         th:text="${#strings.isEmpty(m.description) ? '산업군 설명이 없습니다.' : m.description}">
+                        th:text="${#strings.isEmpty(m.description) ? '산업군 설명이 없습니다.' : m.description}">
                         산업군 설명
                       </p>
                     </div>
@@ -169,17 +216,19 @@
                       <div class="flex items-center gap-2 mb-1">
                         <th:block th:if="${m.growthRate30d >= 0}">
                           <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                           </svg>
                         </th:block>
                         <th:block th:unless="${m.growthRate30d >= 0}">
                           <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
                           </svg>
                         </th:block>
 
                         <span th:class="${m.growthRate30d >= 0 ? 'text-green-600' : 'text-red-600'}"
-                              th:text="${(m.growthRate30d >= 0 ? '+' : '') + #numbers.formatDecimal(m.growthRate30d,1,1) + '%'}">
+                          th:text="${(m.growthRate30d >= 0 ? '+' : '') + #numbers.formatDecimal(m.growthRate30d,1,1) + '%'}">
                           +0.0%
                         </span>
                       </div>
@@ -187,8 +236,7 @@
                     </div>
 
                     <div class="text-right">
-                      <p class="marketcap"
-                         th:attr="data-marketcap=${m.totalmarketcap}">
+                      <p class="marketcap" th:attr="data-marketcap=${m.totalMarketCap}">
                         -
                       </p>
                       <p class="text-xs text-slate-500">총 시가총액</p>
@@ -196,12 +244,12 @@
 
                     <div>
                       <span class="status-badge px-3 py-1 rounded-full text-sm"
-                            th:attr="data-status=${m.marketStatus}"></span>
+                        th:attr="data-status=${m.marketStatus}"></span>
                     </div>
                   </div>
 
                   <div class="mt-4 flex items-center gap-2 text-sm text-slate-600">
-                    <span th:text="${#numbers.formatInteger(m.stockcount,3,'COMMA')} + ' 거래량'">거래량</span>
+                    <span th:text="${#numbers.formatInteger(m.stockCount,3,'COMMA')} + ' 거래량'">거래량</span>
                     <span class="text-slate-300">•</span>
                     <span class="text-blue-600 group-hover:underline">자세히 보기 →</span>
                   </div>
@@ -217,7 +265,8 @@
     <section class="mb-12" id="otherSection">
       <div class="flex items-center gap-3 mb-6">
         <svg class="w-7 h-7 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
         </svg>
         <h2 class="text-slate-900">주요 산업군</h2>
       </div>
@@ -226,32 +275,33 @@
         <th:block th:each="m : ${market}">
           <th:block th:unless="${m.trending}">
             <div class="relative industry-card"
-                 th:with="isFavorite=${wishlist != null and !(wishlist.?[marketid?.id == #vars.m.id]).isEmpty()}"
-                 th:attr="data-id=${m.id},data-name=${m.name},data-status=${m.marketStatus},data-growth=${m.growthRate30d},data-is-favorite=${isFavorite}">
+              th:with="isFavorite=${wishlist != null and !(wishlist.?[marketid?.id == #vars.m.id]).isEmpty()}"
+              th:attr="data-id=${m.id},data-name=${m.name},data-status=${m.marketStatus},data-growth=${m.growthRate30d},data-is-favorite=${isFavorite}">
               <!-- Favorite Button -->
               <button type="button"
-                      th:class="${isFavorite} ?
+                th:class="${isFavorite} ?
                         'favorite-btn absolute top-2 right-2 z-10 p-1.5 rounded-full transition-all duration-200 shadow-sm bg-yellow-100 text-yellow-600 hover:bg-yellow-200' :
                         'favorite-btn absolute top-2 right-2 z-10 p-1.5 rounded-full transition-all duration-200 shadow-sm bg-white/80 text-slate-400 hover:bg-white hover:text-slate-600'"
-                      th:attr="data-id=${m.id}"
-                      title="즐겨찾기 추가">
+                th:attr="data-id=${m.id}" title="즐겨찾기 추가">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
-                     th:classappend="${isFavorite} ? ' fill-current' : ''"
-                     th:attr="fill=${isFavorite} ? 'currentColor' : 'none'">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  th:classappend="${isFavorite} ? ' fill-current' : ''"
+                  th:attr="fill=${isFavorite} ? 'currentColor' : 'none'">
+                  <path
+                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                 </svg>
               </button>
 
               <a th:href="@{/industry-detail(id=${m.id})}"
-                 class="block bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-slate-300 group">
+                class="block bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-slate-300 group">
                 <div class="p-6">
                   <div class="flex items-start justify-between mb-4">
                     <div class="flex-1">
                       <div class="flex items-center gap-2 mb-2">
-                        <h3 class="text-slate-900 group-hover:text-blue-600 transition-colors" th:text="${m.name}">산업군명</h3>
+                        <h3 class="text-slate-900 group-hover:text-blue-600 transition-colors" th:text="${m.name}">산업군명
+                        </h3>
                       </div>
                       <p class="text-slate-600 text-sm line-clamp-2"
-                         th:text="${#strings.isEmpty(m.description) ? '산업군 설명이 없습니다.' : m.description}">
+                        th:text="${#strings.isEmpty(m.description) ? '산업군 설명이 없습니다.' : m.description}">
                         산업군 설명
                       </p>
                     </div>
@@ -263,17 +313,19 @@
                       <div class="flex items-center gap-2 mb-1">
                         <th:block th:if="${m.growthRate30d >= 0}">
                           <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                           </svg>
                         </th:block>
                         <th:block th:unless="${m.growthRate30d >= 0}">
                           <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
                           </svg>
                         </th:block>
 
                         <span th:class="${m.growthRate30d >= 0 ? 'text-green-600' : 'text-red-600'}"
-                              th:text="${(m.growthRate30d >= 0 ? '+' : '') + #numbers.formatDecimal(m.growthRate30d,1,1) + '%'}">
+                          th:text="${(m.growthRate30d >= 0 ? '+' : '') + #numbers.formatDecimal(m.growthRate30d,1,1) + '%'}">
                           +0.0%
                         </span>
                       </div>
@@ -281,8 +333,7 @@
                     </div>
 
                     <div class="text-right">
-                      <p class="marketcap"
-                         th:attr="data-marketcap=${m.totalmarketcap}">
+                      <p class="marketcap" th:attr="data-marketcap=${m.totalMarketCap}">
                         -
                       </p>
                       <p class="text-xs text-slate-500">총 시가총액</p>
@@ -290,12 +341,12 @@
 
                     <div>
                       <span class="status-badge px-3 py-1 rounded-full text-sm"
-                            th:attr="data-status=${m.marketStatus}"></span>
+                        th:attr="data-status=${m.marketStatus}"></span>
                     </div>
                   </div>
 
                   <div class="mt-4 flex items-center gap-2 text-sm text-slate-600">
-                    <span th:text="${#numbers.formatInteger(m.stockcount,3,'COMMA')} + ' 거래량'">거래량</span>
+                    <span th:text="${#numbers.formatInteger(m.stockCount,3,'COMMA')} + ' 거래량'">거래량</span>
                     <span class="text-slate-300">•</span>
                     <span class="text-blue-600 group-hover:underline">자세히 보기 →</span>
                   </div>
@@ -312,7 +363,8 @@
       <div class="text-6xl mb-4">🔍</div>
       <h3 class="text-slate-900 mb-2">검색 결과가 없습니다</h3>
       <p class="text-slate-600 mb-6">다른 검색어를 입력하거나 필터를 변경해보세요</p>
-      <button onclick="resetFilters()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+      <button onclick="resetFilters()"
+        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
         필터 초기화
       </button>
     </div>
@@ -340,7 +392,7 @@
     let v = BigInt(raw);
     if (v < 0n) { sign = "-"; v = -v; }
 
-    const JO  = 1_000_000_000_000n; // 1조
+    const JO = 1_000_000_000_000n; // 1조
     const EOK = 100_000_000n;       // 1억
 
     if (v >= JO) {
@@ -366,4 +418,5 @@
     });
   });
 </script>
+
 </html>

@@ -15,11 +15,11 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public Optional<String> NicknameFindByJwt(Jwt jwt){
+    public Optional<String> findNicknameByJwt(Jwt jwt) {
         return findMemberByJwt(jwt).map(Member::getNickname);
     }
 
-    public Optional<Member> FindByLoginIdMember(String loginid){
+    public Optional<Member> findByLoginId(String loginid) {
         if (loginid == null) {
             return Optional.empty();
         }
@@ -27,7 +27,7 @@ public class MemberService {
         return Optional.ofNullable(memberRepository.findByLoginid(loginid));
     }
 
-    public Optional<Role> RoleFindByJwt(Jwt jwt) {
+    public Optional<Role> findRoleByJwt(Jwt jwt) {
         return findMemberByJwt(jwt).map(Member::getRole);
     }
 

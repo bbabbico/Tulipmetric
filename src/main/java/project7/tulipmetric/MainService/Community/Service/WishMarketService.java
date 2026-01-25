@@ -31,7 +31,7 @@ public class WishMarketService {
     }
 
     @Transactional
-    public void deletWishMarket(Jwt jwt, Long marketid) {
+    public void deleteWishMarket(Jwt jwt, Long marketid) {
         Jwt authenticatedJwt = requireJwt(jwt);
         Market market = findMarketOrThrow(marketid);
         String loginid = authenticatedJwt.getSubject();
@@ -42,7 +42,7 @@ public class WishMarketService {
     }
 
     @Transactional
-    public Boolean CheckWishMarket(Jwt jwt, Long id) { // 좋아요 이미 누른 사용자 인지 보내줌,
+    public Boolean checkWishMarket(Jwt jwt, Long id) { // 좋아요 이미 누른 사용자 인지 보내줌,
         Jwt authenticatedJwt = requireJwt(jwt);
         Market market = findMarketOrThrow(id);
 
