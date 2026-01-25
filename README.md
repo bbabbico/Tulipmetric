@@ -2,8 +2,7 @@
 산업군 비교 서비스
 
 # 개발 단계
-통합테스트 완료,
-1차 리펙터링 중... (객체지향 아키텍처)
+2차 리팩터링중 (성능 점검)
 
 ## <a href="https://www.figma.com/board/ky0Sb60izZ4Ah3MlDtEusG/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98?node-id=0-1&t=WhjYw5i6j7hK7Kfi-1">아키텍처</a>
 figma
