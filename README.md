@@ -2,7 +2,7 @@
 산업군 비교 서비스
 
 # 개발 단계
-엔드포인트 스프링 부트 로 설정했을때 모두 정상작동함. nginx 설정중
+2차 리팩터링중 (성능 점검)
 
 ## <a href="https://www.figma.com/board/ky0Sb60izZ4Ah3MlDtEusG/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98?node-id=0-1&t=WhjYw5i6j7hK7Kfi-1">아키텍처</a>
 figma
@@ -10,12 +10,12 @@ figma
 ## 빌드
 .env 파일 에서 SQL 설정 수정한뒤
 mysql 폴더의 Dockerfile 에서 SQL 설정 수정해야됨.
-그리고 실재 주식시장 데이터를 이용하기 때문에, KOSIS API 키와 공공데이터 포탈 API 가 필요함.
+그리고 실재 주식시장 데이터를 이용하기 때문에, KOSIS API 키와 공공데이터 포탈 API 가 필요함. 
 
 DATA_GO_KR_SERVICE_KEY=9k9a3/dWfMNnVqG9mRPMQQ28gKPieL/zP8QrxRrOr6gP71ukyqvL7voKvS6fYOooEJiA1/UjQ/SS0sg49nZEUA==
-KOSIS_API_KEY=ZmVmMjhjMjMwYTBlZjcxODdlMWE4NGM0YjA5NjgxMWU=
+KOSIS_API_KEY=KOSIS_API_KEY=ZmVmMjhjMjMwYTBlZjcxODdlMWE4NGM0YjA5NjgxMWU=
 
-한시적으로 테스트를위해 위에 API를 사용. 
+한시적으로 테스트를위해 위 API를 사용. 
 
 최종빌드
 
@@ -35,7 +35,7 @@ KOSIS_API_KEY=ZmVmMjhjMjMwYTBlZjcxODdlMWE4NGM0YjA5NjgxMWU=
 
 ### 개발 환경
 - java 17
-- springframework 4.0.1
+- springframework
 - Spring Data JPA
 - Spring Security
 - Thymeleaf

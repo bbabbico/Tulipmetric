@@ -128,7 +128,7 @@ async function toggleFavorite(id) {
     return;
   }
 
-  const url = isFav ? '/deletwishmarket' : '/savewishmarket';
+  const url = isFav ? '/deletewishmarket' : '/savewishmarket';
   const body = new URLSearchParams();
   body.set('id', id);
 

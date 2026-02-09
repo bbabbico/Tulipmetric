@@ -19,24 +19,23 @@ public class IndexService {
     private final CompanyRepoitory companyRepoitory;
     private final WishMarketRepository wishMarketRepository;
 
-    public List<Wishmarket> IndexWishMarketFindByLoginId(Jwt jwt) {
-        if (jwt==null) {
+    public List<Wishmarket> findWishMarketByLoginId(Jwt jwt) {
+        if (jwt == null) {
             return null;
         }
         return wishMarketRepository.findAllByLoginid(jwt.getSubject());
     }
 
-    public List<Market> IndexMarketLoad(){
+    public List<Market> findAllMarkets() {
         return marketRepository.findAll();
     }
 
-    public Market IndexMarketLoadById(Long id){
+    public Market findMarketById(Long id) {
         return marketRepository.findById(id).get();
     }
 
-    public List<Company> IndexCompanyFindByMarketLoad(String market){
+    public List<Company> findCompaniesByMarket(String market) {
         return companyRepoitory.findAllByMarket(market);
     }
-
 
 }
