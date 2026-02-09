@@ -31,14 +31,14 @@ public class MypageController {
 
     @GetMapping("/mypage")
     public String mypage(@AuthenticationPrincipal Jwt jwt , Model model) {
-        Member member = memberService.FindByLoginIdMember(jwt.getSubject())
+        Member member = memberService.findByLoginId(jwt.getSubject())
                 .orElseThrow(() -> new IllegalArgumentException("인증된 사용자만 접근할 수 있습니다."));
         log.info("회원인증 완료 {}",member.toString());
 
         log.info("{}",likeService.findAllByLoginid(member.getLoginid()).size());
         model.addAttribute("likecount",likeService.findAllByLoginid(member.getLoginid()).size());
-        model.addAttribute("commentcount",commentService.CommentCountFindJwt(jwt));
-        model.addAttribute("postcount",postService.FindAllByNickname(member.getNickname()).size());
+        model.addAttribute("commentcount",commentService.countByJwt(jwt));
+        model.addAttribute("postcount",postService.findAllByNickname(member.getNickname()).size());
         model.addAttribute("member", member);
         return "Mypage/mypage";
     }
@@ -55,7 +55,7 @@ public class MypageController {
         model.addAttribute("posts",mypageService.LoadPostsByNickname(jwt));
         model.addAttribute("comments",mypageService.LoadPostsByComment(jwt));
 
-        model.addAttribute("commentcount",commentService.CommentCountFindJwt(jwt));
+        model.addAttribute("commentcount",commentService.countByJwt(jwt));
         return "Mypage/activity";
     }
 

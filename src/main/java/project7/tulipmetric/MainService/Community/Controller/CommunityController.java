@@ -36,18 +36,18 @@ public class CommunityController {
 
     @GetMapping("/community") // 커뮤니티 메인 페이지 GET
     public String community(Model model){
-        model.addAttribute("posts",postService.FindAll());
+        model.addAttribute("posts",postService.findAll());
         return "MainService/community/community";
     }
 
     @GetMapping("/discussion-detail") // 커뮤니티 게시글 상세 페이지 GET
     public String discussion_detail(@RequestParam Long id,@AuthenticationPrincipal Jwt jwt ,Model model){
-        Post post = postService.FindByPostId(id);
-        List<Comment> comments = commentService.FindAllByPostid(post);
+        Post post = postService.findByPostId(id);
+        List<Comment> comments = commentService.findAllByPostId(post);
         Boolean Check = likeService.CheckLike(jwt,post);
-        String nickname = memberService.NicknameFindByJwt(jwt).orElse(null);
+        String nickname = memberService.findNicknameByJwt(jwt).orElse(null);
         boolean isHost = post.getNickname().equals(nickname);
-        boolean isLoot = memberService.RoleFindByJwt(jwt).map(role -> role == Role.LOOT).orElse(false);
+        boolean isLoot = memberService.findRoleByJwt(jwt).map(role -> role == Role.LOOT).orElse(false);
 
         model.addAttribute("host", isHost); //작성자 본인인지 확인
         model.addAttribute("nickname",nickname); //작성자 닉네임
@@ -67,20 +67,20 @@ public class CommunityController {
 
     @PostMapping("/createpost")
     public String SavePost(@AuthenticationPrincipal Jwt jwt, PostDto postDto){
-        String nickname = memberService.NicknameFindByJwt(jwt)
+        String nickname = memberService.findNicknameByJwt(jwt)
                 .orElseThrow(() -> new IllegalArgumentException("인증된 사용자만 게시글을 작성할 수 있습니다."));
         Date nowDate = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 ss초");
 
-        postService.SavePost(new Post(null,nickname,postDto.category(),postDto.industryTag(),postDto.title(),postDto.content(),simpleDateFormat.format(nowDate),0,0, Role.USER));
+        postService.savePost(new Post(null,nickname,postDto.category(),postDto.industryTag(),postDto.title(),postDto.content(),simpleDateFormat.format(nowDate),0,0, Role.USER));
 
         return "redirect:/community";
     }
 
     @GetMapping("/editpost") // 수정 페이지 Get
     public String GetEditPost(Model model,@RequestParam Long id, @AuthenticationPrincipal Jwt jwt){
-        Post post = postService.FindByPostId(id);
-        String nickname = memberService.NicknameFindByJwt(jwt)
+        Post post = postService.findByPostId(id);
+        String nickname = memberService.findNicknameByJwt(jwt)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
         if (!post.getNickname().equals(nickname)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
@@ -93,26 +93,26 @@ public class CommunityController {
 
     @PostMapping("/editpost") // 게시글 수정
     public String EditPost(@ModelAttribute PostDto postDto, @RequestParam Long id, @AuthenticationPrincipal Jwt jwt){
-        Post post = postService.FindByPostId(id);
-        String nickname = memberService.NicknameFindByJwt(jwt)
+        Post post = postService.findByPostId(id);
+        String nickname = memberService.findNicknameByJwt(jwt)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
         if (!post.getNickname().equals(nickname)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
-        postService.EditPost(post,postDto);
+        postService.editPost(post,postDto);
         return "redirect:/discussion-detail?id="+id;
     }
 
     @PostMapping("/deletepost") // 게시글 삭제
     public String DeletePost(@RequestParam Long postid, @AuthenticationPrincipal Jwt jwt){
-        Post post = postService.FindByPostId(postid);
-        String nickname = memberService.NicknameFindByJwt(jwt)
+        Post post = postService.findByPostId(postid);
+        String nickname = memberService.findNicknameByJwt(jwt)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-        boolean isLoot = memberService.RoleFindByJwt(jwt).map(role -> role == Role.LOOT).orElse(false);
+        boolean isLoot = memberService.findRoleByJwt(jwt).map(role -> role == Role.LOOT).orElse(false);
         if (!isLoot && !post.getNickname().equals(nickname)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
-        postService.DeletePost(postid);
+        postService.deletePost(postid);
         return "redirect:/community";
     }
 
@@ -146,34 +146,34 @@ public class CommunityController {
 
     @PostMapping("/createcomment") // 댓글 등록
     public String SaveComment(@AuthenticationPrincipal Jwt jwt, CommentDto commentDto){
-        String nickname = memberService.NicknameFindByJwt(jwt)
+        String nickname = memberService.findNicknameByJwt(jwt)
                 .orElseThrow(() -> new IllegalArgumentException("인증된 사용자만 댓글을 작성할 수 있습니다."));
         Date nowDate = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 ss초");
 
-        commentService.SaveComment(new Comment(null, postService.FindByPostId(commentDto.postid()),nickname,commentDto.content(),simpleDateFormat.format(nowDate)));
+        commentService.saveComment(new Comment(null, postService.findByPostId(commentDto.postid()),nickname,commentDto.content(),simpleDateFormat.format(nowDate)));
 
         return "redirect:/discussion-detail?id="+commentDto.postid();
     }
 
     @PostMapping("/editcomment") // 댓글 수정
     public ResponseEntity<Integer> EditComment(@AuthenticationPrincipal Jwt jwt, Long id , String content){
-        Comment comment = commentService.FindById(id);
-        String nickname = memberService.NicknameFindByJwt(jwt)
+        Comment comment = commentService.findById(id);
+        String nickname = memberService.findNicknameByJwt(jwt)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
         if (!comment.getNickname().equals(nickname)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
-        commentService.EditComment(id,content);
+        commentService.editComment(id,content);
         return new ResponseEntity<>(0, HttpStatus.OK);
     }
 
     @PostMapping("/deletecomment") // 댓글 삭제
     public ResponseEntity<Integer> DeleteComment(@AuthenticationPrincipal Jwt jwt, Long id){
-        Comment comment = commentService.FindById(id);
-        String nickname = memberService.NicknameFindByJwt(jwt)
+        Comment comment = commentService.findById(id);
+        String nickname = memberService.findNicknameByJwt(jwt)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-        boolean isLoot = memberService.RoleFindByJwt(jwt).map(role -> role == Role.LOOT).orElse(false);
+        boolean isLoot = memberService.findRoleByJwt(jwt).map(role -> role == Role.LOOT).orElse(false);
         if (!isLoot && !comment.getNickname().equals(nickname)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
