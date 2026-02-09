@@ -16,6 +16,12 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   spring-server:
     image: spring-server:1
@@ -25,7 +31,8 @@ services:
     container_name: spring-server
     restart: always
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     expose:
       - "8080"
     env_file:
@@ -50,7 +57,8 @@ services:
     container_name: python-loader
     restart: "no"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     env_file:
       - ./.env
     environment:

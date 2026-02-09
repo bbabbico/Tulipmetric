@@ -43,7 +43,7 @@ public class MypageController {
         return "Mypage/mypage";
     }
 
-    @GetMapping("/accountsettings") //TODO : MemberService 수정해야함.
+    @GetMapping("/accountsettings")
     public String accountSettings(@AuthenticationPrincipal Jwt jwt,Model model){
         model.addAttribute("member",memberService.findMemberByJwt(jwt).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.")));
         return "Mypage/account-settings";
