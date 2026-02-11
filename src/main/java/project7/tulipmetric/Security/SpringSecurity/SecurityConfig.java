@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import project7.tulipmetric.Security.SpringSecurity.JWT.*;
 import project7.tulipmetric.Security.SpringSecurity.OAuth2.CookieOAuth2AuthorizationRequestRepository;
@@ -97,8 +98,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/savewishmarket", "/deletwishmarket").hasAnyRole(userAndLootRoles)
                                 .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
 
-//                                .anyRequest().authenticated() // 운영 기준
-                         .anyRequest().permitAll()    // 테스트
+                                .anyRequest().authenticated() // 운영 기준
+//                         .anyRequest().permitAll()    // 테스트
                 )
 
                 // 기본 formLogin 비활성 (JwtLoginFilter로 대체)
@@ -119,7 +120,7 @@ public class SecurityConfig {
                 // 로그인 처리 필터(POST /login)
                 .addFilterAt(jwtLoginFilter, UsernamePasswordAuthenticationFilter.class)
 
-                // 로그아웃: 세션이 없으니 "쿠키 삭제" 정도만 의미 있음
+                // 로그아웃 - 쿠키 제거
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessHandler((req, res, auth) -> {
@@ -136,8 +137,8 @@ public class SecurityConfig {
 
                 // 인증 실패시 401 내려주기(페이지가 아니라 API면 특히 중요)
                 .exceptionHandling(e -> e
-                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)) //로그인 안했는데 로그인 필요한 페이지 접근하면 = 로그인 페이지로 이동
-                        .accessDeniedHandler((req, res, ex) -> res.sendError(403))
+                        .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")) //로그인 안했는데 로그인 필요한 페이지 접근하면 = 로그인 페이지로 이동
+                        .accessDeniedHandler((req, res, ex) -> res.sendError(403,"해당 권한으로 접근할 수 없는 페이지 입니다.")) //로그인 후, 권한 밖의 페이지를 접속한경우 에러응답
                 );
 
         return http.build();
