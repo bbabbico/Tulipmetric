@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>회원가입 - Tulipmetric</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.google.com/recaptcha/enterprise.js" async defer></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
@@ -135,8 +136,10 @@
               class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
                       <p id="pwMsg" class="text-xs mt-1"></p>
-</div>
 
+          </div>
+          <!-- 구글 캡챠 -->
+          <div class="g-recaptcha" data-sitekey="6LeP2mgsAAAAAFuyIXdFTZPt6xgLuqJJ84fbpoQK" data-action="LOGIN"></div>
           <div class="space-y-3">
             <label class="flex items-start gap-2">
               <input type="checkbox" required class="w-4 h-4 mt-1 text-blue-600 border-slate-300 rounded focus:ring-2 focus:ring-blue-500">
@@ -440,19 +443,6 @@
       }
 
       setPwMsg(true, '');
-
-      // 중복확인 체크(요구사항에 맞게 버튼 누른 뒤 0/1 결과를 반영)   TODO : 삭제
-      if (duplicateState.loginid !== true) {
-        alert('로그인 ID 중복확인을 완료해주세요.');
-        if (e && e.preventDefault) e.preventDefault();
-        return false;
-      }
-      if (duplicateState.nickname !== true) {
-        alert('별명 중복확인을 완료해주세요.');
-        if (e && e.preventDefault) e.preventDefault();
-        return false;
-      }
-
       return true;
     }
 </script>
