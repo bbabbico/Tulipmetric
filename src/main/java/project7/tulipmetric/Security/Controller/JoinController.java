@@ -1,11 +1,11 @@
 package project7.tulipmetric.Security.Controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import project7.tulipmetric.Security.join.CaptchaService;
 import project7.tulipmetric.Security.join.JoinDto;
 import project7.tulipmetric.Security.join.JoinService;
 
@@ -16,6 +16,7 @@ import java.util.Map;
 public class JoinController {
 
     private final JoinService joinService;
+    private final CaptchaService captchaService;
 
     @GetMapping("/join")
     public String Getjoin() {
@@ -23,9 +24,16 @@ public class JoinController {
     }
 
     @PostMapping("/join")
-    public String Postjoin(JoinDto joinDto) {
+    public String Postjoin(
+            JoinDto joinDto,
+            @RequestParam(name = "g-recaptcha-response", required = false) String captchaToken
+    ) {
+        if (!captchaService.verify(captchaToken)) {
+            return "redirect:/join?captchaError=1";
+        }
+
         joinService.Join(joinDto);
-        return "Login/login";
+        return "redirect:/login";
     }
 
     @ResponseBody

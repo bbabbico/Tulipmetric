@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>회원가입 - Tulipmetric</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.google.com/recaptcha/enterprise.js" async defer></script>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
@@ -139,7 +139,14 @@
 
           </div>
           <!-- 구글 캡챠 -->
-          <div class="g-recaptcha" data-sitekey="6LeP2mgsAAAAAFuyIXdFTZPt6xgLuqJJ84fbpoQK" data-action="LOGIN"></div>
+          <div
+                  class="g-recaptcha"
+                  th:attr="data-sitekey=${@environment.getProperty('recaptcha.site-key')}"
+                  data-callback="onCaptchaVerified"
+                  data-expired-callback="onCaptchaExpired"
+                  data-error-callback="onCaptchaExpired"
+          ></div>
+          <p id="captchaMsg" class="text-xs mt-1"></p>
           <div class="space-y-3">
             <label class="flex items-start gap-2">
               <input type="checkbox" required class="w-4 h-4 mt-1 text-blue-600 border-slate-300 rounded focus:ring-2 focus:ring-blue-500">
@@ -175,7 +182,7 @@
            px-3 py-2 text-xs text-white bg-slate-800 rounded-md shadow-lg whitespace-nowrap
            opacity-0 group-hover:opacity-100 transition pointer-events-none"
             >
-              로그인 ID와 별명 중복확인을 먼저 해주세요
+              로그인 ID/별명 중복확인과 캡차 인증을 완료해주세요
               <div class="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0
                 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-slate-800"></div>
             </div>
@@ -231,7 +238,8 @@
   // 중복확인 상태 저장
   const duplicateState = {
     loginid: null,   // true(사용가능) / false(중복) / null(미확인)
-    nickname: null
+    nickname: null,
+    captcha: false
   };
 
   function setLoading(btn, spinner, textEl, loadingText, isLoading) {
@@ -265,6 +273,27 @@
 
     inputEl.classList.remove('border-green-400', 'focus:ring-green-500', 'border-red-400', 'focus:ring-red-500');
     inputEl.classList.add('border-slate-300', 'focus:ring-blue-500');
+  }
+
+
+  function setCaptchaMessage(ok, message) {
+    const msg = document.getElementById('captchaMsg');
+    if (!msg) return;
+
+    msg.textContent = message || '';
+    msg.className = 'text-xs mt-1 ' + (ok ? 'text-green-600' : 'text-red-600');
+  }
+
+  function onCaptchaVerified(token) {
+    duplicateState.captcha = Boolean(token);
+    setCaptchaMessage(true, '캡차 인증이 완료되었습니다.');
+    updateSignupButton();
+  }
+
+  function onCaptchaExpired() {
+    duplicateState.captcha = false;
+    setCaptchaMessage(false, '캡차 인증이 만료되었습니다. 다시 인증해주세요.');
+    updateSignupButton();
   }
 
   async function postCheck(url, payload) {
@@ -386,6 +415,12 @@
       resetFieldUI(document.getElementById('nicknameCheckMsg'), nicknameInput);
       updateSignupButton();
     });
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('captchaError') === '1') {
+      setCaptchaMessage(false, '캡차 검증에 실패했습니다. 다시 시도해주세요.');
+    }
+
     updateSignupButton();
   });
 
@@ -393,7 +428,11 @@
     const btn = document.getElementById('signupBtn');
     const tip = document.getElementById('signupTooltip');
 
-    const enabled = (duplicateState.loginid === true && duplicateState.nickname === true);
+    const enabled = (
+            duplicateState.loginid === true &&
+            duplicateState.nickname === true &&
+            duplicateState.captcha === true
+    );
 
     btn.disabled = !enabled;
 
@@ -442,7 +481,22 @@
         return false;
       }
 
+      if (duplicateState.loginid !== true || duplicateState.nickname !== true) {
+        if (e && e.preventDefault) e.preventDefault();
+        return false;
+      }
+
+      const captchaResponse = document.getElementById('g-recaptcha-response');
+      const captchaToken = captchaResponse ? captchaResponse.value : '';
+
+      if (!captchaToken || duplicateState.captcha !== true) {
+        setCaptchaMessage(false, '캡차 인증 후 회원가입을 진행해주세요.');
+        if (e && e.preventDefault) e.preventDefault();
+        return false;
+      }
+
       setPwMsg(true, '');
+      setCaptchaMessage(true, '캡차 인증이 완료되었습니다.');
       return true;
     }
 </script>
