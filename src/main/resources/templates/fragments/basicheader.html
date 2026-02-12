@@ -9,20 +9,18 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between py-4">
         <!-- Logo -->
-        <a href="/" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <svg class="w-8 h-8" viewBox="0 0 100 100">
-            <path d="M 50 60 Q 48 75 46 90" stroke="#27AE60" stroke-width="3" fill="none" stroke-linecap="round"/>
-            <path d="M 46 75 Q 35 75 30 80 Q 35 78 46 77" fill="#27AE60" opacity="0.8"/>
-            <g>
-              <ellipse cx="50" cy="35" rx="8" ry="18" fill="#FF69B4" opacity="0.9"/>
-              <ellipse cx="42" cy="40" rx="8" ry="18" fill="#FF69B4" transform="rotate(-25 42 40)" opacity="0.85"/>
-              <ellipse cx="58" cy="40" rx="8" ry="18" fill="#FF69B4" transform="rotate(25 58 40)" opacity="0.85"/>
-              <ellipse cx="38" cy="42" rx="7" ry="16" fill="#FF69B4" transform="rotate(-40 38 42)" opacity="0.7"/>
-              <ellipse cx="62" cy="42" rx="7" ry="16" fill="#FF69B4" transform="rotate(40 62 42)" opacity="0.7"/>
-            </g>
-          </svg>
-          <h1 class="text-slate-900">Tulipmetric</h1>
+        <a href="/" class="flex items-center hover:opacity-80 transition-opacity" aria-label="Tulipmetric">
+          <img
+                  th:src="@{/img/tulipmetric-logo.png}"
+                  src="/img/tulipmetric-logo.png"
+                  alt="Tulipmetric"
+                  class="h-8 w-auto sm:h-9 object-contain select-none"
+                  loading="eager"
+                  decoding="async"
+          />
+
         </a>
+
 
         <!-- Center Navigation -->
         <nav class="flex items-center gap-1">

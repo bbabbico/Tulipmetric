@@ -1,4 +1,4 @@
-package project7.tulipmetric.Security.join;
+package project7.tulipmetric.Security.SpringSecurity.Captcah;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ public class CaptchaService {
             body.add("secret", secretKey);
             body.add("response", captchaToken);
 
-            CaptchaVerifyResponse response = restClient.post()
+            CaptchaVerifyResponse response = restClient.post() // 구글 캡차 API 서버로 요청보내서 클라이언트 토큰 검증
                     .uri(VERIFY_URL)
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .body(body)

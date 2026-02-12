@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import project7.tulipmetric.Security.join.CaptchaService;
+import project7.tulipmetric.Security.SpringSecurity.Captcah.CaptchaService;
 import project7.tulipmetric.Security.join.JoinDto;
 import project7.tulipmetric.Security.join.JoinService;
 
