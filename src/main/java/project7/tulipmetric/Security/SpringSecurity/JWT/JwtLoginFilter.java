@@ -21,7 +21,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
 
-        // 기존과 동일하게 POST /login 처리
+        // 기존과 동일하게 POST /login 처리 Username 는 로그인 아이디로 정함.
         setUsernameParameter("loginid");
         setPasswordParameter("password");
     }

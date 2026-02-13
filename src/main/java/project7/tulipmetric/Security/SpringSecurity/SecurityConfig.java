@@ -76,6 +76,7 @@ public class SecurityConfig {
         // 폼 로그인 JWT 발급 필터
         JwtLoginFilter jwtLoginFilter = new JwtLoginFilter(authenticationManager, tokenProvider);
 
+        // 권한 묶음
         String[] userAndLootRoles = {Role.USER.name(), Role.LOOT.name()};
 
         http
@@ -83,6 +84,9 @@ public class SecurityConfig {
 
                 // 세션 완전 비활성(STATELESS)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // 기본 formLogin 비활성 (JwtLoginFilter로 대체)
+                .formLogin(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
@@ -102,8 +106,6 @@ public class SecurityConfig {
 //                         .anyRequest().permitAll()    // 테스트
                 )
 
-                // 기본 formLogin 비활성 (JwtLoginFilter로 대체)
-                .formLogin(AbstractHttpConfigurer::disable)
 
                 // OAuth2 로그인: 성공 시 JWT 발급
                 .oauth2Login(oauth -> oauth

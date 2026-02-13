@@ -38,7 +38,7 @@ public class JwtTokenProvider {
             // secret을 BASE64로 관리하는 게 일반적
             keyBytes = Decoders.BASE64.decode(secret);
         } catch (IllegalArgumentException e) {
-            // BASE64가 아니라면(개발 중 임시 등) UTF-8 bytes로 fallback
+            // BASE64가 아니라면 UTF-8 bytes로 fallback
             keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         }
         return Keys.hmacShaKeyFor(keyBytes);
@@ -79,6 +79,7 @@ public class JwtTokenProvider {
         }
     }
 
+    // JWT 에서 유저 아이디, 권한 조회
     public String getUsername(String token) {
         return parseSignedClaims(token).getPayload().getSubject();
     }
