@@ -31,7 +31,7 @@ CREATE TABLE `market` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
-CREATE TABLE `member` (
+CREATE TABLE `memberEntity` (
                           `id` bigint NOT NULL AUTO_INCREMENT,
                           `nickname` varchar(20) NOT NULL,
                           `password` varchar(61) NOT NULL,

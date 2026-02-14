@@ -3,7 +3,7 @@ package project7.tulipmetric.Security.SpringSecurity.UserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import project7.tulipmetric.domain.Member.Member;
+import project7.tulipmetric.domain.Member.MemberEntity;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,26 +11,26 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class MemberUserDetails implements UserDetails {
 
-    private final Member member;
+    private final MemberEntity memberEntity;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
         Collection<GrantedAuthority> collection = new ArrayList<>();
 
-        collection.add((GrantedAuthority) () -> "ROLE_"+member.getRole());
+        collection.add((GrantedAuthority) () -> "ROLE_"+ memberEntity.getRole());
 
         return collection;
     }
 
     @Override
     public String getPassword() {
-        return member.getPassword();
+        return memberEntity.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return member.getLoginid();
+        return memberEntity.getLoginid();
     }
 
     @Override

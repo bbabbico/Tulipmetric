@@ -4,9 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -16,7 +13,7 @@ import java.time.LocalDateTime;
 })
 @AllArgsConstructor
 @NoArgsConstructor
-public class Member {
+public class MemberEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //사용자 식별 번호
@@ -44,7 +41,7 @@ public class Member {
     @Column(length = 10 , nullable = false)
     private Join_type jointype; // 로그인 방식이 소셜 로그인 / 폼 방식인지 체크
 
-    public MemberDto DTO() {
+    public MemberDto ToDomain() {
         return new MemberDto(email, loginid, nickname, role);
     }
 
@@ -62,7 +59,7 @@ public class Member {
 
     @Override
     public String toString() {
-        return "Member{" +
+        return "MemberEntity{" +
                 "id=" + id +
                 ", email='" + email + '\'' +
                 ", loginid='" + loginid + '\'' +

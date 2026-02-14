@@ -10,7 +10,7 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import project7.tulipmetric.domain.Member.Join_type;
-import project7.tulipmetric.domain.Member.Member;
+import project7.tulipmetric.domain.Member.MemberEntity;
 import project7.tulipmetric.domain.Member.MemberRepository;
 import project7.tulipmetric.domain.Member.Role;
 
@@ -30,24 +30,24 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
         SocialProfile profile = extractProfile(registrationId, oAuth2User.getAttributes());
-        Member member = findOrCreateMember(profile);
+        MemberEntity memberEntity = findOrCreateMember(profile);
 
-        Collection<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + member.getRole()));
+        Collection<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + memberEntity.getRole()));
 
         return new DefaultOAuth2User(authorities,
                 Map.of(
-                        "loginid", member.getLoginid(),
-                        "email", member.getEmail(),
-                        "nickname", member.getNickname()
+                        "loginid", memberEntity.getLoginid(),
+                        "email", memberEntity.getEmail(),
+                        "nickname", memberEntity.getNickname()
                 ),
                 "loginid");
     }
 
-    private Member findOrCreateMember(SocialProfile profile) {
+    private MemberEntity findOrCreateMember(SocialProfile profile) {
         if (profile.email() == null || profile.email().isBlank()) {
             throw new OAuth2AuthenticationException("Email not provided by provider");
         }
-        Member existing = memberRepository.findByEmail(profile.email());
+        MemberEntity existing = memberRepository.findByEmail(profile.email());
         if (existing != null) {
             return existing;
         }
@@ -56,7 +56,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Date nowDate = new Date();
         SimpleDateFormat  simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 ss초");
 
-        Member member = new Member(
+        MemberEntity memberEntity = new MemberEntity(
                 null,
                 profile.email(),
                 profile.loginId(),
@@ -66,8 +66,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 Role.USER,
                 profile.joinType()
         );
-        log.info(member.toString());
-        return memberRepository.save(member);
+        log.info(memberEntity.toString());
+        return memberRepository.save(memberEntity);
     }
 
     private SocialProfile extractProfile(String registrationId, Map<String, Object> attributes) {

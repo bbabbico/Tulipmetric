@@ -3,11 +3,10 @@ package project7.tulipmetric.Mypage;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
-import project7.tulipmetric.domain.Member.Member;
+import project7.tulipmetric.domain.Member.MemberEntity;
 import project7.tulipmetric.domain.Member.MemberRepository;
 import project7.tulipmetric.domain.Post.Comment.Comment;
 import project7.tulipmetric.domain.Post.Comment.CommentRepository;
@@ -39,8 +38,8 @@ public class MypageService {
     @Transactional
     public List<Post> LoadPostsByComment(Jwt jwt){ // Comment 로 Post 찾기
 
-        Member member =  memberRepository.findByLoginid(jwt.getSubject());
-        List<Comment> comments = commentRepository.findAllByNickname(member.getNickname());
+        MemberEntity memberEntity =  memberRepository.findByLoginid(jwt.getSubject());
+        List<Comment> comments = commentRepository.findAllByNickname(memberEntity.getNickname());
 
         Set<Long> postIds = new LinkedHashSet<>(); // 중복 제거 + 입력 순서 유지 , JPA HibernateProxy 에서 가져온 객체는 HibernateProxy 라는 대리객체 를 가져오므로 equals 에서 getClass() != o.getClass() 이거에 무조건 false 됨
         for (Comment c : comments) {

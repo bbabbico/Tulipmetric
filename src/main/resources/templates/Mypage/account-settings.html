@@ -74,7 +74,7 @@
             name="nickname"
             minlength="2"
             maxlength="30"
-            th:placeholder="${member.nickname}"
+            th:placeholder="${memberEntity.nickname}"
             class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
@@ -85,7 +85,7 @@
             type="email" 
             id="email"
             name="email"
-            th:placeholder="${member.email}"
+            th:placeholder="${memberEntity.email}"
             class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
@@ -99,7 +99,7 @@
     </form>
 
     <!-- Password Settings -->
-    <form th:if="${member.getJointype().name()=='FORM'}" action="/editpassword" method="post" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6" onsubmit="return handlePasswordChange(event)">
+    <form th:if="${memberEntity.getJointype().name()=='FORM'}" action="/editpassword" method="post" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6" onsubmit="return handlePasswordChange(event)">
       <h3 class="text-slate-900 mb-6">비밀번호 변경</h3>
         <div class="space-y-6">
           <div>
