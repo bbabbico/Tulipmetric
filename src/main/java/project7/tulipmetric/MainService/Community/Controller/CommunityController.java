@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import project7.tulipmetric.MainService.Community.Service.CommentService;
 import project7.tulipmetric.MainService.Community.Service.LikeService;
+import project7.tulipmetric.domain.Member.Member;
 import project7.tulipmetric.domain.Member.MemberService;
 import project7.tulipmetric.domain.Member.Role;
 import project7.tulipmetric.MainService.Community.Service.PostService;
@@ -27,6 +28,7 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
+// TODO : IsLoot 도매인 매서드로 쿼리 단축 필요
 public class CommunityController {
 
     private final MemberService memberService;
@@ -40,16 +42,19 @@ public class CommunityController {
         return "MainService/community/community";
     }
 
+    // TODO : 쿼리단축 완료
     @GetMapping("/discussion-detail") // 커뮤니티 게시글 상세 페이지 GET
     public String discussion_detail(@RequestParam Long id,@AuthenticationPrincipal Jwt jwt ,Model model){
         Post post = postService.findByPostId(id);
         List<Comment> comments = commentService.findAllByPostId(post);
 
-        // 인증 된 사용자 요청
-            Boolean Check = likeService.CheckLike(jwt, post);
-            String nickname = memberService.findNicknameByJwt(jwt).orElse(null);
-            boolean isHost = post.getNickname().equals(nickname);
-            boolean isLoot = memberService.findRoleByJwt(jwt).map(role -> role == Role.LOOT).orElse(false);
+        // 인증 된 사용자 검증
+        Boolean Check = likeService.CheckLike(jwt, post); // 좋아요 체크
+
+        Member member = memberService.findMemberByJwt(jwt).orElse(null);
+        String nickname = member.getNickname();
+        boolean isHost = post.getNickname().equals(nickname); // 게시물 작성자 체크
+        boolean isLoot = member.IsLoot(); // 관리자 권한 체크
 
             model.addAttribute("host", isHost); //작성자 본인인지 확인
             model.addAttribute("nickname", nickname); //작성자 닉네임
@@ -106,12 +111,13 @@ public class CommunityController {
         return "redirect:/discussion-detail?id="+id;
     }
 
+    //TODO : 쿼리단축 완료
     @PostMapping("/deletepost") // 게시글 삭제
     public String DeletePost(@RequestParam Long postid, @AuthenticationPrincipal Jwt jwt){
         Post post = postService.findByPostId(postid);
-        String nickname = memberService.findNicknameByJwt(jwt)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-        boolean isLoot = memberService.findRoleByJwt(jwt).map(role -> role == Role.LOOT).orElse(false);
+        Member member = memberService.findMemberByJwt(jwt).orElse(null);
+        String nickname = member.getNickname();
+        boolean isLoot = member.IsLoot();
         if (!isLoot && !post.getNickname().equals(nickname)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
@@ -171,12 +177,13 @@ public class CommunityController {
         return new ResponseEntity<>(0, HttpStatus.OK);
     }
 
+    // TODO : 쿼리 단축 완료
     @PostMapping("/deletecomment") // 댓글 삭제
     public ResponseEntity<Integer> DeleteComment(@AuthenticationPrincipal Jwt jwt, Long id){
         Comment comment = commentService.findById(id);
-        String nickname = memberService.findNicknameByJwt(jwt)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-        boolean isLoot = memberService.findRoleByJwt(jwt).map(role -> role == Role.LOOT).orElse(false);
+        Member member = memberService.findMemberByJwt(jwt).orElse(null);
+        String nickname = member.getNickname();
+        boolean isLoot = member.IsLoot();
         if (!isLoot && !comment.getNickname().equals(nickname)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }

@@ -45,6 +45,13 @@ public class Member {
         return new MemberDto(email, loginid, nickname, role);
     }
 
+    public boolean IsLoot() { // 권한 확인 매서드
+        if (this.role != null) {
+            return this.role == Role.LOOT;
+        }
+        throw new NullPointerException("Role is null");
+    }
+
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }

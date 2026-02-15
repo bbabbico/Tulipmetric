@@ -15,22 +15,17 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
+    // JWT -> 닉네임
     public Optional<String> findNicknameByJwt(Jwt jwt) {
         return findMemberByJwt(jwt).map(Member::getNickname);
     }
 
-    public Optional<Member> findByLoginId(String loginid) {
-        if (loginid == null) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(memberRepository.findByLoginid(loginid));
-    }
-
+    // JWT -> Role
     public Optional<Role> findRoleByJwt(Jwt jwt) {
         return findMemberByJwt(jwt).map(Member::getRole);
     }
 
+    // JWT -> Member
     public Optional<Member> findMemberByJwt(Jwt jwt) {
         if (jwt == null || jwt.getSubject() == null) {
             return Optional.empty();
@@ -39,6 +34,16 @@ public class MemberService {
         return Optional.ofNullable(memberRepository.findByLoginid(jwt.getSubject()));
     }
 
+    // Loginid -> Member
+    public Optional<Member> findByLoginId(String loginid) {
+        if (loginid == null) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(memberRepository.findByLoginid(loginid));
+    }
+
+    // 수정 nickname , email
     @Transactional
     public Member updateProfile(Jwt jwt, String nickname, String email) {
         Member member = findMemberByJwt(jwt)
@@ -55,6 +60,7 @@ public class MemberService {
         return member;
     }
 
+    //수정 Password
     @Transactional
     public void updatePassword(Jwt jwt, String currentPassword, String newPassword) {
         Member member = findMemberByJwt(jwt)
@@ -67,6 +73,7 @@ public class MemberService {
         member.updatePassword(passwordEncoder.encode(newPassword));
     }
 
+    // JWT -> 회원탈퇴
     @Transactional
     public void deleteByJwt(Jwt jwt) {
         Member member = findMemberByJwt(jwt)
