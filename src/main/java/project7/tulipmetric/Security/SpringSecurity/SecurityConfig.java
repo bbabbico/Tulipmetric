@@ -93,7 +93,7 @@ public class SecurityConfig {
                                 .requestMatchers("/img/**").permitAll() //정적 이미지
                                 .requestMatchers(HttpMethod.GET, "/join", "/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/join", "/signup", "/login","/nicknamecheck","/loginidcheck").permitAll()
-                                .requestMatchers("/","/industry-detail","/industry-detail/**").permitAll()
+                                .requestMatchers("/","/community","/industry-detail","/discussion-detail").permitAll()
                                 .requestMatchers("/mypage","/activity","/accountsettings","/saved").hasAnyRole(userAndLootRoles) //마이 페이지
                                 .requestMatchers("/editprofile","/editpassword","/deletprofile").hasAnyRole(userAndLootRoles) //마이 페이지 - 사용자 정보 수정
                                 .requestMatchers("/createpost","/deletepost","/editpost").hasAnyRole(userAndLootRoles) //Post , Comment , Creat/Delete/Edit

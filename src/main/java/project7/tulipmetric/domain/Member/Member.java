@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 })
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberEntity {
+public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //사용자 식별 번호
@@ -59,7 +59,7 @@ public class MemberEntity {
 
     @Override
     public String toString() {
-        return "MemberEntity{" +
+        return "Member{" +
                 "id=" + id +
                 ", email='" + email + '\'' +
                 ", loginid='" + loginid + '\'' +

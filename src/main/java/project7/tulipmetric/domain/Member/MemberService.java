@@ -16,10 +16,10 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     public Optional<String> findNicknameByJwt(Jwt jwt) {
-        return findMemberByJwt(jwt).map(MemberEntity::getNickname);
+        return findMemberByJwt(jwt).map(Member::getNickname);
     }
 
-    public Optional<MemberEntity> findByLoginId(String loginid) {
+    public Optional<Member> findByLoginId(String loginid) {
         if (loginid == null) {
             return Optional.empty();
         }
@@ -28,10 +28,10 @@ public class MemberService {
     }
 
     public Optional<Role> findRoleByJwt(Jwt jwt) {
-        return findMemberByJwt(jwt).map(MemberEntity::getRole);
+        return findMemberByJwt(jwt).map(Member::getRole);
     }
 
-    public Optional<MemberEntity> findMemberByJwt(Jwt jwt) {
+    public Optional<Member> findMemberByJwt(Jwt jwt) {
         if (jwt == null || jwt.getSubject() == null) {
             return Optional.empty();
         }
@@ -40,37 +40,37 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberEntity updateProfile(Jwt jwt, String nickname, String email) {
-        MemberEntity memberEntity = findMemberByJwt(jwt)
+    public Member updateProfile(Jwt jwt, String nickname, String email) {
+        Member member = findMemberByJwt(jwt)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
         if (StringUtils.hasText(nickname)) {
-            memberEntity.updateNickname(nickname);
+            member.updateNickname(nickname);
         }
 
         if (StringUtils.hasText(email)) {
-            memberEntity.updateEmail(email);
+            member.updateEmail(email);
         }
 
-        return memberEntity;
+        return member;
     }
 
     @Transactional
     public void updatePassword(Jwt jwt, String currentPassword, String newPassword) {
-        MemberEntity memberEntity = findMemberByJwt(jwt)
+        Member member = findMemberByJwt(jwt)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        if (!passwordEncoder.matches(currentPassword, memberEntity.getPassword())) {
+        if (!passwordEncoder.matches(currentPassword, member.getPassword())) {
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
 
-        memberEntity.updatePassword(passwordEncoder.encode(newPassword));
+        member.updatePassword(passwordEncoder.encode(newPassword));
     }
 
     @Transactional
     public void deleteByJwt(Jwt jwt) {
-        MemberEntity memberEntity = findMemberByJwt(jwt)
+        Member member = findMemberByJwt(jwt)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-        memberRepository.delete(memberEntity);
+        memberRepository.delete(member);
     }
 }

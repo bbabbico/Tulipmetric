@@ -21,7 +21,7 @@ public class JoinService {
         Date nowDate = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 ss초");
         try {
-            MemberEntity memberEntity = new MemberEntity(
+            Member member = new Member(
                     null,
                     dto.getEmail(),
                     dto.getLoginid(),
@@ -31,7 +31,7 @@ public class JoinService {
                     Role.USER,
                     Join_type.FORM   // 예시: 폼 가입이면 이렇게 지정
             );
-            memberRepository.save(memberEntity);
+            memberRepository.save(member);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

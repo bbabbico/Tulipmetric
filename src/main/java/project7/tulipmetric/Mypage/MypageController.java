@@ -15,7 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import project7.tulipmetric.MainService.Community.Service.CommentService;
 import project7.tulipmetric.MainService.Community.Service.LikeService;
 import project7.tulipmetric.MainService.Community.Service.PostService;
-import project7.tulipmetric.domain.Member.MemberEntity;
+import project7.tulipmetric.domain.Member.Member;
 import project7.tulipmetric.domain.Member.MemberService;
 
 @Slf4j
@@ -31,15 +31,15 @@ public class MypageController {
 
     @GetMapping("/mypage")
     public String mypage(@AuthenticationPrincipal Jwt jwt , Model model) {
-        MemberEntity memberEntity = memberService.findByLoginId(jwt.getSubject())
+        Member member = memberService.findByLoginId(jwt.getSubject())
                 .orElseThrow(() -> new IllegalArgumentException("인증된 사용자만 접근할 수 있습니다."));
-        log.info("회원인증 완료 {}", memberEntity.toString());
+        log.info("회원인증 완료 {}", member.toString());
 
-        log.info("{}",likeService.findAllByLoginid(memberEntity.getLoginid()).size());
-        model.addAttribute("likecount",likeService.findAllByLoginid(memberEntity.getLoginid()).size());
+        log.info("{}",likeService.findAllByLoginid(member.getLoginid()).size());
+        model.addAttribute("likecount",likeService.findAllByLoginid(member.getLoginid()).size());
         model.addAttribute("commentcount",commentService.countByJwt(jwt));
-        model.addAttribute("postcount",postService.findAllByNickname(memberEntity.getNickname()).size());
-        model.addAttribute("member", memberEntity);
+        model.addAttribute("postcount",postService.findAllByNickname(member.getNickname()).size());
+        model.addAttribute("member", member);
         return "Mypage/mypage";
     }
 

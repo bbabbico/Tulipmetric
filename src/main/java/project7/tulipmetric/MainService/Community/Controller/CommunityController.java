@@ -44,16 +44,19 @@ public class CommunityController {
     public String discussion_detail(@RequestParam Long id,@AuthenticationPrincipal Jwt jwt ,Model model){
         Post post = postService.findByPostId(id);
         List<Comment> comments = commentService.findAllByPostId(post);
-        Boolean Check = likeService.CheckLike(jwt,post);
-        String nickname = memberService.findNicknameByJwt(jwt).orElse(null);
-        boolean isHost = post.getNickname().equals(nickname);
-        boolean isLoot = memberService.findRoleByJwt(jwt).map(role -> role == Role.LOOT).orElse(false);
 
-        model.addAttribute("host", isHost); //작성자 본인인지 확인
-        model.addAttribute("nickname",nickname); //작성자 닉네임
-        model.addAttribute("isLoot", isLoot);
-        model.addAttribute("canDeletePost", isHost || isLoot);
-        model.addAttribute("check",Check); // 사용자 좋아요/북마크 여부
+        // 인증 된 사용자 요청
+            Boolean Check = likeService.CheckLike(jwt, post);
+            String nickname = memberService.findNicknameByJwt(jwt).orElse(null);
+            boolean isHost = post.getNickname().equals(nickname);
+            boolean isLoot = memberService.findRoleByJwt(jwt).map(role -> role == Role.LOOT).orElse(false);
+
+            model.addAttribute("host", isHost); //작성자 본인인지 확인
+            model.addAttribute("nickname", nickname); //작성자 닉네임
+            model.addAttribute("isLoot", isLoot);
+            model.addAttribute("canDeletePost", isHost || isLoot);
+            model.addAttribute("check", Check); // 사용자 좋아요/북마크 여부
+
         model.addAttribute("post",post); //게시글 정보
         model.addAttribute("comments",comments); // 댓글 정보
 
