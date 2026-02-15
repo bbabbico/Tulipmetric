@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import project7.tulipmetric.MainService.Community.Service.WishMarketService;
 
 @RestController
 @RequiredArgsConstructor

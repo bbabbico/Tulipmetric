@@ -1,4 +1,4 @@
-package project7.tulipmetric.MainService.Community.Service;
+package project7.tulipmetric.Mypage;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class WishMarketService {
         String loginid = authenticatedJwt.getSubject();
 
         if (wishMarketRepository.existsByLoginidAndMarketid(loginid, market)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Wish market already exists");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 즐겨찾기에 등록된 산업군 입니다.");
         }
 
         wishMarketRepository.save(new Wishmarket(null, loginid, market));
@@ -37,7 +37,7 @@ public class WishMarketService {
         String loginid = authenticatedJwt.getSubject();
 
         Wishmarket existingWish = wishMarketRepository.findByLoginidAndMarketid(loginid, market)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Wish market not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 산업군을 찾을 수 없습니다"));
         wishMarketRepository.delete(existingWish);
     }
 
@@ -58,6 +58,6 @@ public class WishMarketService {
 
     private Market findMarketOrThrow(Long marketid) {
         return marketRepository.findById(marketid)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Market not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 산업군을 찾을 수 없습니다."));
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import project7.tulipmetric.MainService.Community.Service.WishMarketService;
+import project7.tulipmetric.Mypage.WishMarketService;
 import project7.tulipmetric.domain.Market.Market;
 
 @Controller
