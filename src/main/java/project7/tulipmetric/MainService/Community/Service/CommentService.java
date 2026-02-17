@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import project7.tulipmetric.domain.Member.MemberRepository;
+import project7.tulipmetric.domain.Member.MemberService;
 import project7.tulipmetric.domain.Post.Comment.Comment;
 import project7.tulipmetric.domain.Post.Comment.CommentRepository;
 import project7.tulipmetric.domain.Post.Post.Post;
@@ -21,7 +21,7 @@ import java.util.List;
 public class CommentService {
     public final CommentRepository commentRepository;
     public final PostRepository postRepository;
-    private final MemberRepository memberRepository;
+    public final MemberService memberService;
 
     @Transactional
     public void saveComment(Comment comment) {
@@ -61,7 +61,7 @@ public class CommentService {
     }
 
     public int countByJwt(Jwt jwt) {
-        return commentRepository.findAllByNickname(memberRepository.findByLoginid(jwt.getSubject()).getNickname())
+        return commentRepository.findAllByNickname(memberService.findByLoginId(jwt.getSubject()).get().getNickname())
                 .size();
     }
 

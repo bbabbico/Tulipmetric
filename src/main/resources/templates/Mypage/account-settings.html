@@ -79,7 +79,7 @@
           />
         </div>
 
-        <div>
+        <div th:if="${member.getJointype().name()=='FORM'}">
           <label for="email" class="block text-sm text-slate-700 mb-2">이메일</label>
           <input 
             type="email" 

@@ -13,8 +13,8 @@ import java.util.Date;
 @Service
 @RequiredArgsConstructor
 public class JoinService {
-    private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MemberService memberService;
 
     public void Join(JoinDto dto) {
         String encodedPw = passwordEncoder.encode(dto.getPassword());
@@ -31,7 +31,7 @@ public class JoinService {
                     Role.USER,
                     Join_type.FORM   // 예시: 폼 가입이면 이렇게 지정
             );
-            memberRepository.save(member);
+            memberService.save(member);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -40,10 +40,10 @@ public class JoinService {
 
     // 회원가입 정보 중복확인 메서드
     public boolean LoginIdDuplicateCheck(String loginid) {
-        return memberRepository.findByLoginid(loginid) == null;
+        return memberService.findByLoginId(loginid).isEmpty();
     }
 
     public boolean NickNameDuplicateCheck(String nickname) {
-        return memberRepository.findByNickname(nickname) == null;
+        return memberService.findByNickname(nickname).isEmpty();
     }
 }

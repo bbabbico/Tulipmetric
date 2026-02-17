@@ -1,5 +1,7 @@
 package project7.tulipmetric.Mypage;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -45,7 +47,7 @@ public class MypageController {
 
     @GetMapping("/accountsettings")
     public String accountSettings(@AuthenticationPrincipal Jwt jwt,Model model){
-        model.addAttribute("member",memberService.findMemberByJwt(jwt).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.")));
+        model.addAttribute("member", memberService.findMemberByJwt(jwt).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.")));
         return "Mypage/account-settings";
     }
 
@@ -83,8 +85,11 @@ public class MypageController {
     }
 
     @PostMapping("/deletprofile")
-    public ResponseEntity<Void> deleteProfile(@AuthenticationPrincipal Jwt jwt) {
+    public String deleteProfile(@AuthenticationPrincipal Jwt jwt, HttpServletResponse res) {
         memberService.deleteByJwt(jwt);
-        return ResponseEntity.noContent().build();
+        Cookie cookie = new Cookie("ACCESS_TOKEN", null); // 삭제할 쿠키에 대한 값을 null로 지정
+        cookie.setMaxAge(0); // 유효시간을 0으로 설정해서 바로 만료시킨다.
+        res.addCookie(cookie); // 응답에 추가해서 없어지도록 함
+        return "redirect:/";
     }
 }

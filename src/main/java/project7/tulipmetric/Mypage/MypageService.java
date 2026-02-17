@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import project7.tulipmetric.domain.Member.Member;
-import project7.tulipmetric.domain.Member.MemberRepository;
+import project7.tulipmetric.domain.Member.MemberService;
 import project7.tulipmetric.domain.Post.Comment.Comment;
 import project7.tulipmetric.domain.Post.Comment.CommentRepository;
 import project7.tulipmetric.domain.Post.Like.LikeEntity;
@@ -27,18 +27,18 @@ public class MypageService {
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     @Transactional
     public List<Post> LoadPostsByNickname(Jwt jwt){ // 아이디로 Post 찾기
-        String Nick_name =  memberRepository.findByLoginid(jwt.getSubject()).getNickname();
+        String Nick_name =  memberService.findByLoginId(jwt.getSubject()).get().getNickname();
         return postRepository.findAllByNickname(Nick_name);
     }
 
     @Transactional
     public List<Post> LoadPostsByComment(Jwt jwt){ // Comment 로 Post 찾기
 
-        Member member =  memberRepository.findByLoginid(jwt.getSubject());
+        Member member =  memberService.findByLoginId(jwt.getSubject()).get();
         List<Comment> comments = commentRepository.findAllByNickname(member.getNickname());
 
         Set<Long> postIds = new LinkedHashSet<>(); // 중복 제거 + 입력 순서 유지 , JPA HibernateProxy 에서 가져온 객체는 HibernateProxy 라는 대리객체 를 가져오므로 equals 에서 getClass() != o.getClass() 이거에 무조건 false 됨

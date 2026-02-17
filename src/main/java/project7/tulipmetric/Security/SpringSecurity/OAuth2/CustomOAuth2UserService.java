@@ -11,7 +11,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import project7.tulipmetric.domain.Member.Join_type;
 import project7.tulipmetric.domain.Member.Member;
-import project7.tulipmetric.domain.Member.MemberRepository;
+import project7.tulipmetric.domain.Member.MemberService;
 import project7.tulipmetric.domain.Member.Role;
 
 import java.text.SimpleDateFormat;
@@ -22,7 +22,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -47,9 +47,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (profile.email() == null || profile.email().isBlank()) {
             throw new OAuth2AuthenticationException("Email not provided by provider");
         }
-        Member existing = memberRepository.findByEmail(profile.email());
-        if (existing != null) {
-            return existing;
+        Optional<Member> existing = memberService.findByEmail(profile.email());
+        if (existing.isPresent()) {
+            return existing.get();
         }
 
         String encodedPassword = "social"+UUID.randomUUID().toString();
@@ -67,7 +67,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 profile.joinType()
         );
         log.info(member.toString());
-        return memberRepository.save(member);
+        return memberService.save(member);
     }
 
     private SocialProfile extractProfile(String registrationId, Map<String, Object> attributes) {
