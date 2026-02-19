@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IntelliJ HTTP Request — 완벽 가이드</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2128;
+    --border: #30363d;
+    --accent: #f78166;
+    --accent2: #79c0ff;
+    --accent3: #56d364;
+    --accent4: #d2a8ff;
+    --accent5: #ffa657;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --text-dim: #484f58;
+    --code-bg: #161b22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(247,129,102,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(121,192,255,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 50% at 20% 60%, rgba(86,211,100,0.08) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(48,54,61,0.4) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(48,54,61,0.4) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(247,129,102,0.15);
+    border: 1px solid rgba(247,129,102,0.4);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    padding: 0.35rem 1rem;
+    border-radius: 100px;
+    margin-bottom: 2rem;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 1.5rem;
+    animation: fadeDown 0.7s 0.1s ease both;
+  }
+
+  .hero h1 span.hl { color: var(--accent); }
+  .hero h1 span.hl2 { color: var(--accent2); }
+
+  .hero-desc {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto 3rem;
+    animation: fadeDown 0.7s 0.2s ease both;
+    font-weight: 300;
+  }
+
+  .hero-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    animation: fadeDown 0.7s 0.3s ease both;
+  }
+
+  .hero-nav a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.5rem 1.2rem;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+  .hero-nav a:hover { color: var(--accent); border-color: var(--accent); background: rgba(247,129,102,0.08); }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .section {
+    padding: 5rem 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-title .num {
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+  }
+
+  p { color: var(--text-muted); margin-bottom: 1rem; }
+  p strong { color: var(--text); font-weight: 600; }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 2rem 0 0.75rem;
+  }
+
+  h3.accent { color: var(--accent2); }
+  h3.accent2 { color: var(--accent3); }
+  h3.accent3 { color: var(--accent4); }
+  h3.accent4 { color: var(--accent5); }
+
+  /* ── CODE BLOCKS ── */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 1.5rem 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.65;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 1rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .code-filename {
+    color: var(--text-muted);
+    font-size: 0.73rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .code-filename::before {
+    content: '●';
+    color: var(--accent);
+    font-size: 0.65rem;
+  }
+
+  .code-lang {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    background: var(--border);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .code-content { padding: 1.25rem 1.5rem; overflow-x: auto; }
+
+  .line { display: block; }
+  .c { color: #6e7681; }                /* comment */
+  .k { color: var(--accent4); }          /* keyword / method */
+  .u { color: var(--accent2); }          /* url */
+  .h { color: var(--accent3); }          /* header key */
+  .hv { color: var(--accent5); }         /* header value */
+  .b { color: var(--text); }             /* body */
+  .s { color: #a5d6ff; }                 /* string value */
+  .n { color: var(--accent); }           /* number */
+  .v { color: var(--accent4); }          /* variable */
+  .op { color: var(--text-muted); }      /* operator */
+  .env { color: var(--accent3); }        /* env var */
+  .sep { color: var(--text-dim); }       /* separator */
+
+  /* ── CARDS ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+  .card-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .card p { font-size: 0.88rem; margin: 0; }
+
+  /* ── TABLE ── */
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 1.5rem 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.87rem;
+  }
+
+  thead th {
+    background: var(--surface2);
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.85rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid rgba(48,54,61,0.5);
+    color: var(--text-muted);
+    vertical-align: top;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .mono { font-family: 'JetBrains Mono', monospace; color: var(--accent2); font-size: 0.8rem; }
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .tag-get { background: rgba(86,211,100,0.15); color: var(--accent3); }
+  .tag-post { background: rgba(255,166,87,0.15); color: var(--accent5); }
+  .tag-put { background: rgba(121,192,255,0.15); color: var(--accent2); }
+  .tag-del { background: rgba(247,129,102,0.15); color: var(--accent); }
+  .tag-patch { background: rgba(210,168,255,0.15); color: var(--accent4); }
+
+  /* ── CALLOUT ── */
+  .callout {
+    border-left: 3px solid;
+    padding: 1rem 1.25rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+  }
+  .callout.info { border-color: var(--accent2); background: rgba(121,192,255,0.06); }
+  .callout.tip { border-color: var(--accent3); background: rgba(86,211,100,0.06); }
+  .callout.warn { border-color: var(--accent5); background: rgba(255,166,87,0.06); }
+
+  .callout-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+  .callout.info .callout-title { color: var(--accent2); }
+  .callout.tip .callout-title { color: var(--accent3); }
+  .callout.warn .callout-title { color: var(--accent5); }
+  .callout p { margin: 0; color: var(--text-muted); font-size: 0.88rem; }
+
+  /* ── STEPS ── */
+  .steps { counter-reset: step; margin: 1.5rem 0; }
+  .step {
+    display: flex;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid rgba(48,54,61,0.5);
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    background: rgba(247,129,102,0.15);
+    border: 1px solid rgba(247,129,102,0.4);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-top: 0.1rem;
+  }
+  .step-body {}
+  .step-title { font-weight: 700; color: var(--text); margin-bottom: 0.3rem; font-size: 0.95rem; }
+  .step-desc { color: var(--text-muted); font-size: 0.88rem; }
+
+  /* ── TOC SIDEBAR (floating) ── */
+  .toc {
+    position: fixed;
+    top: 50%;
+    right: 2rem;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    z-index: 100;
+  }
+
+  .toc a {
+    width: 6px; height: 6px;
+    background: var(--border);
+    border-radius: 50%;
+    display: block;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .toc a:hover { background: var(--accent); transform: scale(1.5); }
+  .toc a.active { background: var(--accent); transform: scale(1.5); }
+
+  @media (max-width: 1100px) { .toc { display: none; } }
+
+  /* ── FOOTER ── */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 3rem 0;
+    text-align: center;
+  }
+
+  .footer p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin: 0;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+  /* ── HIGHLIGHT CHIPS ── */
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82em;
+    background: rgba(121,192,255,0.12);
+    color: var(--accent2);
+    padding: 0.15em 0.45em;
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOC dots -->
+<nav class="toc" id="toc">
+  <a href="#intro" title="소개"></a>
+  <a href="#features" title="주요 기능"></a>
+  <a href="#quickstart" title="시작하기"></a>
+  <a href="#syntax" title="문법"></a>
+  <a href="#methods" title="HTTP 메서드"></a>
+  <a href="#variables" title="변수 & 환경"></a>
+  <a href="#auth" title="인증"></a>
+  <a href="#scripts" title="스크립트"></a>
+  <a href="#advanced" title="고급 기능"></a>
+  <a href="#shortcuts" title="단축키"></a>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-grid"></div>
+  <div class="badge">🔥 IntelliJ IDEA Built-in Tool</div>
+  <h1>
+    <span class="hl">HTTP</span> Request<br>
+    <span class="hl2">완벽 가이드</span>
+  </h1>
+  <p class="hero-desc">
+    IntelliJ IDEA에 내장된 강력한 HTTP 클라이언트로<br>
+    Postman 없이 IDE 안에서 API를 개발하고 테스트하세요.
+  </p>
+  <nav class="hero-nav">
+    <a href="#intro">소개</a>
+    <a href="#quickstart">시작하기</a>
+    <a href="#syntax">문법</a>
+    <a href="#variables">변수 & 환경</a>
+    <a href="#auth">인증</a>
+    <a href="#scripts">스크립트</a>
+    <a href="#advanced">고급 기능</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ── 1. 소개 ── -->
+<section class="section" id="intro">
+  <div class="container">
+    <div class="section-label">01 / Introduction</div>
+    <h2 class="section-title">IntelliJ HTTP Request란?</h2>
+
+    <p>
+      <strong>HTTP Request</strong>는 IntelliJ IDEA, WebStorm, GoLand 등 JetBrains IDE에 기본 내장된 HTTP 클라이언트 기능입니다.
+      <code>.http</code> 또는 <code>.rest</code> 확장자 파일에 간단한 텍스트 형식으로 API 요청을 작성하면, 별도의 도구 없이 IDE에서 바로 실행할 수 있습니다.
+    </p>
+
+    <p>
+      요청 파일은 <strong>Git으로 버전 관리</strong>가 되므로 팀원과 공유하기 쉽고, 응답 검증 스크립트·환경 변수·동적 변수 기능을 통해 Postman에 버금가는 고급 테스트 워크플로우를 구성할 수 있습니다.
+    </p>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <div class="card-title">IDE 통합</div>
+        <p>컨텍스트 스위칭 없이 코드 편집기와 API 테스트를 같은 창에서 수행</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📁</div>
+        <div class="card-title">Git 친화적</div>
+        <p>텍스트 기반 파일이라 버전 관리·코드 리뷰·PR에 포함 가능</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌍</div>
+        <div class="card-title">환경 변수</div>
+        <p>dev / staging / prod 환경을 파일 하나로 관리, 민감 정보는 별도 파일로 분리</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🧪</div>
+        <div class="card-title">응답 검증</div>
+        <p>JavaScript 스크립트로 응답 상태코드·바디를 자동 검증하는 테스트 작성</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔗</div>
+        <div class="card-title">요청 체이닝</div>
+        <p>이전 응답값을 변수에 저장해 다음 요청에서 재사용</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📝</div>
+        <div class="card-title">자동 완성</div>
+        <p>HTTP 메서드·헤더·URL 등에 대한 IDE 자동 완성 및 문서 제공</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 2. 주요 기능 ── -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="section-label">02 / Features</div>
+    <h2 class="section-title">주요 기능 비교</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>기능</th>
+            <th>IntelliJ HTTP Client</th>
+            <th>Postman</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>무료 사용</td>
+            <td style="color:var(--accent3)">✓ IDE 포함</td>
+            <td style="color:var(--text-muted)">일부 유료</td>
+          </tr>
+          <tr>
+            <td>Git 버전 관리</td>
+            <td style="color:var(--accent3)">✓ 텍스트 파일</td>
+            <td style="color:var(--text-muted)">별도 동기화 필요</td>
+          </tr>
+          <tr>
+            <td>환경 변수</td>
+            <td style="color:var(--accent3)">✓</td>
+            <td style="color:var(--accent3)">✓</td>
+          </tr>
+          <tr>
+            <td>응답 스크립트</td>
+            <td style="color:var(--accent3)">✓ JavaScript</td>
+            <td style="color:var(--accent3)">✓ JavaScript</td>
+          </tr>
+          <tr>
+            <td>CI/CD 통합</td>
+            <td style="color:var(--accent3)">✓ IntelliJ HTTP CLI</td>
+            <td style="color:var(--text-muted)">Newman 필요</td>
+          </tr>
+          <tr>
+            <td>WebSocket / gRPC</td>
+            <td style="color:var(--accent3)">✓ (2023.1+)</td>
+            <td style="color:var(--accent3)">✓</td>
+          </tr>
+          <tr>
+            <td>코드 자동 완성</td>
+            <td style="color:var(--accent3)">✓ IDE 네이티브</td>
+            <td style="color:var(--text-muted)">제한적</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ── 3. 시작하기 ── -->
+<section class="section" id="quickstart">
+  <div class="container">
+    <div class="section-label">03 / Quickstart</div>
+    <h2 class="section-title">시작하기</h2>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">HTTP 파일 생성</div>
+          <div class="step-desc">프로젝트 내 아무 디렉토리에서 우클릭 → <strong>New → HTTP Request File</strong> 을 선택하거나, 새 파일을 <code>.http</code> 또는 <code>.rest</code> 확장자로 생성합니다.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">첫 번째 요청 작성</div>
+          <div class="step-desc">파일에 아래처럼 메서드 + URL 한 줄만 작성하면 됩니다. 에디터 왼쪽 ▶ 버튼을 누르거나 <code>Ctrl+Enter</code>로 실행합니다.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">응답 확인</div>
+          <div class="step-desc">실행 후 하단 <strong>Services</strong> 탭 또는 분리된 응답 창에서 Status, Headers, Body를 확인할 수 있습니다.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">응답 이력 관리</div>
+          <div class="step-desc">이전 요청 응답은 <code>.idea/httpRequests/</code> 폴더에 자동 저장되어 언제든 비교·재활용할 수 있습니다.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">api-test.http</span>
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="c">### 첫 번째 요청 - 공개 API 테스트</span></span>
+<span class="line"><span class="k">GET</span> <span class="u">https://jsonplaceholder.typicode.com/todos/1</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span class="c">### 응답 예시</span></span>
+<span class="line"><span class="c">// HTTP/1.1 200 OK</span></span>
+<span class="line"><span class="c">// Content-Type: application/json</span></span>
+<span class="line"><span class="c">// {</span></span>
+<span class="line"><span class="c">//   "userId": 1,</span></span>
+<span class="line"><span class="c">//   "id": 1,</span></span>
+<span class="line"><span class="c">//   "title": "delectus aut autem",</span></span>
+<span class="line"><span class="c">//   "completed": false</span></span>
+<span class="line"><span class="c">// }</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 4. 문법 ── -->
+<section class="section" id="syntax">
+  <div class="container">
+    <div class="section-label">04 / Syntax</div>
+    <h2 class="section-title">파일 문법 완전 정리</h2>
+
+    <p>하나의 <code>.http</code> 파일 안에 여러 요청을 작성할 수 있습니다. 요청 사이는 <code>###</code>으로 구분합니다.</p>
+
+    <h3 class="accent">기본 구조</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">syntax-overview.http</span>
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="c"># 요청 이름 (선택사항, ### 뒤에 작성)</span></span>
+<span class="line"><span class="c">### 요청 1 이름</span></span>
+<span class="line"></span>
+<span class="line"><span class="c"># 메서드 URL [HTTP버전]</span></span>
+<span class="line"><span class="k">POST</span> <span class="u">https://api.example.com/users</span> <span class="op">HTTP/1.1</span></span>
+<span class="line"></span>
+<span class="line"><span class="c"># 헤더 (키: 값 형식)</span></span>
+<span class="line"><span class="h">Content-Type</span><span class="op">:</span> <span class="hv">application/json</span></span>
+<span class="line"><span class="h">Authorization</span><span class="op">:</span> <span class="hv">Bearer my-token</span></span>
+<span class="line"><span class="h">Accept</span><span class="op">:</span> <span class="hv">application/json</span></span>
+<span class="line"></span>
+<span class="line"><span class="c"># 빈 줄 (헤더와 바디 구분)</span></span>
+<span class="line"></span>
+<span class="line"><span class="c"># 요청 바디</span></span>
+<span class="line"><span class="b">{</span></span>
+<span class="line"><span class="b">  </span><span class="s">"name"</span><span class="b">: </span><span class="s">"홍길동"</span><span class="b">,</span></span>
+<span class="line"><span class="b">  </span><span class="s">"email"</span><span class="b">: </span><span class="s">"hong@example.com"</span></span>
+<span class="line"><span class="b">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="c">### 요청 2 이름</span></span>
+<span class="line"><span class="k">GET</span> <span class="u">https://api.example.com/users</span></span>
+      </div>
+    </div>
+
+    <h3 class="accent2">긴 URL 줄 바꿈</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">long-url.http</span>
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="k">GET</span> <span class="u">https://api.example.com/v1/search</span></span>
+<span class="line">  <span class="op">?</span><span class="h">keyword</span><span class="op">=</span><span class="hv">intellij</span></span>
+<span class="line">  <span class="op">&amp;</span><span class="h">page</span><span class="op">=</span><span class="n">1</span></span>
+<span class="line">  <span class="op">&amp;</span><span class="h">limit</span><span class="op">=</span><span class="n">20</span></span>
+<span class="line">  <span class="op">&amp;</span><span class="h">sort</span><span class="op">=</span><span class="hv">desc</span></span>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-title">💡 Tip</div>
+      <p>쿼리 파라미터를 줄 바꿈하면 가독성이 크게 높아집니다. 각 줄은 들여쓰기(스페이스 또는 탭)로 시작해야 합니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── 5. HTTP 메서드 ── -->
+<section class="section" id="methods">
+  <div class="container">
+    <div class="section-label">05 / HTTP Methods</div>
+    <h2 class="section-title">HTTP 메서드별 예제</h2>
+
+    <h3 class="accent2">GET — 데이터 조회</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">get-examples.http</span>
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="c">### 목록 조회</span></span>
+<span class="line"><span class="k">GET</span> <span class="u">https://api.example.com/posts</span></span>
+<span class="line"><span class="h">Accept</span><span class="op">:</span> <span class="hv">application/json</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span class="c">### 특정 항목 조회 (Path Variable)</span></span>
+<span class="line"><span class="k">GET</span> <span class="u">https://api.example.com/posts/1</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span class="c">### 조건 검색 (Query Parameter)</span></span>
+<span class="line"><span class="k">GET</span> <span class="u">https://api.example.com/posts</span></span>
+<span class="line">  <span class="op">?</span><span class="h">userId</span><span class="op">=</span><span class="n">1</span></span>
+<span class="line">  <span class="op">&amp;</span><span class="h">_limit</span><span class="op">=</span><span class="n">5</span></span>
+      </div>
+    </div>
+
+    <h3 class="accent3">POST — 데이터 생성</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">post-examples.http</span>
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="c">### JSON 바디 전송</span></span>
+<span class="line"><span class="k">POST</span> <span class="u">https://api.example.com/posts</span></span>
+<span class="line"><span class="h">Content-Type</span><span class="op">:</span> <span class="hv">application/json</span></span>
+<span class="line"></span>
+<span class="line"><span class="b">{</span></span>
+<span class="line"><span class="b">  </span><span class="s">"title"</span><span class="b">: </span><span class="s">"IntelliJ HTTP Client Guide"</span><span class="b">,</span></span>
+<span class="line"><span class="b">  </span><span class="s">"body"</span><span class="b">: </span><span class="s">"This is amazing!"</span><span class="b">,</span></span>
+<span class="line"><span class="b">  </span><span class="s">"userId"</span><span class="b">: </span><span class="n">1</span></span>
+<span class="line"><span class="b">}</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span class="c">### Form Data 전송</span></span>
+<span class="line"><span class="k">POST</span> <span class="u">https://api.example.com/login</span></span>
+<span class="line"><span class="h">Content-Type</span><span class="op">:</span> <span class="hv">application/x-www-form-urlencoded</span></span>
+<span class="line"></span>
+<span class="line"><span class="b">username=admin&password=secret</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span class="c">### Multipart 파일 업로드</span></span>
+<span class="line"><span class="k">POST</span> <span class="u">https://api.example.com/upload</span></span>
+<span class="line"><span class="h">Content-Type</span><span class="op">:</span> <span class="hv">multipart/form-data; boundary=WebAppBoundary</span></span>
+<span class="line"></span>
+<span class="line"><span class="b">--WebAppBoundary</span></span>
+<span class="line"><span class="b">Content-Disposition: form-data; name="file"; filename="photo.png"</span></span>
+<span class="line"><span class="b">Content-Type: image/png</span></span>
+<span class="line"></span>
+<span class="line"><span class="op">&lt; </span><span class="u">./photo.png</span></span>
+<span class="line"><span class="b">--WebAppBoundary--</span></span>
+      </div>
+    </div>
+
+    <h3 class="accent4">PUT / PATCH / DELETE</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">put-patch-delete.http</span>
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="c">### PUT - 전체 수정</span></span>
+<span class="line"><span class="k">PUT</span> <span class="u">https://api.example.com/posts/1</span></span>
+<span class="line"><span class="h">Content-Type</span><span class="op">:</span> <span class="hv">application/json</span></span>
+<span class="line"></span>
+<span class="line"><span class="b">{</span></span>
+<span class="line"><span class="b">  </span><span class="s">"id"</span><span class="b">: </span><span class="n">1</span><span class="b">,</span></span>
+<span class="line"><span class="b">  </span><span class="s">"title"</span><span class="b">: </span><span class="s">"Updated Title"</span><span class="b">,</span></span>
+<span class="line"><span class="b">  </span><span class="s">"body"</span><span class="b">: </span><span class="s">"Updated content"</span><span class="b">,</span></span>
+<span class="line"><span class="b">  </span><span class="s">"userId"</span><span class="b">: </span><span class="n">1</span></span>
+<span class="line"><span class="b">}</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span class="c">### PATCH - 일부 수정</span></span>
+<span class="line"><span class="k">PATCH</span> <span class="u">https://api.example.com/posts/1</span></span>
+<span class="line"><span class="h">Content-Type</span><span class="op">:</span> <span class="hv">application/json</span></span>
+<span class="line"></span>
+<span class="line"><span class="b">{</span></span>
+<span class="line"><span class="b">  </span><span class="s">"title"</span><span class="b">: </span><span class="s">"Patched Title Only"</span></span>
+<span class="line"><span class="b">}</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span class="c">### DELETE - 삭제</span></span>
+<span class="line"><span class="k">DELETE</span> <span class="u">https://api.example.com/posts/1</span></span>
+<span class="line"><span class="h">Authorization</span><span class="op">:</span> <span class="hv">Bearer {{token}}</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 6. 변수 & 환경 ── -->
+<section class="section" id="variables">
+  <div class="container">
+    <div class="section-label">06 / Variables & Environments</div>
+    <h2 class="section-title">변수 & 환경 관리</h2>
+
+    <p>
+      <code>{{변수명}}</code> 문법으로 변수를 사용합니다. 변수는 환경 파일, 응답 핸들러, 동적 변수 세 가지로 정의할 수 있습니다.
+    </p>
+
+    <h3 class="accent">환경 파일 구성</h3>
+    <p>프로젝트 루트 또는 요청 파일과 같은 폴더에 <code>http-client.env.json</code>을 생성합니다.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">http-client.env.json</span>
+        <span class="code-lang">json</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="b">{</span></span>
+<span class="line"><span class="b">  </span><span class="s">"development"</span><span class="b">: {</span></span>
+<span class="line"><span class="b">    </span><span class="s">"baseUrl"</span><span class="b">: </span><span class="s">"http://localhost:8080"</span><span class="b">,</span></span>
+<span class="line"><span class="b">    </span><span class="s">"apiVersion"</span><span class="b">: </span><span class="s">"v1"</span><span class="b">,</span></span>
+<span class="line"><span class="b">    </span><span class="s">"userId"</span><span class="b">: </span><span class="s">"1"</span></span>
+<span class="line"><span class="b">  },</span></span>
+<span class="line"><span class="b">  </span><span class="s">"staging"</span><span class="b">: {</span></span>
+<span class="line"><span class="b">    </span><span class="s">"baseUrl"</span><span class="b">: </span><span class="s">"https://staging.example.com"</span><span class="b">,</span></span>
+<span class="line"><span class="b">    </span><span class="s">"apiVersion"</span><span class="b">: </span><span class="s">"v1"</span><span class="b">,</span></span>
+<span class="line"><span class="b">    </span><span class="s">"userId"</span><span class="b">: </span><span class="s">"42"</span></span>
+<span class="line"><span class="b">  },</span></span>
+<span class="line"><span class="b">  </span><span class="s">"production"</span><span class="b">: {</span></span>
+<span class="line"><span class="b">    </span><span class="s">"baseUrl"</span><span class="b">: </span><span class="s">"https://api.example.com"</span><span class="b">,</span></span>
+<span class="line"><span class="b">    </span><span class="s">"apiVersion"</span><span class="b">: </span><span class="s">"v2"</span><span class="b">,</span></span>
+<span class="line"><span class="b">    </span><span class="s">"userId"</span><span class="b">: </span><span class="s">"100"</span></span>
+<span class="line"><span class="b">  }</span></span>
+<span class="line"><span class="b">}</span></span>
+      </div>
+    </div>
+
+    <h3 class="accent2">민감 정보 분리</h3>
+    <p>토큰·비밀번호 등 민감한 값은 <code>http-client.private.env.json</code>에 저장하고 <code>.gitignore</code>에 추가합니다.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">http-client.private.env.json</span>
+        <span class="code-lang">json</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="b">{</span></span>
+<span class="line"><span class="b">  </span><span class="s">"development"</span><span class="b">: {</span></span>
+<span class="line"><span class="b">    </span><span class="s">"token"</span><span class="b">: </span><span class="s">"dev-secret-token-here"</span><span class="b">,</span></span>
+<span class="line"><span class="b">    </span><span class="s">"dbPassword"</span><span class="b">: </span><span class="s">"dev-password"</span></span>
+<span class="line"><span class="b">  },</span></span>
+<span class="line"><span class="b">  </span><span class="s">"production"</span><span class="b">: {</span></span>
+<span class="line"><span class="b">    </span><span class="s">"token"</span><span class="b">: </span><span class="s">"prod-secret-token-here"</span><span class="b">,</span></span>
+<span class="line"><span class="b">    </span><span class="s">"dbPassword"</span><span class="b">: </span><span class="s">"prod-password"</span></span>
+<span class="line"><span class="b">  }</span></span>
+<span class="line"><span class="b">}</span></span>
+      </div>
+    </div>
+
+    <h3 class="accent3">환경 변수 사용</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">use-variables.http</span>
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="c">### 환경 변수를 활용한 요청</span></span>
+<span class="line"><span class="k">GET</span> <span class="u">{{baseUrl}}/api/{{apiVersion}}/users/{{userId}}</span></span>
+<span class="line"><span class="h">Authorization</span><span class="op">:</span> <span class="hv">Bearer {{token}}</span></span>
+<span class="line"><span class="h">Content-Type</span><span class="op">:</span> <span class="hv">application/json</span></span>
+      </div>
+    </div>
+
+    <h3 class="accent4">동적 변수 (내장 변수)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>변수</th><th>설명</th><th>예시 출력</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">$uuid</td><td>랜덤 UUID 생성</td><td class="mono">a1b2c3d4-...</td></tr>
+          <tr><td class="mono">$timestamp</td><td>현재 Unix 타임스탬프</td><td class="mono">1700000000</td></tr>
+          <tr><td class="mono">$isoTimestamp</td><td>ISO 8601 형식 현재 시간</td><td class="mono">2024-01-01T00:00:00Z</td></tr>
+          <tr><td class="mono">$randomInt</td><td>0~1000 사이 랜덤 정수</td><td class="mono">742</td></tr>
+          <tr><td class="mono">$random.integer(min,max)</td><td>지정 범위 랜덤 정수</td><td class="mono">$random.integer(1, 100)</td></tr>
+          <tr><td class="mono">$random.alphabetic(n)</td><td>n자리 랜덤 알파벳</td><td class="mono">$random.alphabetic(8)</td></tr>
+          <tr><td class="mono">$random.email</td><td>랜덤 이메일 주소</td><td class="mono">user@example.com</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">dynamic-variables.http</span>
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="c">### 동적 변수 활용 예</span></span>
+<span class="line"><span class="k">POST</span> <span class="u">https://api.example.com/users</span></span>
+<span class="line"><span class="h">Content-Type</span><span class="op">:</span> <span class="hv">application/json</span></span>
+<span class="line"><span class="h">X-Request-ID</span><span class="op">:</span> <span class="hv">{{$uuid}}</span></span>
+<span class="line"></span>
+<span class="line"><span class="b">{</span></span>
+<span class="line"><span class="b">  </span><span class="s">"id"</span><span class="b">: </span><span class="v">{{$uuid}}</span><span class="b">,</span></span>
+<span class="line"><span class="b">  </span><span class="s">"name"</span><span class="b">: </span><span class="v">"{{$random.alphabetic(8)}}"</span><span class="b">,</span></span>
+<span class="line"><span class="b">  </span><span class="s">"email"</span><span class="b">: </span><span class="v">"{{$random.email}}"</span><span class="b">,</span></span>
+<span class="line"><span class="b">  </span><span class="s">"createdAt"</span><span class="b">: </span><span class="v">"{{$isoTimestamp}}"</span></span>
+<span class="line"><span class="b">}</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 7. 인증 ── -->
+<section class="section" id="auth">
+  <div class="container">
+    <div class="section-label">07 / Authentication</div>
+    <h2 class="section-title">인증 방식별 예제</h2>
+
+    <h3 class="accent">Bearer Token (JWT)</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">auth-bearer.http</span>
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="k">GET</span> <span class="u">{{baseUrl}}/api/protected</span></span>
+<span class="line"><span class="h">Authorization</span><span class="op">:</span> <span class="hv">Bearer {{token}}</span></span>
+<span class="line"><span class="h">Content-Type</span><span class="op">:</span> <span class="hv">application/json</span></span>
+      </div>
+    </div>
+
+    <h3 class="accent2">Basic Authentication</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">auth-basic.http</span>
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="k">GET</span> <span class="u">https://api.example.com/secure</span></span>
+<span class="line"><span class="h">Authorization</span><span class="op">:</span> <span class="hv">Basic dXNlcjpwYXNzd29yZA==</span></span>
+<span class="line"></span>
+<span class="line"><span class="c"># 또는 변수 사용 (base64 인코딩은 수동으로)</span></span>
+<span class="line"><span class="c"># echo -n "user:password" | base64</span></span>
+      </div>
+    </div>
+
+    <h3 class="accent3">로그인 후 토큰 자동 저장 (체이닝)</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">auth-chain.http</span>
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="c">### Step 1: 로그인 → 토큰 저장</span></span>
+<span class="line"><span class="k">POST</span> <span class="u">{{baseUrl}}/auth/login</span></span>
+<span class="line"><span class="h">Content-Type</span><span class="op">:</span> <span class="hv">application/json</span></span>
+<span class="line"></span>
+<span class="line"><span class="b">{</span></span>
+<span class="line"><span class="b">  </span><span class="s">"username"</span><span class="b">: </span><span class="s">"admin"</span><span class="b">,</span></span>
+<span class="line"><span class="b">  </span><span class="s">"password"</span><span class="b">: </span><span class="s">"{{adminPassword}}"</span></span>
+<span class="line"><span class="b">}</span></span>
+<span class="line"></span>
+<span class="line"><span class="c">&gt; {%</span></span>
+<span class="line"><span class="c">  client.global.set("authToken", response.body.accessToken);</span></span>
+<span class="line"><span class="c">  client.log("✅ Token saved: " + response.body.accessToken);</span></span>
+<span class="line"><span class="c">%}</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span class="c">### Step 2: 저장된 토큰으로 인증 요청</span></span>
+<span class="line"><span class="k">GET</span> <span class="u">{{baseUrl}}/api/me</span></span>
+<span class="line"><span class="h">Authorization</span><span class="op">:</span> <span class="hv">Bearer {{authToken}}</span></span>
+      </div>
+    </div>
+
+    <h3 class="accent4">API Key 인증</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">auth-apikey.http</span>
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="c">### 헤더로 전달</span></span>
+<span class="line"><span class="k">GET</span> <span class="u">https://api.example.com/data</span></span>
+<span class="line"><span class="h">X-API-Key</span><span class="op">:</span> <span class="hv">{{apiKey}}</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span class="c">### 쿼리 파라미터로 전달</span></span>
+<span class="line"><span class="k">GET</span> <span class="u">https://api.example.com/data?api_key={{apiKey}}</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 8. 스크립트 ── -->
+<section class="section" id="scripts">
+  <div class="container">
+    <div class="section-label">08 / Response Handler Scripts</div>
+    <h2 class="section-title">응답 처리 스크립트</h2>
+
+    <p>
+      <code>&gt; {%  %}</code> 블록 안에 JavaScript 코드를 작성하여 응답을 자동 검증하거나 값을 변수로 저장할 수 있습니다.
+    </p>
+
+    <h3 class="accent">응답 검증 테스트</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">response-tests.http</span>
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="k">GET</span> <span class="u">https://jsonplaceholder.typicode.com/todos/1</span></span>
+<span class="line"></span>
+<span class="line"><span class="c">&gt; {%</span></span>
+<span class="line"><span class="c">  // ── 상태 코드 검증</span></span>
+<span class="line"><span class="c">  client.test("Status 200", function() {</span></span>
+<span class="line"><span class="c">    client.assert(response.status === 200, "Expected 200, got " + response.status);</span></span>
+<span class="line"><span class="c">  });</span></span>
+<span class="line"></span>
+<span class="line"><span class="c">  // ── 헤더 검증</span></span>
+<span class="line"><span class="c">  client.test("Content-Type is JSON", function() {</span></span>
+<span class="line"><span class="c">    client.assert(</span></span>
+<span class="line"><span class="c">      response.contentType.mimeType === "application/json",</span></span>
+<span class="line"><span class="c">      "Expected JSON content type"</span></span>
+<span class="line"><span class="c">    );</span></span>
+<span class="line"><span class="c">  });</span></span>
+<span class="line"></span>
+<span class="line"><span class="c">  // ── 바디 필드 검증</span></span>
+<span class="line"><span class="c">  client.test("Has required fields", function() {</span></span>
+<span class="line"><span class="c">    client.assert(response.body.hasOwnProperty("id"), "Missing id field");</span></span>
+<span class="line"><span class="c">    client.assert(response.body.hasOwnProperty("title"), "Missing title field");</span></span>
+<span class="line"><span class="c">    client.assert(response.body.id === 1, "Expected id to be 1");</span></span>
+<span class="line"><span class="c">  });</span></span>
+<span class="line"></span>
+<span class="line"><span class="c">  // ── 로그 출력</span></span>
+<span class="line"><span class="c">  client.log("Response body: " + JSON.stringify(response.body));</span></span>
+<span class="line"><span class="c">%}</span></span>
+      </div>
+    </div>
+
+    <h3 class="accent2">변수 저장 & 체이닝</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">chaining.http</span>
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="c">### 1. 포스트 생성 → ID 저장</span></span>
+<span class="line"><span class="k">POST</span> <span class="u">https://jsonplaceholder.typicode.com/posts</span></span>
+<span class="line"><span class="h">Content-Type</span><span class="op">:</span> <span class="hv">application/json</span></span>
+<span class="line"></span>
+<span class="line"><span class="b">{ "title": "New Post", "body": "Content", "userId": 1 }</span></span>
+<span class="line"></span>
+<span class="line"><span class="c">&gt; {%</span></span>
+<span class="line"><span class="c">  // 응답에서 ID 추출해 전역 변수에 저장</span></span>
+<span class="line"><span class="c">  client.global.set("createdPostId", response.body.id);</span></span>
+<span class="line"><span class="c">  client.log("Created post ID: " + response.body.id);</span></span>
+<span class="line"><span class="c">%}</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span class="c">### 2. 저장된 ID로 조회</span></span>
+<span class="line"><span class="k">GET</span> <span class="u">https://jsonplaceholder.typicode.com/posts/{{createdPostId}}</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span class="c">### 3. 저장된 ID로 삭제</span></span>
+<span class="line"><span class="k">DELETE</span> <span class="u">https://jsonplaceholder.typicode.com/posts/{{createdPostId}}</span></span>
+      </div>
+    </div>
+
+    <h3 class="accent3">주요 스크립트 API</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>API</th><th>설명</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">client.test(name, fn)</td><td>테스트 케이스 정의</td></tr>
+          <tr><td class="mono">client.assert(cond, msg)</td><td>조건 검증 (실패 시 오류)</td></tr>
+          <tr><td class="mono">client.log(msg)</td><td>콘솔 로그 출력</td></tr>
+          <tr><td class="mono">client.global.set(k, v)</td><td>전역 변수 저장 (요청 간 공유)</td></tr>
+          <tr><td class="mono">client.global.get(k)</td><td>전역 변수 읽기</td></tr>
+          <tr><td class="mono">client.global.clear(k)</td><td>전역 변수 삭제</td></tr>
+          <tr><td class="mono">response.status</td><td>HTTP 상태 코드 (숫자)</td></tr>
+          <tr><td class="mono">response.body</td><td>파싱된 응답 바디 (JSON 객체)</td></tr>
+          <tr><td class="mono">response.headers.valueOf(k)</td><td>응답 헤더 값 읽기</td></tr>
+          <tr><td class="mono">response.contentType.mimeType</td><td>Content-Type MIME 타입</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ── 9. 고급 기능 ── -->
+<section class="section" id="advanced">
+  <div class="container">
+    <div class="section-label">09 / Advanced</div>
+    <h2 class="section-title">고급 기능</h2>
+
+    <h3 class="accent">WebSocket 연결</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">websocket.http</span>
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="c">### WebSocket 연결</span></span>
+<span class="line"><span class="k">WEBSOCKET</span> <span class="u">wss://echo.websocket.events</span></span>
+<span class="line"><span class="h">Origin</span><span class="op">:</span> <span class="hv">https://websocket.events</span></span>
+<span class="line"></span>
+<span class="line"><span class="c">=== wait-for-server ===</span></span>
+<span class="line"></span>
+<span class="line"><span class="c">=== send ===</span></span>
+<span class="line"><span class="b">{"type":"subscribe","channel":"notifications"}</span></span>
+<span class="line"></span>
+<span class="line"><span class="c">=== wait-for-server ===</span></span>
+<span class="line"></span>
+<span class="line"><span class="c">=== send ===</span></span>
+<span class="line"><span class="b">{"type":"ping"}</span></span>
+      </div>
+    </div>
+
+    <h3 class="accent2">외부 파일 바디 참조</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">file-body.http</span>
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="c">### 외부 JSON 파일을 바디로 전송</span></span>
+<span class="line"><span class="k">POST</span> <span class="u">https://api.example.com/import</span></span>
+<span class="line"><span class="h">Content-Type</span><span class="op">:</span> <span class="hv">application/json</span></span>
+<span class="line"></span>
+<span class="line"><span class="op">&lt; </span><span class="u">./data/payload.json</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span class="c">### 외부 XML 파일 전송</span></span>
+<span class="line"><span class="k">POST</span> <span class="u">https://api.example.com/soap</span></span>
+<span class="line"><span class="h">Content-Type</span><span class="op">:</span> <span class="hv">text/xml</span></span>
+<span class="line"></span>
+<span class="line"><span class="op">&lt; </span><span class="u">./data/request.xml</span></span>
+      </div>
+    </div>
+
+    <h3 class="accent3">리다이렉트 및 SSL 설정</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">settings.http</span>
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="c"># @no-redirect — 리다이렉트 따라가지 않음</span></span>
+<span class="line"><span class="c"># @no-log — 응답 이력에 저장하지 않음</span></span>
+<span class="line"><span class="c"># @name myRequest — 요청에 이름 부여 (변수 참조용)</span></span>
+<span class="line"></span>
+<span class="line"><span class="c">### 리다이렉트 비활성화</span></span>
+<span class="line"><span class="c">// @no-redirect</span></span>
+<span class="line"><span class="k">GET</span> <span class="u">https://httpbin.org/redirect/1</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span class="c">### 요청 이름 부여</span></span>
+<span class="line"><span class="c">// @name createUser</span></span>
+<span class="line"><span class="k">POST</span> <span class="u">{{baseUrl}}/users</span></span>
+<span class="line"><span class="h">Content-Type</span><span class="op">:</span> <span class="hv">application/json</span></span>
+<span class="line"></span>
+<span class="line"><span class="b">{ "name": "Test User" }</span></span>
+<span class="line"></span>
+<span class="line"><span class="c">&gt; {%</span></span>
+<span class="line"><span class="c">  client.global.set("newUserId", response.body.id);</span></span>
+<span class="line"><span class="c">%}</span></span>
+      </div>
+    </div>
+
+    <h3 class="accent4">GraphQL 요청</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-filename">graphql.http</span>
+        <span class="code-lang">http</span>
+      </div>
+      <div class="code-content">
+<span class="line"><span class="c">### GraphQL Query</span></span>
+<span class="line"><span class="k">POST</span> <span class="u">https://api.example.com/graphql</span></span>
+<span class="line"><span class="h">Content-Type</span><span class="op">:</span> <span class="hv">application/json</span></span>
+<span class="line"><span class="h">Authorization</span><span class="op">:</span> <span class="hv">Bearer {{token}}</span></span>
+<span class="line"></span>
+<span class="line"><span class="b">{</span></span>
+<span class="line"><span class="b">  </span><span class="s">"query"</span><span class="b">: </span><span class="s">"query GetUser($id: ID!) { user(id: $id) { id name email posts { title } } }"</span><span class="b">,</span></span>
+<span class="line"><span class="b">  </span><span class="s">"variables"</span><span class="b">: {</span></span>
+<span class="line"><span class="b">    </span><span class="s">"id"</span><span class="b">: </span><span class="s">"{{userId}}"</span></span>
+<span class="line"><span class="b">  }</span></span>
+<span class="line"><span class="b">}</span></span>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-title">✅ Pro Tip</div>
+      <p>GraphQL 쿼리를 외부 <code>.graphql</code> 파일로 분리하고 <code>&lt; ./query.graphql</code>로 참조하면 IntelliJ의 GraphQL 플러그인과 함께 자동완성·타입 검증도 사용할 수 있습니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── 10. 단축키 ── -->
+<section class="section" id="shortcuts">
+  <div class="container">
+    <div class="section-label">10 / Shortcuts</div>
+    <h2 class="section-title">단축키 & 팁</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>단축키</th><th>동작</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">Ctrl + Enter (⌘ + Enter)</td><td>커서 위치의 요청 실행</td></tr>
+          <tr><td class="mono">Alt + Enter</td><td>인텐션 액션 (URL 변환, 환경 변수 추출 등)</td></tr>
+          <tr><td class="mono">Ctrl + Click (⌘ + Click)</td><td>URL로 이동 / 변수 정의로 이동</td></tr>
+          <tr><td class="mono">Ctrl + Space</td><td>자동 완성 (메서드, 헤더, 변수)</td></tr>
+          <tr><td class="mono">Ctrl + / (⌘ + /)</td><td>현재 줄 주석 처리</td></tr>
+          <tr><td class="mono">Shift + F6</td><td>변수명 일괄 변경 (Rename)</td></tr>
+          <tr><td class="mono">Alt + F7</td><td>변수 사용처 모두 찾기</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="accent" style="margin-top:2.5rem">실전 베스트 프랙티스</h3>
+
+    <div class="callout tip">
+      <div class="callout-title">📂 파일 구조</div>
+      <p>API 도메인별로 파일을 분리하세요: <code>auth.http</code>, <code>users.http</code>, <code>products.http</code>. 팀 공유 컬렉션은 <code>/http</code> 폴더에 모아 Git으로 관리합니다.</p>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-title">🔐 보안</div>
+      <p><code>http-client.private.env.json</code>을 반드시 <code>.gitignore</code>에 추가하세요. 토큰, 패스워드, API 키는 절대 <code>http-client.env.json</code>에 직접 작성하지 마세요.</p>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-title">⚠️ Production 주의</div>
+      <p>Production 환경 변수는 팀원 전체가 의도한 경우에만 사용하도록 명확히 구분하세요. 실수로 Production API를 호출하지 않도록 환경 이름을 명확히 표시하는 것이 중요합니다.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p>IntelliJ HTTP Request Guide · Built for JetBrains IDE users · 2025</p>
+  </div>
+</footer>
+
+<script>
+  // TOC active state
+  const sections = document.querySelectorAll('.section, .hero');
+  const tocLinks = document.querySelectorAll('.toc a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tocLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.toc a[href="#${id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(s => s.id && observer.observe(s));
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.card, .code-block, .callout, .step');
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.08 });
+
+  revealEls.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(18px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    revealObs.observe(el);
+  });
+</script>
+</body>
+</html>
