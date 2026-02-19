@@ -27,14 +27,17 @@ public class IndexServiceImpl implements IndexSevice{
         return wishMarketRepository.findAllByLoginid(jwt.getSubject());
     }
 
+    @LogExecutionTime
     public List<Market> findAllMarkets() {
         return marketRepository.findAll();
     }
 
+    @LogExecutionTime
     public Market findMarketById(Long id) {
         return marketRepository.findById(id).get();
     }
 
+    @LogExecutionTime
     public List<Company> findCompaniesByMarket(String market) {
         return companyRepoitory.findAllByMarket(market);
     }
