@@ -1,11 +1,9 @@
 package project7.tulipmetric.domain.Member;
 
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
 public interface MemberService {
     // JWT -> 닉네임
     public Optional<String> findNicknameByJwt(Jwt jwt);

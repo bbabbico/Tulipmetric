@@ -14,13 +14,13 @@ import project7.tulipmetric.domain.Market.Market;
 @RequiredArgsConstructor
 public class IndexController {
 
-    private final IndexService indexService;
+    private final IndexSevice indexSevice;
     private final WishMarketService wishMarketService;
 
     @GetMapping("/")
     public String index(@AuthenticationPrincipal Jwt jwt, Model model) {
-        model.addAttribute("wishlist", indexService.findWishMarketByLoginId(jwt));
-        model.addAttribute("market", indexService.findAllMarkets());
+        model.addAttribute("wishlist", indexSevice.findWishMarketByLoginId(jwt));
+        model.addAttribute("market", indexSevice.findAllMarkets());
         return "MainService/index";
     }
 
@@ -28,13 +28,13 @@ public class IndexController {
     public String industry_detail(@AuthenticationPrincipal Jwt jwt, @RequestParam Long id, Model model) {
 
         Boolean check = jwt != null && wishMarketService.checkWishMarket(jwt, id); //왼쪽 조건인 jwt != null 이 거짓이면 오른쪽 함수는 실행되지 않음. && and 에 따라 어짜피 거짓이라
-        Market market = indexService.findMarketById(id);
+        Market market = indexSevice.findMarketById(id);
         if (check) {
             model.addAttribute("wishcheck", true);
         }
 
         model.addAttribute("market", market);
-        model.addAttribute("company", indexService.findCompaniesByMarket(market.getName()));
+        model.addAttribute("company", indexSevice.findCompaniesByMarket(market.getName()));
         return "MainService/industry-detail";
     }
 

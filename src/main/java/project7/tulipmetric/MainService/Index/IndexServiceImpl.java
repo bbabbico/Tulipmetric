@@ -3,6 +3,7 @@ package project7.tulipmetric.MainService.Index;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+import project7.tulipmetric.AOP.LogExecutionTime;
 import project7.tulipmetric.domain.Company.Company;
 import project7.tulipmetric.domain.Company.CompanyRepoitory;
 import project7.tulipmetric.domain.Market.Market;
@@ -14,7 +15,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class IndexService {
+public class IndexServiceImpl implements IndexSevice{
     private final MarketRepository marketRepository;
     private final CompanyRepoitory companyRepoitory;
     private final WishMarketRepository wishMarketRepository;
