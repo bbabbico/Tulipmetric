@@ -22,6 +22,29 @@ KOSIS_API_KEY=KOSIS_API_KEY=ZmVmMjhjMjMwYTBlZjcxODdlMWE4NGM0YjA5NjgxMWU=
 
 `docker compose up -d --build`
 
+
+## HTTPS 적용 (운영용 + certbot 자동 갱신)
+- Nginx가 443 포트에서 TLS를 종료하고, 80 포트는 HTTPS로 301 리다이렉트됩니다.
+- `/.well-known/acme-challenge/` 경로를 webroot로 열어 certbot HTTP-01 검증을 처리합니다.
+- `.env`에 `CERTBOT_DOMAIN`, `CERTBOT_EMAIL`을 설정하세요. (`CERTBOT_DOMAIN`은 공인 DNS가 연결된 **도메인**이어야 하며 로컬 IP는 불가)
+
+### 최초 인증서 발급
+```bash
+docker compose up -d nginx
+docker compose --profile certbot-init run --rm certbot-init
+```
+발급 후 전체 스택 실행:
+```bash
+docker compose up -d --build
+```
+
+> 초기 발급 전에는 `docker compose up -d nginx` → `docker compose --profile certbot-init run --rm certbot-init` 순서를 반드시 지켜주세요.
+
+### 자동 갱신
+- `certbot` 서비스가 12시간마다 `certbot renew`를 실행합니다.
+- 갱신된 인증서는 `nginx/certs/fullchain.pem`, `nginx/certs/privkey.pem`으로 동기화됩니다.
+- 운영에서는 인증서 반영을 위해 `nginx -s reload`를 주기적으로 수행하세요.
+
 ## 사이트 주요 기능
 - 코스피 시장에 등록된 모든 26개 산업군에 대한 성장률 과 최근 12개월간의 지수 변동을 이용해 시장 과열도를 비교할 수 있는 사이트임.
 - 커뮤니티는 주식과 시장에 대해 자유롭게 토론과 소통을 할 수 있는 페이지임.

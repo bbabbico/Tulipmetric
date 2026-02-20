@@ -46,8 +46,35 @@ services:
       - spring-server
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - ./nginx/www:/var/www/certbot:ro
+
+  certbot:
+    image: certbot/certbot:latest
+    container_name: certbot-renewal
+    restart: always
+    entrypoint: ["/bin/sh", "/certbot-renew.sh"]
+    env_file:
+      - ./.env
+    volumes:
+      - ./nginx/certs:/etc/nginx/certs
+      - ./nginx/www:/var/www/certbot
+      - ./nginx/scripts/certbot-renew.sh:/certbot-renew.sh:ro
+
+  certbot-init:
+    image: certbot/certbot:latest
+    container_name: certbot-init
+    profiles: ["certbot-init"]
+    entrypoint: ["/bin/sh", "/certbot-init.sh"]
+    env_file:
+      - ./.env
+    volumes:
+      - ./nginx/certs:/etc/nginx/certs
+      - ./nginx/www:/var/www/certbot
+      - ./nginx/scripts/certbot-init.sh:/certbot-init.sh:ro
 
   python-loader:
     image: python-loader:1
