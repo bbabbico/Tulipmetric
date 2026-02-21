@@ -5,8 +5,8 @@
 HTTPS 적용 + 도메인 관리 
 서비스 확장 / 유지보수 기간
 
-## <a href="https://www.figma.com/board/ky0Sb60izZ4Ah3MlDtEusG/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98?node-id=0-1&t=WhjYw5i6j7hK7Kfi-1">아키텍처</a>
-figma
+## <a href="https://www.figma.com/board/ky0Sb60izZ4Ah3MlDtEusG/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98?node-id=0-1&t=WhjYw5i6j7hK7Kfi-1">아키텍처 - figma</a>
+
 
 ## 환경 설정
 1. `.env.example`을 `.env`로 복사해 DB, OAuth, JWT 설정을 채웁니다. 실제 `.env` 파일은 Git에 커밋되지 않도록 `.gitignore`에 추가되어 있습니다.
