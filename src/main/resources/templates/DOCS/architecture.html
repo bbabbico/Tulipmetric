@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tulipmetric Architecture</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3250;
+      --accent: #6c8cff;
+      --accent2: #a78bfa;
+      --accent3: #34d399;
+      --accent4: #fb923c;
+      --accent5: #f472b6;
+      --text: #e2e8f0;
+      --text-muted: #8892b0;
+      --text-dim: #4a5568;
+      --nginx: #22c55e;
+      --spring: #6c8cff;
+      --python: #f59e0b;
+      --mysql: #38bdf8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', 'Noto Sans KR', sans-serif;
+      line-height: 1.7;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #0f1117 0%, #1a1d27 50%, #0d1b2a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 64px 40px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(108,140,255,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(108,140,255,0.15);
+      border: 1px solid rgba(108,140,255,0.4);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 52px);
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+    .hero p {
+      color: var(--text-muted);
+      font-size: 16px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: rgba(26,29,39,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      position: sticky; top: 0; z-index: 100;
+      display: flex; gap: 0; overflow-x: auto;
+    }
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 14px 18px;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    nav a:hover { color: var(--text); border-bottom-color: var(--accent); }
+
+    /* ── LAYOUT ── */
+    main { max-width: 1100px; margin: 0 auto; padding: 48px 24px; }
+
+    section { margin-bottom: 64px; }
+    h2 {
+      font-size: 24px; font-weight: 700;
+      color: #fff;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    h2 .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      display: inline-block; flex-shrink: 0;
+    }
+    h3 { font-size: 17px; font-weight: 600; color: #fff; margin: 24px 0 12px; }
+
+    p { color: var(--text-muted); margin-bottom: 12px; font-size: 15px; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .card-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+    }
+    .card-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .card-title { font-size: 17px; font-weight: 700; color: #fff; }
+    .card-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── FLOW DIAGRAM ── */
+    .flow {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0;
+      margin: 28px 0;
+    }
+    .flow-node {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 20px;
+      text-align: center;
+      min-width: 110px;
+      position: relative;
+    }
+    .flow-node .label { font-size: 13px; font-weight: 600; color: #fff; }
+    .flow-node .sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .flow-arrow {
+      color: var(--text-dim);
+      font-size: 20px;
+      padding: 0 8px;
+      flex-shrink: 0;
+    }
+    .fn-client  { border-color: #475569; }
+    .fn-nginx   { border-color: var(--nginx); box-shadow: 0 0 10px rgba(34,197,94,0.15); }
+    .fn-spring  { border-color: var(--spring); box-shadow: 0 0 10px rgba(108,140,255,0.15); }
+    .fn-mysql   { border-color: var(--mysql); box-shadow: 0 0 10px rgba(56,189,248,0.15); }
+    .fn-python  { border-color: var(--python); box-shadow: 0 0 10px rgba(245,158,11,0.15); }
+
+    /* ── TABLE ── */
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th {
+      background: var(--surface2);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-align: left;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+    }
+    td {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+    /* ── CODE ── */
+    pre {
+      background: #0a0c14;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px 20px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #a8b4d8;
+      margin: 12px 0 20px;
+    }
+    code { font-family: 'Fira Code', 'Consolas', monospace; }
+    .kw { color: #6c8cff; }
+    .str { color: #34d399; }
+    .cm { color: #4a5568; font-style: italic; }
+    .tag { color: #f472b6; }
+    .val { color: #fb923c; }
+
+    /* ── BADGE ── */
+    .badge {
+      display: inline-block;
+      font-size: 11px; font-weight: 600;
+      padding: 2px 8px; border-radius: 4px;
+      margin-right: 4px; vertical-align: middle;
+    }
+    .badge-nginx  { background: rgba(34,197,94,0.15); color: var(--nginx); border: 1px solid rgba(34,197,94,0.3); }
+    .badge-spring { background: rgba(108,140,255,0.15); color: var(--spring); border: 1px solid rgba(108,140,255,0.3); }
+    .badge-python { background: rgba(245,158,11,0.15); color: var(--python); border: 1px solid rgba(245,158,11,0.3); }
+    .badge-mysql  { background: rgba(56,189,248,0.15); color: var(--mysql); border: 1px solid rgba(56,189,248,0.3); }
+    .badge-sec    { background: rgba(244,114,182,0.15); color: var(--accent5); border: 1px solid rgba(244,114,182,0.3); }
+
+    /* ── LIST ── */
+    ul.styled { padding-left: 0; list-style: none; }
+    ul.styled li {
+      color: var(--text-muted);
+      font-size: 14px;
+      padding: 7px 0 7px 22px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      position: relative;
+    }
+    ul.styled li::before {
+      content: '▸';
+      position: absolute; left: 4px;
+      color: var(--accent);
+    }
+
+    /* ── GRID ── */
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media(max-width: 700px) { .grid2 { grid-template-columns: 1fr; } }
+
+    /* ── LAYER BOX ── */
+    .layer-box {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .layer-header {
+      padding: 10px 18px;
+      font-size: 12px; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+    .layer-body { padding: 16px 18px; background: var(--surface); }
+    .lh-security { background: rgba(244,114,182,0.1); color: var(--accent5); border-bottom: 1px solid rgba(244,114,182,0.2); }
+    .lh-web      { background: rgba(108,140,255,0.1); color: var(--accent); border-bottom: 1px solid rgba(108,140,255,0.2); }
+    .lh-service  { background: rgba(52,211,153,0.1); color: var(--accent3); border-bottom: 1px solid rgba(52,211,153,0.2); }
+    .lh-data     { background: rgba(56,189,248,0.1); color: var(--mysql); border-bottom: 1px solid rgba(56,189,248,0.2); }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 32px;
+      border-top: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    /* ── STEP ── */
+    .steps { counter-reset: step; }
+    .step-item {
+      display: flex; gap: 16px;
+      margin-bottom: 20px;
+      align-items: flex-start;
+    }
+    .step-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--accent);
+      color: #fff; font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-content h4 { font-size: 14px; color: #fff; margin-bottom: 4px; }
+    .step-content p { margin-bottom: 0; font-size: 13px; }
+
+    /* color dots */
+    .c-nginx   { color: var(--nginx); }
+    .c-spring  { color: var(--spring); }
+    .c-python  { color: var(--python); }
+    .c-mysql   { color: var(--mysql); }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════ HERO ════════════════ -->
+<div class="hero">
+  <div class="hero-badge">Architecture Docs</div>
+  <h1>🌷 Tulipmetric</h1>
+  <p>Spring Boot · Nginx · Python · MySQL — Docker Compose 기반 멀티 컨테이너 아키텍처 문서</p>
+</div>
+
+<!-- ════════════════ NAV ════════════════ -->
+<nav>
+  <a href="#overview">전체 개요</a>
+  <a href="#request-cycle">요청/응답 사이클</a>
+  <a href="#nginx">Nginx 컨테이너</a>
+  <a href="#spring">Spring 컨테이너</a>
+  <a href="#python">Python 컨테이너</a>
+  <a href="#mysql">MySQL 컨테이너</a>
+  <a href="#security">보안 아키텍처</a>
+</nav>
+
+<!-- ════════════════ MAIN ════════════════ -->
+<main>
+
+  <!-- ── 전체 개요 ── -->
+  <section id="overview">
+    <h2><span class="dot" style="background:#6c8cff"></span>전체 시스템 개요</h2>
+    <p>Tulipmetric은 한국 KOSPI 업종별 주식 지표를 제공하는 웹 서비스입니다. 모든 서비스는 <strong>Docker Compose</strong>로 오케스트레이션되며, 4개의 독립 컨테이너로 구성됩니다.</p>
+
+    <div class="card">
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>컨테이너</th>
+              <th>이미지</th>
+              <th>포트</th>
+              <th>역할 요약</th>
+              <th>재시작 정책</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-nginx">nginx</span> nginx-proxy</td>
+              <td>nginx:1.25-alpine</td>
+              <td>80:80 (외부 노출)</td>
+              <td>리버스 프록시 · Rate Limiting · 보안 헤더</td>
+              <td>always</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-spring">spring</span> spring-server</td>
+              <td>spring-server:1 (빌드)</td>
+              <td>8080 (내부 only)</td>
+              <td>메인 비즈니스 로직 · JWT 인증 · MVC</td>
+              <td>always</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-mysql">mysql</span> mysql-container</td>
+              <td>mysql-server:1 (빌드)</td>
+              <td>3306:3306</td>
+              <td>영구 데이터 저장 · JPA ORM 타겟</td>
+              <td>always</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-python">python</span> python-loader</td>
+              <td>python-loader:1 (빌드)</td>
+              <td>없음</td>
+              <td>초기 데이터 수집 (KOSIS API · data.go.kr)</td>
+              <td>no (1회 실행)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3>컨테이너 의존 관계</h3>
+    <div class="flow" style="justify-content:center; flex-direction:column; align-items:flex-start; gap:8px; padding:20px; background:var(--surface); border:1px solid var(--border); border-radius:12px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="flow-node fn-mysql" style="min-width:130px"><span class="label">🗄️ MySQL</span><span class="sub">healthcheck 통과 후</span></span>
+        <span class="flow-arrow">──→</span>
+        <span class="flow-node fn-spring"><span class="label">🍃 Spring</span><span class="sub">depends_on: mysql</span></span>
+        <span class="flow-arrow">──→</span>
+        <span class="flow-node fn-nginx"><span class="label">🛡️ Nginx</span><span class="sub">depends_on: spring</span></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px; margin-top:8px;">
+        <span class="flow-node fn-mysql" style="min-width:130px"><span class="label">🗄️ MySQL</span><span class="sub">healthcheck 통과 후</span></span>
+        <span class="flow-arrow">──→</span>
+        <span class="flow-node fn-python"><span class="label">🐍 Python</span><span class="sub">depends_on: mysql</span></span>
+      </div>
+    </div>
+    <p style="font-size:13px; color:var(--text-dim); margin-top:8px;">MySQL이 <code>mysqladmin ping</code> healthcheck를 통과해야만 Spring과 Python이 기동됩니다. Nginx는 Spring이 올라온 뒤 시작합니다.</p>
+  </section>
+
+  <!-- ── 요청/응답 사이클 ── -->
+  <section id="request-cycle">
+    <h2><span class="dot" style="background:#34d399"></span>요청 → 응답 전체 사이클</h2>
+    <p>클라이언트가 HTTP 요청을 보내면 아래 순서로 처리됩니다.</p>
+
+    <div class="flow" style="justify-content:center;flex-wrap:wrap;margin:28px 0;">
+      <div class="flow-node fn-client"><span class="label">💻 Client</span><span class="sub">Browser / App</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node fn-nginx"><span class="label">🛡️ Nginx</span><span class="sub">:80</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node fn-spring"><span class="label">🍃 Spring</span><span class="sub">:8080</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node fn-mysql"><span class="label">🗄️ MySQL</span><span class="sub">:3306</span></div>
+      <div class="flow-arrow">←</div>
+      <div class="flow-node fn-spring"><span class="label">🍃 Spring</span></div>
+      <div class="flow-arrow">←</div>
+      <div class="flow-node fn-nginx"><span class="label">🛡️ Nginx</span></div>
+      <div class="flow-arrow">←</div>
+      <div class="flow-node fn-client"><span class="label">💻 Client</span></div>
+    </div>
+
+    <div class="steps">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>클라이언트 → Nginx (TCP :80)</h4>
+          <p>브라우저가 HTTP GET/POST 요청을 전송합니다. Nginx만 외부에 <code>80:80</code>으로 열려 있고, Spring(:8080)은 <strong>Docker 내부 네트워크에서만</strong> 접근 가능합니다.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Nginx — Rate Limiting 판정</h4>
+          <p>요청 경로(URI)에 따라 Rate Limit zone을 선택합니다. <code>/api/auth/</code>·<code>/login</code>은 분당 5회(login_limit), <code>/api/</code>는 초당 10회(api_limit), OAuth2 콜백은 초당 2회(oauth2_limit) 제한이 적용됩니다. 초과 시 <strong>429 Too Many Requests</strong>를 반환하고 Spring까지 전달되지 않습니다.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>Nginx → Spring (HTTP/1.1 Reverse Proxy)</h4>
+          <p>통과한 요청은 upstream <code>spring_backend(spring-server:8080)</code>로 프록시됩니다. 이때 <code>X-Real-IP</code>, <code>X-Forwarded-For</code>, <code>X-Forwarded-Proto</code> 헤더를 주입하여 Spring이 실제 클라이언트 IP를 알 수 있게 합니다. keepalive 32개 커넥션 풀을 유지합니다.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>Spring Security Filter Chain</h4>
+          <p>요청이 Spring에 도달하면 가장 먼저 Filter Chain을 통과합니다. <strong>JwtAuthenticationFilter</strong>가 쿠키의 <code>ACCESS_TOKEN</code>을 검증하고, 유효하면 <code>SecurityContextHolder</code>에 인증 정보를 저장합니다.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <h4>Spring DispatcherServlet → Controller → Service</h4>
+          <p>필터를 통과한 요청은 DispatcherServlet이 받아 적절한 <code>@Controller</code>에 라우팅합니다. Controller는 Service 레이어를 호출하고, Service는 JPA Repository를 통해 MySQL에 쿼리합니다.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <h4>MySQL 쿼리 → 결과 반환</h4>
+          <p>JPA(Hibernate)가 JPQL/SQL을 생성해 MySQL에 실행하고 결과를 엔티티로 매핑합니다. Service → Controller 순으로 응답 데이터가 올라옵니다.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">7</div>
+        <div class="step-content">
+          <h4>Thymeleaf 렌더링 → Nginx → 클라이언트</h4>
+          <p>Controller가 Thymeleaf 템플릿에 모델을 바인딩하여 HTML을 렌더링합니다. 결과 HTML(또는 JSON)은 Nginx를 거쳐 클라이언트에 전달됩니다. 정적 파일(.css/.js/.jpg 등)은 Nginx가 <code>Cache-Control: public, immutable</code>과 7일 캐시 헤더를 추가합니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── NGINX ── -->
+  <section id="nginx">
+    <h2><span class="dot" style="background:#22c55e"></span>Nginx 컨테이너</h2>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(34,197,94,0.1);">🛡️</div>
+        <div>
+          <div class="card-title">nginx-proxy</div>
+          <div class="card-sub">nginx:1.25-alpine · 포트 80 외부 노출 · 설정 파일: nginx/default.conf</div>
+        </div>
+      </div>
+      <p>Nginx는 <strong>외부 인터넷과 Spring 사이의 유일한 관문</strong>입니다. Spring을 직접 노출하지 않고 모든 트래픽을 Nginx가 중계하여 보안, 성능, 트래픽 제어를 담당합니다.</p>
+    </div>
+
+    <h3>📌 Rate Limiting 구조</h3>
+    <div class="card">
+      <table>
+        <thead><tr><th>Zone 이름</th><th>적용 경로</th><th>제한</th><th>Burst</th><th>목적</th></tr></thead>
+        <tbody>
+          <tr><td><code>api_limit</code></td><td><code>/api/</code></td><td>10 r/s</td><td>20</td><td>일반 API 과부하 방지</td></tr>
+          <tr><td><code>login_limit</code></td><td><code>/login</code>, <code>/api/auth/</code></td><td>5 r/m (POST만)</td><td>3</td><td>브루트포스 로그인 공격 방지</td></tr>
+          <tr><td><code>oauth2_limit</code></td><td><code>/login/oauth2/</code></td><td>2 r/s</td><td>6</td><td>OAuth2 리다이렉트 연속 호출 허용</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:13px; margin-top:12px; color:var(--text-dim);">💡 GET/HEAD 로그인 요청은 <code>map</code> 디렉티브로 key를 빈 문자열로 만들어 Rate Limit에서 제외됩니다.</p>
+    </div>
+
+    <h3>📌 보안 헤더</h3>
+    <pre><code><span class="tag">add_header</span> <span class="str">X-Frame-Options</span>        <span class="val">"SAMEORIGIN"</span>;           <span class="cm"># 클릭재킹 방지</span>
+<span class="tag">add_header</span> <span class="str">X-Content-Type-Options</span>  <span class="val">"nosniff"</span>;               <span class="cm"># MIME 스니핑 방지</span>
+<span class="tag">add_header</span> <span class="str">X-XSS-Protection</span>       <span class="val">"1; mode=block"</span>;         <span class="cm"># XSS 필터</span>
+<span class="tag">add_header</span> <span class="str">Referrer-Policy</span>        <span class="val">"strict-origin-when-cross-origin"</span>;</code></pre>
+
+    <h3>📌 Gzip 압축</h3>
+    <p>JSON, HTML, CSS, JS, SVG 등 텍스트 기반 응답에 대해 <code>gzip_comp_level 5</code>로 압축합니다. 1024 bytes 미만 응답은 압축 제외하여 CPU 낭비를 방지합니다.</p>
+
+    <h3>📌 정적 파일 캐싱</h3>
+    <p><code>.css / .js / .jpg / .png / .svg / .woff2</code> 등의 정적 리소스 요청은 Spring으로 프록시하면서 <code>expires 7d</code>, <code>Cache-Control: public, immutable</code> 헤더를 추가하여 브라우저 캐시를 활용합니다. <code>access_log off</code>로 정적 파일 로그는 생략합니다.</p>
+
+    <h3>📌 Health Check 엔드포인트</h3>
+    <p><code>/actuator/health</code> 경로는 Rate Limit 없이 Spring으로 프록시되고, 불필요한 <code>access_log</code>는 꺼져 있습니다. Docker 헬스체크나 로드밸런서 모니터링에 활용됩니다.</p>
+  </section>
+
+  <!-- ── SPRING ── -->
+  <section id="spring">
+    <h2><span class="dot" style="background:#6c8cff"></span>Spring Boot 컨테이너 (메인 서버)</h2>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(108,140,255,0.1);">🍃</div>
+        <div>
+          <div class="card-title">spring-server</div>
+          <div class="card-sub">Spring Boot 4.0.1 · Java 17 · JPA + Security + Thymeleaf + JWT + OAuth2</div>
+        </div>
+      </div>
+      <p>Tulipmetric의 핵심 서버입니다. 인증, 비즈니스 로직, 뷰 렌더링, DB 접근 모두를 담당합니다. 외부에는 노출되지 않고 Docker 내부 네트워크(<code>expose: 8080</code>)로만 접근 가능합니다.</p>
+    </div>
+
+    <h3>🏗️ 멀티스테이지 Docker 빌드</h3>
+    <pre><code><span class="cm"># Stage 1: Builder — JDK로 Gradle bootJar 빌드</span>
+<span class="kw">FROM</span> eclipse-temurin:17-jdk-alpine <span class="kw">AS</span> builder
+<span class="kw">RUN</span> ./gradlew bootJar --no-daemon
+
+<span class="cm"># Stage 2: Runtime — JRE만 포함하여 이미지 경량화</span>
+<span class="kw">FROM</span> eclipse-temurin:17-jre-alpine <span class="kw">AS</span> runtime
+<span class="kw">COPY</span> --from=builder /build/build/libs/*.jar spring_server.jar
+<span class="kw">ENTRYPOINT</span> ["java", "-jar", "/app/spring_server.jar"]</code></pre>
+    <p>JDK가 포함된 builder 스테이지에서 빌드 후, JRE만 있는 runtime 이미지로 복사하여 <strong>최종 이미지 크기를 대폭 줄입니다.</strong></p>
+
+    <h3>📦 레이어(패키지) 구조</h3>
+    <div class="layer-box">
+      <div class="layer-header lh-security">🔒 Security Layer — 보안 처리</div>
+      <div class="layer-body">
+        <ul class="styled">
+          <li><code>Security/SpringSecurity/SecurityConfig.java</code> — 전체 보안 설정의 중심, Filter Chain 정의</li>
+          <li><code>Security/SpringSecurity/JWT/JwtTokenProvider</code> — JWT 생성·검증 (JJWT 0.13.0, 기본 30분 만료)</li>
+          <li><code>Security/SpringSecurity/JWT/JwtAuthenticationFilter</code> — 매 요청마다 쿠키의 ACCESS_TOKEN 검증</li>
+          <li><code>Security/SpringSecurity/JWT/JwtLoginFilter</code> — POST /login 요청 처리, 인증 성공 시 JWT 쿠키 발급</li>
+          <li><code>Security/SpringSecurity/OAuth2/CustomOAuth2UserService</code> — 소셜 로그인 사용자 정보 처리</li>
+          <li><code>Security/SpringSecurity/OAuth2/OAuth2SuccessHandler</code> — OAuth2 성공 시 JWT 발급</li>
+          <li><code>Security/SpringSecurity/OAuth2/CookieOAuth2AuthorizationRequestRepository</code> — OAuth2 state를 쿠키에 저장</li>
+          <li><code>Security/SpringSecurity/Captcha/</code> — CAPTCHA 검증</li>
+          <li><code>Security/join/</code> — 회원가입 로직 (BCrypt 암호화)</li>
+          <li><code>Security/Controller/</code> — 인증 관련 컨트롤러</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="layer-box">
+      <div class="layer-header lh-web">🌐 Web Layer — 비즈니스 로직</div>
+      <div class="layer-body">
+        <ul class="styled">
+          <li><code>MainService/Index/</code> — 메인 페이지 (업종 지수 · 주식 데이터 조회)</li>
+          <li><code>MainService/Community/Controller/</code> — 커뮤니티 게시판 컨트롤러</li>
+          <li><code>MainService/Community/Service/</code> — 게시글·댓글 서비스 (작성/수정/삭제/좋아요)</li>
+          <li><code>Mypage/</code> — 마이페이지, 활동내역, 저장 목록, 프로필 수정</li>
+          <li><code>AOP/LogAspect.java</code> — @LogExecutionTime 어노테이션으로 메서드 실행시간 로깅</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="layer-box">
+      <div class="layer-header lh-service">📂 Domain Layer — 엔티티 & Repository</div>
+      <div class="layer-body">
+        <ul class="styled">
+          <li><code>domain/Member/</code> — 회원 엔티티, Role(USER, LOOT) enum, Repository</li>
+          <li><code>domain/Post/</code> — 게시글 엔티티 및 Repository</li>
+          <li><code>domain/Company/</code> — KOSPI 개별 종목 엔티티 (itmsnm, clpr, vs, fltrt, trqu, mrkttotamt, market)</li>
+          <li><code>domain/Market/</code> — 업종 지수 엔티티 (market_name, total_market_cap, market_per, stock_count, chart, market_status, trending)</li>
+          <li><code>domain/WishMarket/</code> — 관심 업종 저장 엔티티</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>🔐 Spring Security — 상세 Filter Chain</h3>
+    <div class="card">
+      <p style="margin-bottom:16px;">세션을 사용하지 않는 <strong>Stateless JWT 방식</strong>으로 동작합니다. 순서가 매우 중요합니다.</p>
+      <div class="steps">
+        <div class="step-item">
+          <div class="step-num" style="background:var(--accent5)">①</div>
+          <div class="step-content">
+            <h4>JwtAuthenticationFilter (매 요청)</h4>
+            <p>모든 요청에서 HTTP 쿠키의 <code>ACCESS_TOKEN</code>을 읽어 <code>JwtTokenProvider.validateToken()</code>으로 검증합니다. 유효하면 username과 role을 추출해 <code>SecurityContextHolder</code>에 저장합니다.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num" style="background:var(--accent5)">②</div>
+          <div class="step-content">
+            <h4>JwtLoginFilter (POST /login 전용)</h4>
+            <p>form 로그인 대신 이 필터가 <code>UsernamePasswordAuthenticationFilter</code> 자리를 대체합니다. 인증 성공 시 <code>JwtTokenProvider.createToken()</code>으로 JWT를 발급하고 <code>HttpOnly + Secure 쿠키</code>로 응답합니다.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num" style="background:var(--accent5)">③</div>
+          <div class="step-content">
+            <h4>OAuth2 소셜 로그인</h4>
+            <p><code>CustomOAuth2UserService</code>가 소셜 provider의 사용자 정보를 받아 내부 Member 엔티티와 매핑합니다. 성공 시 <code>OAuth2SuccessHandler</code>가 동일하게 JWT 쿠키를 발급합니다.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num" style="background:var(--accent5)">④</div>
+          <div class="step-content">
+            <h4>권한(Role) 계층</h4>
+            <p><code>ROLE_LOOT > ROLE_USER</code> 계층이 설정되어 LOOT 권한은 USER 권한을 포함합니다. 마이페이지, 게시글 작성/삭제, 댓글, 좋아요, 관심업종 저장은 USER 이상만 접근 가능합니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>🔄 AOP — 횡단 관심사</h3>
+    <div class="card">
+      <p>비즈니스 로직과 무관한 <strong>실행 시간 측정</strong>이 AOP로 분리되어 있습니다. <code>@LogExecutionTime</code> 어노테이션이 붙은 메서드는 <code>LogAspect</code>가 Around Advice로 전·후 시간을 측정하여 로그에 기록합니다. 이 방식 덕분에 비즈니스 코드에 성능 측정 코드를 넣지 않아도 됩니다.</p>
+    </div>
+
+    <h3>📊 주요 의존성 (build.gradle)</h3>
+    <div class="grid2">
+      <div class="card" style="padding:16px;">
+        <h4 style="color:var(--accent); font-size:13px; margin-bottom:10px;">핵심 의존성</h4>
+        <ul class="styled">
+          <li>spring-boot-starter-webmvc</li>
+          <li>spring-boot-starter-data-jpa</li>
+          <li>spring-boot-starter-thymeleaf</li>
+          <li>thymeleaf-extras-springsecurity6</li>
+          <li>mysql-connector-j</li>
+        </ul>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="color:var(--accent5); font-size:13px; margin-bottom:10px;">보안 의존성</h4>
+        <ul class="styled">
+          <li>spring-boot-starter-security</li>
+          <li>spring-boot-starter-security-oauth2-client</li>
+          <li>jjwt-api 0.13.0</li>
+          <li>jjwt-impl 0.13.0</li>
+          <li>jjwt-jackson 0.13.0</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>🌐 URL 권한 매핑 요약</h3>
+    <div class="card">
+      <table>
+        <thead><tr><th>경로</th><th>메서드</th><th>필요 권한</th></tr></thead>
+        <tbody>
+          <tr><td><code>/</code>, <code>/community</code>, <code>/industry-detail</code></td><td>ALL</td><td>누구나</td></tr>
+          <tr><td><code>/join</code>, <code>/login</code>, <code>/signup</code></td><td>GET/POST</td><td>누구나</td></tr>
+          <tr><td><code>/mypage</code>, <code>/activity</code>, <code>/saved</code></td><td>ALL</td><td>USER / LOOT</td></tr>
+          <tr><td><code>/editprofile</code>, <code>/editpassword</code>, <code>/deletprofile</code></td><td>ALL</td><td>USER / LOOT</td></tr>
+          <tr><td><code>/createpost</code>, <code>/deletepost</code>, <code>/editpost</code></td><td>ALL</td><td>USER / LOOT</td></tr>
+          <tr><td><code>/createcomment</code>, <code>/deletecomment</code></td><td>ALL</td><td>USER / LOOT</td></tr>
+          <tr><td><code>/likeAction</code>, <code>/savewishmarket</code></td><td>POST</td><td>USER / LOOT</td></tr>
+          <tr><td>그 외 모든 경로</td><td>ALL</td><td>인증 필요</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── PYTHON ── -->
+  <section id="python">
+    <h2><span class="dot" style="background:#f59e0b"></span>Python 컨테이너 (데이터 로더)</h2>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(245,158,11,0.1);">🐍</div>
+        <div>
+          <div class="card-title">python-loader</div>
+          <div class="card-sub">restart: no — 서비스 시작 시 1회만 실행 후 종료</div>
+        </div>
+      </div>
+      <p>Python 컨테이너는 <strong>서버가 아닙니다</strong>. MySQL이 준비된 직후 한 번 실행되어 KOSIS API와 data.go.kr API에서 주식·업종 초기 데이터를 수집하고 MySQL에 INSERT한 뒤 종료됩니다.</p>
+    </div>
+
+    <h3>📡 데이터 수집 흐름</h3>
+    <div class="flow" style="flex-direction:column; gap:12px; padding:20px; background:var(--surface); border:1px solid var(--border); border-radius:12px;">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <div class="flow-node fn-python" style="min-width:120px"><span class="label">KOSIS API</span><span class="sub">업종 지수·PER·시총</span></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-node fn-python"><span class="label">Python</span><span class="sub">데이터 정제·분류</span></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-node fn-mysql"><span class="label">MySQL</span><span class="sub">market 테이블</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <div class="flow-node fn-python" style="min-width:120px"><span class="label">data.go.kr API</span><span class="sub">KOSPI 개별 종목</span></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-node fn-python"><span class="label">Python</span><span class="sub">업종 XLSX 매핑</span></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-node fn-mysql"><span class="label">MySQL</span><span class="sub">company 테이블</span></div>
+      </div>
+    </div>
+
+    <h3>📌 주요 처리 단계</h3>
+    <div class="grid2">
+      <div class="card" style="padding:16px;">
+        <h4 style="color:var(--python); font-size:13px; margin-bottom:10px;">업종(Market) 데이터</h4>
+        <ul class="styled">
+          <li>KOSIS에서 업종별 지수 12개월치 수집 (<code>fetch_sector_chart</code>)</li>
+          <li>시가총액, PER, 종목수 별도 API 호출</li>
+          <li>23개 업종 순서 정렬 (<code>MARKET_ORDER</code>)</li>
+          <li>누락 업종은 이웃 업종 데이터로 보간</li>
+          <li>PER 기준으로 <code>overvalued / growing / stable / declining / crashed</code> 분류</li>
+          <li>30일 성장률(growth_rate30d) 계산</li>
+        </ul>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="color:var(--python); font-size:13px; margin-bottom:10px;">개별종목(Company) 데이터</h4>
+        <ul class="styled">
+          <li>data.go.kr에서 KOSPI 전체 종목(958개) 수집</li>
+          <li><code>주식별 업종 분류.xlsx</code>로 종목코드 → 업종명 매핑</li>
+          <li>종가(clpr), 등락률(fltRt), 거래량(trqu), 시가총액(mrktTotAmt) 저장</li>
+          <li>업종 매핑 실패 종목은 INSERT 제외</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>📌 DB 연결 재시도 로직</h3>
+    <p><code>wait_for_db()</code> 함수가 MySQL이 준비될 때까지 최대 20회(10초 간격)로 재시도합니다. Docker healthcheck와 별개로 Python 레벨에서도 안전성을 보장합니다.</p>
+  </section>
+
+  <!-- ── MYSQL ── -->
+  <section id="mysql">
+    <h2><span class="dot" style="background:#38bdf8"></span>MySQL 컨테이너</h2>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:rgba(56,189,248,0.1);">🗄️</div>
+        <div>
+          <div class="card-title">mysql-container</div>
+          <div class="card-sub">커스텀 빌드 이미지 · 포트 3306 · Volume: mysql_data</div>
+        </div>
+      </div>
+      <p>모든 영구 데이터를 저장하는 컨테이너입니다. <code>mysql_data</code> Docker 볼륨으로 컨테이너가 재시작되어도 데이터가 유지됩니다.</p>
+    </div>
+
+    <h3>📌 Healthcheck 설정</h3>
+    <pre><code><span class="tag">healthcheck</span>:
+  test: [<span class="str">"CMD"</span>, <span class="str">"mysqladmin"</span>, <span class="str">"ping"</span>, <span class="str">"-h localhost"</span>]
+  interval: <span class="val">10s</span>
+  timeout:  <span class="val">5s</span>
+  retries:  <span class="val">10</span>
+  start_period: <span class="val">30s</span></code></pre>
+    <p>10초마다 <code>mysqladmin ping</code>으로 헬스체크를 수행하며, 10회 재시도 내에 통과해야 Spring과 Python 컨테이너가 기동합니다. <code>start_period: 30s</code>로 초기 기동 시간을 여유 있게 설정했습니다.</p>
+
+    <h3>📌 주요 테이블 구조</h3>
+    <div class="card">
+      <table>
+        <thead><tr><th>테이블</th><th>주요 컬럼</th><th>데이터 출처</th></tr></thead>
+        <tbody>
+          <tr><td><code>market</code></td><td>name, totalmarketcap, marketper, stockcount, chart(CSV), growth_rate30d, market_status, trending</td><td>Python (KOSIS)</td></tr>
+          <tr><td><code>company</code></td><td>id(AUTO), itmsnm, clpr, vs, fltrt, trqu, mrkttotamt, market</td><td>Python (data.go.kr)</td></tr>
+          <tr><td><code>member</code></td><td>loginid, password(BCrypt), nickname, role(USER/LOOT)</td><td>Spring (회원가입)</td></tr>
+          <tr><td><code>post</code></td><td>제목, 내용, 작성자, 좋아요수 등</td><td>Spring (커뮤니티)</td></tr>
+          <tr><td><code>wish_market</code></td><td>member_id, market_name</td><td>Spring (관심업종 저장)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>📌 보안</h3>
+    <p>DB 비밀번호, 루트 패스워드 등 민감 정보는 <code>.env</code> 파일에서 환경변수로 주입됩니다. <code>.env.example</code>만 깃에 커밋하고 실제 <code>.env</code>는 <code>.gitignore</code>에 포함되어 레포에 노출되지 않습니다.</p>
+  </section>
+
+  <!-- ── SECURITY ── -->
+  <section id="security">
+    <h2><span class="dot" style="background:#f472b6"></span>전체 보안 아키텍처 요약</h2>
+
+    <div class="grid2">
+      <div class="card">
+        <h4 style="color:var(--nginx); margin-bottom:10px;">Nginx 레벨</h4>
+        <ul class="styled">
+          <li>Rate Limiting (api / login / oauth2 구분)</li>
+          <li>보안 헤더 (XSS, Clickjacking, MIME 스니핑)</li>
+          <li>client_max_body_size 10MB 제한</li>
+          <li>Spring 포트 외부 미노출</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--spring); margin-bottom:10px;">Spring 레벨</h4>
+        <ul class="styled">
+          <li>Stateless JWT (쿠키 HttpOnly·Secure)</li>
+          <li>OAuth2 소셜 로그인 + 쿠키 State 저장</li>
+          <li>BCrypt 비밀번호 암호화</li>
+          <li>CSRF 비활성 (JWT Stateless 방식)</li>
+          <li>Role 기반 URL 접근 제어</li>
+          <li>ROLE_LOOT > ROLE_USER 계층 권한</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--mysql); margin-bottom:10px;">인프라 레벨</h4>
+        <ul class="styled">
+          <li>.env 파일로 시크릿 분리</li>
+          <li>Docker 내부 네트워크 격리</li>
+          <li>Spring/MySQL 포트 외부 노출 없음</li>
+          <li>TZ: Asia/Seoul 설정</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--python); margin-bottom:10px;">데이터 레벨</h4>
+        <ul class="styled">
+          <li>API 키 환경변수로 관리</li>
+          <li>Python 컨테이너 1회 실행 후 종료</li>
+          <li>mysql_data 볼륨으로 데이터 영속성 보장</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>📄 Tulipmetric Architecture Docs — Generated from <a href="https://github.com/bbabbico/Tulipmetric" style="color:var(--accent);text-decoration:none;">github.com/bbabbico/Tulipmetric</a></p>
+</footer>
+
+</body>
+</html>
