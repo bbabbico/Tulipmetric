@@ -27,7 +27,7 @@ public class IndexController {
     @GetMapping("/industry-detail")
     public String industry_detail(@AuthenticationPrincipal Jwt jwt, @RequestParam Long id, Model model) {
 
-        Boolean check = jwt != null && wishMarketService.checkWishMarket(jwt, id); //왼쪽 조건인 jwt != null 이 거짓이면 오른쪽 함수는 실행되지 않음. && and 에 따라 어짜피 거짓이라
+        boolean check = jwt != null && wishMarketService.checkWishMarket(jwt, id); //왼쪽 조건인 jwt != null 이 거짓이면 오른쪽 함수는 실행되지 않음. && and 에 따라 어짜피 거짓이라
         Market market = indexSevice.findMarketById(id);
         if (check) {
             model.addAttribute("wishcheck", true);
