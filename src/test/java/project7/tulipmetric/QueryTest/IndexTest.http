@@ -10,3 +10,8 @@ Accept: application/json
 GET http://127.0.0.1:80/industry-detail
 Accept: application/json
 ###
+
+# 산업군 세부정보 + 기업정보 조회
+GET http://127.0.0.1:80//architecture
+Accept: application/json
+###
