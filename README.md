@@ -50,9 +50,10 @@ KOSIS_API_KEY=KOSIS_API_KEY=ZmVmMjhjMjMwYTBlZjcxODdlMWE4NGM0YjA5NjgxMWU=
 
 ### 개발 환경
 - java 17
-- springframework 4.0.1 / Gradle (Docker)
+- springframework 4.0.1 / image - Gradle (Docker)
 - Spring Data JPA
 - Spring Security
 - Thymeleaf
 - MySql 8.0 (Docker)
-- python:3.11-slim (Docker)
+- image - python:3.11-slim (Docker)
+- image - nginx:1.25-alpine (Docker)
