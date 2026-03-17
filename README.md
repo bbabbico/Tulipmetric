@@ -58,7 +58,7 @@ KOSIS_API_KEY=KOSIS_API_KEY=ZmVmMjhjMjMwYTBlZjcxODdlMWE4NGM0YjA5NjgxMWU=
 - image - python:3.11-slim (Docker)
 - image - nginx:1.25-alpine (Docker)
 
-## GitHub Actions CI/CD 가이드
+## GitHub Actions CI/CD 가이드 - 여기부터 AI 작성(테스트중)
 현재 배포 방식(`docker compose up -d --build`)을 유지하면서 GitHub Actions로 자동화했습니다.
 
 ### 1) CI (`.github/workflows/ci.yml`)
