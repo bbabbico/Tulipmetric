@@ -27,8 +27,7 @@ Architecture.md 파일에 아키텍처 소개가 있습니다.
 
 ## 환경 설정
 1. `.env.example`을 `.env`로 복사해 DB, OAuth, JWT 설정을 채웁니다. 실제 `.env` 파일은 Git에 커밋되지 않도록 `.gitignore`에 추가되어 있습니다.
-2. `src/main/resources/application-example.properties`를 `application.properties`로 복사한 뒤, 필요 시 `.env` 또는 환경 변수에서 값을 주입하도록 `${…}` 플레이스홀더를 유지합니다.
-3. 민감 정보는 환경 변수나 `.env`/`.env.properties` 파일을 통해 주입할 수 있으며, `spring.config.import=optional:file:.env[.properties]` 설정으로 외부 파일 로딩을 허용합니다.
+2. 민감 정보는 환경 변수나 `.env`/`.env.properties` 파일을 통해 주입할 수 있으며, `spring.config.import=optional:file:.env[.properties]` 설정으로 외부 파일 로딩을 허용합니다.
 
 ## 빌드
 실제 주식시장 데이터를 이용하기 때문에, KOSIS API 키와 공공데이터 포탈 API 가 필요합니다. 
