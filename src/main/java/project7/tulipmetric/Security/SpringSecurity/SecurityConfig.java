@@ -91,6 +91,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                                 .requestMatchers("/img/**").permitAll() //정적 이미지
+                                .requestMatchers( "/swagger-ui/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/join", "/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/join", "/signup", "/login","/nicknamecheck","/loginidcheck").permitAll()
                                 .requestMatchers("/","/community","/industry-detail","/discussion-detail").permitAll()
