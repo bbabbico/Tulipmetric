@@ -18,6 +18,7 @@ MySql + JPA 코드 작성 / API 엔드포인트 컨트롤러 작성 JAVA (완료
 3차 리팩터링 Tulipmetric 로고 추가 (완료) <br>
 
 (현재 진행중)
+Swagger 적용
 HTTPS 적용 + 도메인 관리 
 서비스 확장 / 유지보수 기간
 
